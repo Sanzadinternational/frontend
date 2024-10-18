@@ -32,8 +32,8 @@ const Header = () => {
         >
           Supplier
         </Link>
-        <Link className="hover:bg-slate-700 rounded-md px-2 py-1" href="/login">
-          Login
+        <Link className="hover:bg-slate-700 rounded-md px-2 py-1" href="/admin">
+          Admin
         </Link>
       </div>
       <div className="flex items-center justify-between">

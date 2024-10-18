@@ -11,7 +11,7 @@ const AgentLoginRegistration = () => {
           <TabsTrigger value="register">Register</TabsTrigger>
         </TabsList>
         <TabsContent value="login">
-          <Login />
+          <Login role="supplier"/>
         </TabsContent>
         <TabsContent value="register">
           <SupplierRegistration />
