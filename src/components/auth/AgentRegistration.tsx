@@ -1,12 +1,12 @@
-
-
-"use client"; 
+"use client";
 
 import * as z from "zod";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import {
   Card,
   CardHeader,
@@ -77,6 +77,16 @@ const formSchema = z.object({
   otp: z.string().min(1, {
     message: "OTP is required",
   }),
+  officeno: z.string().min(1, {
+    message: "Office No. is required",
+  }),
+  mobileno: z.string().min(1, {
+    message: "Mobile No. is required",
+  }),
+  selectcurrency: z.string().min(1, {
+    message: "Currency is required",
+  }),
+  uploadeddocs: z.string(),
 });
 
 // Type for form data
@@ -85,6 +95,7 @@ type FormData = z.infer<typeof formSchema>;
 const AgentRegistration: React.FC = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCity, setSelectedCity] = useState<string>("");
+  const [selectedCurrency, setSelectedCurrency] = useState<string>("");
   const router = useRouter();
 
   const form = useForm<FormData>({
@@ -100,6 +111,8 @@ const AgentRegistration: React.FC = () => {
       taxno: "",
       otp: "",
       contactperson: "",
+      mobileno: "",
+      officeno: "",
     },
   });
 
@@ -123,6 +136,11 @@ const AgentRegistration: React.FC = () => {
   const cities: string[] =
     countries.find((country) => country.code === selectedCountry)?.cities || [];
 
+  const tags = ["GST", "Adhar", "PAN", "Passport"];
+  const handleCurrencyChange = (value: string) => {
+    setSelectedCurrency(value);
+    form.setValue("selectcurrency", value);
+  };
   return (
     <Card>
       <CardHeader>
@@ -358,6 +376,114 @@ const AgentRegistration: React.FC = () => {
                       type="text"
                       className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                       placeholder="Enter OTP"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="officeno"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    Office Number
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      placeholder="Enter Office Number"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="mobileno"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    Mobile Number
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="string"
+                      className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      placeholder="Enter Mobile Number"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="selectcurrency"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    Currency
+                  </FormLabel>
+                  <FormControl>
+                    <Select
+                      {...field}
+                      onValueChange={handleCurrencyChange}
+                      value={selectedCurrency}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select Currency" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Rs">Rs</SelectItem>
+                        <SelectItem value="usd">USD</SelectItem>
+                        <SelectItem value="ed">ED</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <ScrollArea className="h-28 w-full rounded-md border">
+              <div className="p-4">
+                <h4 className="mb-4 text-xs uppercase font-bold text-zinc-500 dark:text-white leading-none">
+                  Docs To Attach
+                </h4>
+                {tags.map((tag) => (
+                  <>
+                    <div key={tag} className="text-sm">
+                      {tag}
+                    </div>
+                    <Separator className="my-2" />
+                  </>
+                ))}
+              </div>
+            </ScrollArea>
+
+            <FormField
+              control={form.control}
+              name="uploadeddocs"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    Upload Documents
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      placeholder="Upload Docs"
                       {...field}
                     />
                   </FormControl>
