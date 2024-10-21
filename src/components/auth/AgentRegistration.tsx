@@ -351,12 +351,15 @@ const AgentRegistration: React.FC = () => {
                     Email
                   </FormLabel>
                   <FormControl>
-                    {/* <Textarea placeholder="Type your message here." className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white" {...field}/> */}
-                    <Input
+                    {/* <Input
                       className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                       placeholder="Enter Email"
                       {...field}
-                    />
+                    /> */}
+                    <div className="flex w-full max-w-sm items-center space-x-2">
+                      <Input type="email" placeholder="Enter Email" {...field}/>
+                      <Button type="button">Send OTP</Button>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
