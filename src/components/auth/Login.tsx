@@ -21,6 +21,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useToast } from "@/hooks/use-toast"
+
 const formSchema = z.object({
   email: z
     .string()
@@ -38,6 +40,7 @@ interface LoginRoleProps{
   role:string;
 }
 const Login = ({role}:LoginRoleProps) => {
+  const {toast} = useToast();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,7 +51,11 @@ const Login = ({role}:LoginRoleProps) => {
   });
   const handleSubmit = (data: z.infer<typeof formSchema>) => {
     console.log(data);
-    router.push("/");
+    toast({
+      title:`${role[0].toUpperCase()+role.slice(1)} Login`,
+      description:'Login Successful',
+    })
+    router.push(`/dashboard/${role}`);
   };
 
   return (

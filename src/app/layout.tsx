@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { Toaster } from "@/components/ui/toaster";
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -37,9 +37,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-        <Header/>
+        
         {children}
-        <Footer/>
+        <Toaster/>
         </ThemeProvider>
       </body>
     </html>
