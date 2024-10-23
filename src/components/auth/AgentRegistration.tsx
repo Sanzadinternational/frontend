@@ -111,8 +111,6 @@ const AgentRegistration: React.FC = () => {
       taxno: "",
       otp: "",
       contactperson: "",
-      mobileno: "",
-      officeno: "",
     },
   });
 
@@ -397,7 +395,7 @@ const AgentRegistration: React.FC = () => {
                   </FormLabel>
                   <FormControl>
                     <Input
-                      type="text"
+                      type="number"
                       className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                       placeholder="Enter Office Number"
                       {...field}
@@ -418,7 +416,7 @@ const AgentRegistration: React.FC = () => {
                   </FormLabel>
                   <FormControl>
                     <Input
-                      type="string"
+                      type="number"
                       className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                       placeholder="Enter Mobile Number"
                       {...field}
