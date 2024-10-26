@@ -68,6 +68,7 @@ const formSchema = z.object({
     .string()
     .min(1, { message: "Email is Required" })
     .email({ message: "Please enter valid email" }),
+    password: z.string().min(1, { message: "Password is Required" }),
   zipcode: z.string().min(1, { message: "Zipcode is Required" }),
   iatacode: z.string(),
   country: z.string().min(1, { message: "Country is required" }),
@@ -104,6 +105,7 @@ const AgentRegistration: React.FC = () => {
       companyname: "",
       address: "",
       email: "",
+      password:"",
       country: "",
       city: "",
       zipcode: "",
@@ -379,6 +381,24 @@ const AgentRegistration: React.FC = () => {
                       placeholder="Enter OTP"
                       {...field}
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+<FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    Password
+                  </FormLabel>
+                  <FormControl>
+                    
+                      <Input className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white" type="email" placeholder="Enter Password" {...field}/>
+                    
                   </FormControl>
                   <FormMessage />
                 </FormItem>
