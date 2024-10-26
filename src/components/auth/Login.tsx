@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast"
-
+import { useRole } from "../context/RoleContext";
 const formSchema = z.object({
   email: z
     .string()
@@ -40,6 +40,8 @@ interface LoginRoleProps{
   role:string;
 }
 const Login = ({role}:LoginRoleProps) => {
+  const {setRole} = useRole();
+  setRole(role);
   const {toast} = useToast();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -49,10 +51,11 @@ const Login = ({role}:LoginRoleProps) => {
       password: "",
     },
   });
+  const roleTitle:string=role[0].toUpperCase()+role.slice(1);
   const handleSubmit = (data: z.infer<typeof formSchema>) => {
     console.log(data);
     toast({
-      title:`${role[0].toUpperCase()+role.slice(1)} Login`,
+      title:`${roleTitle} Login`,
       description:'Login Successful',
     })
     router.push(`/dashboard/${role}`);

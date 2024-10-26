@@ -1,10 +1,10 @@
-'use client';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+"use client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Collapsible,
   CollapsibleContent,
-  CollapsibleTrigger
-} from '@/components/ui/collapsible';
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,9 +12,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
-import { Separator } from '@/components/ui/separator';
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -31,9 +31,9 @@ import {
   SidebarMenuSubItem,
   SidebarProvider,
   SidebarRail,
-  SidebarTrigger
-} from '@/components/ui/sidebar';
-import { navItems } from '../constants/data';
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { sideBarItems } from "../constants/data";
 import {
   BadgeCheck,
   Bell,
@@ -41,38 +41,30 @@ import {
   ChevronsUpDown,
   CreditCard,
   LogOut,
-  Car
-} from 'lucide-react';
+  Car,
+} from "lucide-react";
 // import { useSession } from 'next-auth/react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import ThemeToggler from '../theme/ThemeToggler';
-import { Icons } from '../icons';
-import { UserNav } from '../layout/user-nav';
-
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import ThemeToggler from "../theme/ThemeToggler";
+import { Icons } from "../icons";
+import { UserNav } from "../layout/user-nav";
+import { useRole } from "../context/RoleContext";
 export const company = {
-  name: 'Sanzad',
+  name: "Sanzad",
   logo: Car,
-  plan: 'International'
+  plan: "International",
 };
 
 export default function AppSidebar({
-  children
+  children,
 }: {
   children: React.ReactNode;
 }) {
-//   const [mounted, setMounted] = React.useState(false);
-//   const { data: session } = useSession();
+  const {role} = useRole();
   const pathname = usePathname();
-//   // Only render after first client-side mount
-//   React.useEffect(() => {
-//     setMounted(true);
-//   }, []);
-
-//   if (!mounted) {
-//     return null; // or a loading skeleton
-//   }
-
+  // const rolename = role;
+  const roleData = sideBarItems.filter((name) => name.role === role);
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
@@ -91,7 +83,62 @@ export default function AppSidebar({
           <SidebarGroup>
             <SidebarGroupLabel>Overview</SidebarGroupLabel>
             <SidebarMenu>
-              {navItems.map((item) => {
+              {roleData.map((item) =>
+                item.roleItems.map((data) => {
+                  const Icon = data.icon ? Icons[data.icon] : Icons.logo;
+                  return data?.items && data?.items.length > 0 ? (
+                    <Collapsible
+                      key={data.title}
+                      asChild
+                      defaultOpen={data.isActive}
+                      className="group/collapsible"
+                    >
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton
+                            tooltip={data.title}
+                            isActive={pathname === data.url}
+                          >
+                            {data.icon && <Icon />}
+                            <span>{data.title}</span>
+                            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {data.items?.map((subItem) => (
+                              <SidebarMenuSubItem key={subItem.title}>
+                                <SidebarMenuSubButton
+                                  asChild
+                                  isActive={pathname === subItem.url}
+                                >
+                                  <Link href={subItem.url}>
+                                    <span>{subItem.title}</span>
+                                  </Link>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </SidebarMenuItem>
+                    </Collapsible>
+                  ) : (
+                    <SidebarMenuItem key={data.title}>
+                      <SidebarMenuButton
+                        asChild
+                        tooltip={data.title}
+                        isActive={pathname === data.url}
+                      >
+                        <Link href={data.url}>
+                          <Icon />
+                          <span>{data.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })
+              )}
+              {/* {sideBarItems.map((item) => {
                 const Icon = item.icon ? Icons[item.icon] : Icons.logo;
                 return item?.items && item?.items?.length > 0 ? (
                   <Collapsible
@@ -143,7 +190,7 @@ export default function AppSidebar({
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
-              })}
+              })} */}
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>
@@ -165,8 +212,13 @@ export default function AppSidebar({
                         {session?.user?.name?.slice(0, 2)?.toUpperCase() ||
                           'CN'}
                       </AvatarFallback> */}
-                      <AvatarImage src="https://github.com/shadcn.png" alt="avatar" />
-                      <AvatarFallback className="text-black rounded-lg">AK</AvatarFallback>
+                      <AvatarImage
+                        src="https://github.com/shadcn.png"
+                        alt="avatar"
+                      />
+                      <AvatarFallback className="text-black rounded-lg">
+                        AK
+                      </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">
@@ -198,8 +250,13 @@ export default function AppSidebar({
                           {session?.user?.name?.slice(0, 2)?.toUpperCase() ||
                             'CN'}
                         </AvatarFallback> */}
-                        <AvatarImage src="https://github.com/shadcn.png" alt="avatar" />
-                        <AvatarFallback className="text-black rounded-lg">AK</AvatarFallback>
+                        <AvatarImage
+                          src="https://github.com/shadcn.png"
+                          alt="avatar"
+                        />
+                        <AvatarFallback className="text-black rounded-lg">
+                          AK
+                        </AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 text-left text-sm leading-tight">
                         <span className="truncate font-semibold">
@@ -207,7 +264,7 @@ export default function AppSidebar({
                           name
                         </span>
                         <span className="truncate text-xs">
-                          {' '}
+                          {" "}
                           {/* {session?.user?.email || ''} */}
                           email
                         </span>
