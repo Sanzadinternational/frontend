@@ -60,34 +60,32 @@ const countries: Country[] = [
 ];
 
 const formSchema = z.object({
-  companyname: z.string().min(1, { message: "Company Name is Required" }),
-  address: z.string().min(1, {
+  Company_name: z.string().min(1, { message: "Company Name is Required" }),
+  Address: z.string().min(1, {
     message: "Address is Required",
   }),
-  email: z
+  Email: z
     .string()
     .min(1, { message: "Email is Required" })
     .email({ message: "Please enter valid email" }),
-    password: z.string().min(1, { message: "Password is Required" }),
-  zipcode: z.string().min(1, { message: "Zipcode is Required" }),
-  iatacode: z.string(),
-  country: z.string().min(1, { message: "Country is required" }),
-  city: z.string().min(1, { message: "City is required" }),
-  taxno: z.string().min(1, { message: "Tax Number is required" }),
-  contactperson: z.string(),
-  otp: z.string().min(1, {
-    message: "OTP is required",
-  }),
-  officeno: z.string().min(1, {
+    Password: z.string().min(1, { message: "Password is Required" }),
+    Zip_code: z.string().min(1, { message: "Zipcode is Required" }),
+    IATA_Code: z.string(),
+    Country: z.string().min(1, { message: "Country is required" }),
+    City: z.string().min(1, { message: "City is required" }),
+  Gst_Vat_Tax_number: z.string().min(1, { message: "Tax Number is required" }),
+  Contact_Person: z.string(),
+  otp: z.string(),
+  Office_number: z.string().min(1, {
     message: "Office No. is required",
   }),
-  mobileno: z.string().min(1, {
+  Mobile_number: z.string().min(1, {
     message: "Mobile No. is required",
   }),
-  selectcurrency: z.string().min(1, {
+  Currency: z.string().min(1, {
     message: "Currency is required",
   }),
-  uploadeddocs: z.string(),
+  Gst_Tax_Certificate: z.string(),
 });
 
 // Type for form data
@@ -102,35 +100,48 @@ const AgentRegistration: React.FC = () => {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      companyname: "",
-      address: "",
-      email: "",
-      password:"",
-      country: "",
-      city: "",
-      zipcode: "",
-      iatacode: "",
-      taxno: "",
+      Company_name: "",
+      Address: "",
+      Email: "",
+      Password: "",
+      Country: "",
+      City: "",
+      Zip_code: "",
+      IATA_Code: "",
+      Gst_Vat_Tax_number: "",
       otp: "",
-      contactperson: "",
+      Contact_Person: "",
     },
   });
 
-  const handleSubmit: SubmitHandler<FormData> = (data) => {
+  const handleSubmit: SubmitHandler<FormData> = async(data) => {
+    try{
+      const response = await fetch('http://localhost:8000/Api/V1/Agent/registration',{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+        },
+        body:JSON.stringify(data),
+      });
+    }
+    catch(error){
+console.log(error);
+    }
+
     console.log(data);
     router.push("/");
   };
 
   const handleCountryChange = (value: string) => {
     setSelectedCountry(value);
-    form.setValue("country", value);
-    form.setValue("city", "");
+    form.setValue("Country", value);
+    form.setValue("City", "");
     setSelectedCity("");
   };
 
   const handleCityChange = (value: string) => {
     setSelectedCity(value);
-    form.setValue("city", value);
+    form.setValue("City", value);
   };
 
   const cities: string[] =
@@ -139,7 +150,7 @@ const AgentRegistration: React.FC = () => {
   const tags = ["GST", "Adhar", "PAN", "Passport"];
   const handleCurrencyChange = (value: string) => {
     setSelectedCurrency(value);
-    form.setValue("selectcurrency", value);
+    form.setValue("Currency", value);
   };
   return (
     <Card>
@@ -157,7 +168,7 @@ const AgentRegistration: React.FC = () => {
           >
             <FormField
               control={form.control}
-              name="companyname"
+              name="Company_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
@@ -177,7 +188,7 @@ const AgentRegistration: React.FC = () => {
 
             <FormField
               control={form.control}
-              name="address"
+              name="Address"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
@@ -197,7 +208,7 @@ const AgentRegistration: React.FC = () => {
 
             <FormField
               control={form.control}
-              name="country"
+              name="Country"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
@@ -228,7 +239,7 @@ const AgentRegistration: React.FC = () => {
 
             <FormField
               control={form.control}
-              name="city"
+              name="City"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
@@ -260,7 +271,7 @@ const AgentRegistration: React.FC = () => {
 
             <FormField
               control={form.control}
-              name="zipcode"
+              name="Zip_code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
@@ -281,7 +292,7 @@ const AgentRegistration: React.FC = () => {
 
             <FormField
               control={form.control}
-              name="iatacode"
+              name="IATA_Code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
@@ -302,7 +313,7 @@ const AgentRegistration: React.FC = () => {
 
             <FormField
               control={form.control}
-              name="taxno"
+              name="Gst_Vat_Tax_number"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
@@ -323,7 +334,7 @@ const AgentRegistration: React.FC = () => {
 
             <FormField
               control={form.control}
-              name="contactperson"
+              name="Contact_Person"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
@@ -344,7 +355,7 @@ const AgentRegistration: React.FC = () => {
 
             <FormField
               control={form.control}
-              name="email"
+              name="Email"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
@@ -357,7 +368,11 @@ const AgentRegistration: React.FC = () => {
                       {...field}
                     /> */}
                     <div className="flex w-full max-w-sm items-center space-x-2">
-                      <Input type="email" placeholder="Enter Email" {...field}/>
+                      <Input
+                        type="email"
+                        placeholder="Enter Email"
+                        {...field}
+                      />
                       <Button type="button">Send OTP</Button>
                     </div>
                   </FormControl>
@@ -387,18 +402,21 @@ const AgentRegistration: React.FC = () => {
               )}
             />
 
-<FormField
+            <FormField
               control={form.control}
-              name="password"
+              name="Password"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
                     Password
                   </FormLabel>
                   <FormControl>
-                    
-                      <Input className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white" type="email" placeholder="Enter Password" {...field}/>
-                    
+                    <Input
+                      className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      type="password"
+                      placeholder="Enter Password"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -407,7 +425,7 @@ const AgentRegistration: React.FC = () => {
 
             <FormField
               control={form.control}
-              name="officeno"
+              name="Office_number"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
@@ -428,7 +446,7 @@ const AgentRegistration: React.FC = () => {
 
             <FormField
               control={form.control}
-              name="mobileno"
+              name="Mobile_number"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
@@ -449,7 +467,7 @@ const AgentRegistration: React.FC = () => {
 
             <FormField
               control={form.control}
-              name="selectcurrency"
+              name="Currency"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
@@ -494,7 +512,7 @@ const AgentRegistration: React.FC = () => {
 
             <FormField
               control={form.control}
-              name="uploadeddocs"
+              name="Gst_Tax_Certificate"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
