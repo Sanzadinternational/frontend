@@ -32,32 +32,38 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-
+import CountryCityAPI from "../api/CountryCityAPI";
+// Define country and city types
+// interface Country {
+//   code: string;
+//   name: string;
+//   cities: string[];
+// }
 // Define country and city types
 interface Country {
-  code: string;
   name: string;
+  unicodeFlag: string;
   cities: string[];
 }
 
-const countries: Country[] = [
-  {
-    code: "US",
-    name: "United States",
-    cities: ["New York", "Los Angeles", "Chicago"],
-  },
-  { code: "CA", name: "Canada", cities: ["Toronto", "Vancouver", "Montreal"] },
-  {
-    code: "GB",
-    name: "United Kingdom",
-    cities: ["London", "Manchester", "Birmingham"],
-  },
-  {
-    code: "IN",
-    name: "India",
-    cities: ["Patna", "Noida", "Delhi", "Mumbai", "Kolkata"],
-  },
-];
+// const countries: Country[] = [
+//   {
+//     code: "US",
+//     name: "United States",
+//     cities: ["New York", "Los Angeles", "Chicago"],
+//   },
+//   { code: "CA", name: "Canada", cities: ["Toronto", "Vancouver", "Montreal"] },
+//   {
+//     code: "GB",
+//     name: "United Kingdom",
+//     cities: ["London", "Manchester", "Birmingham"],
+//   },
+//   {
+//     code: "IN",
+//     name: "India",
+//     cities: ["Patna", "Noida", "Delhi", "Mumbai", "Kolkata"],
+//   },
+// ];
 
 const formSchema = z.object({
   Company_name: z.string().min(1, { message: "Company Name is Required" }),
@@ -68,11 +74,11 @@ const formSchema = z.object({
     .string()
     .min(1, { message: "Email is Required" })
     .email({ message: "Please enter valid email" }),
-    Password: z.string().min(1, { message: "Password is Required" }),
-    Zip_code: z.string().min(1, { message: "Zipcode is Required" }),
-    IATA_Code: z.string(),
-    Country: z.string().min(1, { message: "Country is required" }),
-    City: z.string().min(1, { message: "City is required" }),
+  Password: z.string().min(1, { message: "Password is Required" }),
+  Zip_code: z.string().min(1, { message: "Zipcode is Required" }),
+  IATA_Code: z.string(),
+  Country: z.string().min(1, { message: "Country is required" }),
+  City: z.string().min(1, { message: "City is required" }),
   Gst_Vat_Tax_number: z.string().min(1, { message: "Tax Number is required" }),
   Contact_Person: z.string(),
   otp: z.string(),
@@ -92,6 +98,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const AgentRegistration: React.FC = () => {
+  const [countries, setCountries] = useState<Country[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [selectedCurrency, setSelectedCurrency] = useState<string>("");
@@ -114,18 +121,20 @@ const AgentRegistration: React.FC = () => {
     },
   });
 
-  const handleSubmit: SubmitHandler<FormData> = async(data) => {
-    try{
-      const response = await fetch('http://localhost:8000/Api/V1/Agent/registration',{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-        },
-        body:JSON.stringify(data),
-      });
-    }
-    catch(error){
-console.log(error);
+  const handleSubmit: SubmitHandler<FormData> = async (data) => {
+    try {
+      const response = await fetch(
+        "http://localhost:8000/Api/V1/Agent/registration",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
+    } catch (error) {
+      console.log(error);
     }
 
     console.log(data);
@@ -144,8 +153,10 @@ console.log(error);
     form.setValue("City", value);
   };
 
-  const cities: string[] =
-    countries.find((country) => country.code === selectedCountry)?.cities || [];
+  // const cities: string[] =
+  //   countries.find((country) => country.code === selectedCountry)?.cities || [];
+  const cities =
+    countries.find((country) => country.name === selectedCountry)?.cities || [];
 
   const tags = ["GST", "Adhar", "PAN", "Passport"];
   const handleCurrencyChange = (value: string) => {
@@ -154,6 +165,8 @@ console.log(error);
   };
   return (
     <Card>
+      <CountryCityAPI onDataFetched={setCountries} />{" "}
+      {/* Fetch countries and cities */}
       <CardHeader>
         <CardTitle>Register</CardTitle>
         <CardDescription>
@@ -224,11 +237,19 @@ console.log(error);
                         <SelectValue placeholder="Select a country" />
                       </SelectTrigger>
                       <SelectContent>
-                        {countries.map((country) => (
-                          <SelectItem key={country.code} value={country.code}>
+                        {/* {countries.map((country) => (
+                          <SelectItem key={country.unicodeFlag} value={country.name}>
                             {country.name}
                           </SelectItem>
-                        ))}
+                        ))} */}
+                        {countries
+                          .slice() // create a copy of the array
+                          .sort((a, b) => a.name.localeCompare(b.name)) // sort alphabetically by country name
+                          .map((country) => (
+                            <SelectItem key={country.unicodeFlag} value={country.name}>
+                              {country.name}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -535,6 +556,7 @@ console.log(error);
           </form>
         </Form>
       </CardContent>
+      {/* <CountryCityAPI/> */}
     </Card>
   );
 };
