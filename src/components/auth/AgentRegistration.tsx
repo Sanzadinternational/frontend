@@ -98,7 +98,7 @@ const AgentRegistration: React.FC = () => {
     if (email) {
       setIsSendingOtp(true); // Start sending OTP
       try {
-        const response = await fetch("http://localhost:8000/Api/V1/Agent/send-otp", {
+        const response = await fetch("http://localhost:8000/api/V1/agent/send-otp", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -126,7 +126,7 @@ const AgentRegistration: React.FC = () => {
     const otp = form.getValues("Otp");
     setIsVerifyingOtp(true); // Start verifying OTP
     try {
-      const response = await fetch("http://localhost:8000/Api/V1/Agent/verify-otp", {
+      const response = await fetch("http://localhost:8000/api/V1/agent/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp }),
@@ -152,7 +152,7 @@ const AgentRegistration: React.FC = () => {
     if (isOtpVerified) {
       try {
         const registrationResponse = await fetch(
-          "http://localhost:8000/Api/V1/Agent/registration",
+          "http://localhost:8000/api/V1/agent/registration",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -190,6 +190,7 @@ const AgentRegistration: React.FC = () => {
   const handleCityChange = (value: string) => {
     setSelectedCity(value);
     form.setValue("City", value);
+    form.trigger("City"); // Ensure city validation is triggered
   };
 
   const cities =
@@ -222,12 +223,14 @@ const AgentRegistration: React.FC = () => {
               name="Company_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                  <FormLabel 
+                  // className="uppercase text-xs font-bold text-zinc-500 dark:text-white"
+                  >
                     Company Name
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                       placeholder="Enter Company Name"
                       {...field}
                     />
@@ -242,13 +245,13 @@ const AgentRegistration: React.FC = () => {
               name="Address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                  <FormLabel >
                     Address
                   </FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Enter Your Address"
-                      className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                       {...field}
                     />
                   </FormControl>
@@ -262,7 +265,7 @@ const AgentRegistration: React.FC = () => {
               name="Country"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                  <FormLabel >
                     Country
                   </FormLabel>
                   <FormControl>
@@ -280,7 +283,7 @@ const AgentRegistration: React.FC = () => {
                           .sort((a, b) => a.name.localeCompare(b.name)) // sort alphabetically by country name
                           .map((country) => (
                             <SelectItem
-                              key={country.unicodeFlag}
+                              key={country.name}
                               value={country.name}
                             >
                               {country.name}
@@ -299,7 +302,7 @@ const AgentRegistration: React.FC = () => {
               name="City"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                  <FormLabel >
                     City
                   </FormLabel>
                   <FormControl>
@@ -313,8 +316,8 @@ const AgentRegistration: React.FC = () => {
                         <SelectValue placeholder="Select a city" />
                       </SelectTrigger>
                       <SelectContent>
-                        {cities.map((city) => (
-                          <SelectItem key={city} value={city}>
+                        {cities.map((city,index) => (
+                          <SelectItem key={index} value={city}>
                             {city}
                           </SelectItem>
                         ))}
@@ -331,13 +334,13 @@ const AgentRegistration: React.FC = () => {
               name="Zip_code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                  <FormLabel >
                     Zip Code
                   </FormLabel>
                   <FormControl>
                     <Input
                       type="text"
-                      className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                       placeholder="Enter Zip Code"
                       {...field}
                     />
@@ -352,13 +355,13 @@ const AgentRegistration: React.FC = () => {
               name="IATA_Code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                  <FormLabel >
                     IATA Code
                   </FormLabel>
                   <FormControl>
                     <Input
                       type="text"
-                      className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                       placeholder="Enter IATA Code"
                       {...field}
                     />
@@ -373,13 +376,13 @@ const AgentRegistration: React.FC = () => {
               name="Gst_Vat_Tax_number"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                  <FormLabel >
                     GST/VAT/TAX Number
                   </FormLabel>
                   <FormControl>
                     <Input
                       type="text"
-                      className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                       placeholder="Enter GST/VAT/TAX Number"
                       {...field}
                     />
@@ -394,13 +397,13 @@ const AgentRegistration: React.FC = () => {
               name="Contact_Person"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                  <FormLabel >
                     Contact Person
                   </FormLabel>
                   <FormControl>
                     <Input
                       type="text"
-                      className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                       placeholder="Contact Person"
                       {...field}
                     />
@@ -483,12 +486,12 @@ const AgentRegistration: React.FC = () => {
                 name="Password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    <FormLabel >
                       Password
                     </FormLabel>
                     <FormControl>
                       <Input
-                        className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                        // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                         type="password"
                         placeholder="Enter Password"
                         {...field}
@@ -504,13 +507,13 @@ const AgentRegistration: React.FC = () => {
                 name="Office_number"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    <FormLabel >
                       Office Number
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
-                        className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                        // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                         placeholder="Enter Office Number"
                         {...field}
                       />
@@ -525,13 +528,13 @@ const AgentRegistration: React.FC = () => {
                 name="Mobile_number"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    <FormLabel >
                       Mobile Number
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
-                        className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                        // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                         placeholder="Enter Mobile Number"
                         {...field}
                       />
@@ -546,7 +549,7 @@ const AgentRegistration: React.FC = () => {
                 name="Currency"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    <FormLabel >
                       Currency
                     </FormLabel>
                     <FormControl>
@@ -591,13 +594,13 @@ const AgentRegistration: React.FC = () => {
                 name="Gst_Tax_Certificate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    <FormLabel >
                       Upload Documents
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="file"
-                        className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                        // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                         placeholder="Upload Docs"
                         {...field}
                       />

@@ -1,5 +1,6 @@
 "use client";
 import * as z from "zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -21,10 +22,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/use-toast";
 import { useRole } from "../context/RoleContext";
+import axios from "axios";
 const formSchema = z.object({
-  email: z
+  Email: z
     .string()
     .min(1, {
       message: "Email is Required",
@@ -32,36 +34,76 @@ const formSchema = z.object({
     .email({
       message: "Please enter valid email",
     }),
-  password: z.string().min(1, {
+  Password: z.string().min(1, {
     message: "Password is Required",
   }),
 });
-interface LoginRoleProps{
-  role:string;
+interface LoginRoleProps {
+  role: string;
 }
 
-
-const Login = ({role}:LoginRoleProps) => {
-  
-  const {setRole} = useRole();
-  setRole(role);
-  const {toast} = useToast();
+const Login = ({ role }: LoginRoleProps) => {
+  const { setRole } = useRole();
+  const { toast } = useToast();
   const router = useRouter();
+  // Use useEffect to set the role after the component renders
+  useEffect(() => {
+    setRole(role);
+  }, [role, setRole]);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      Email: "",
+      Password: "",
     },
   });
-  const roleTitle:string=role[0].toUpperCase()+role.slice(1);
-  const handleSubmit = (data: z.infer<typeof formSchema>) => {
+  const roleTitle: string = role[0].toUpperCase() + role.slice(1);
+  const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     console.log(data);
-    toast({
-      title:`${roleTitle} Login`,
-      description:'Login Successful',
-    })
-    router.push(`/dashboard/${role}`);
+    // toast({
+    //   title: `${roleTitle} Login`,
+    //   description: "Login Successful",
+    // });
+    // router.push(`/dashboard/${role}`);
+    try {
+      // Define the API endpoint dynamically based on the role
+      const loginEndpoint = `http://localhost:8000/api/V1/${role}/login`;
+
+      // Call the API for login with email and password
+      const response = await axios.post(loginEndpoint, {
+        Email: data.Email,
+        Password: data.Password,
+      });
+
+      if (response.status === 200) {
+        // console.log(response.data);
+        // If login is successful
+        toast({
+          title: `${roleTitle} Login`,
+          description: "Login Successful",
+        });
+        // Store the token if needed (localStorage/sessionStorage)
+        localStorage.setItem("authToken", response.data.token);
+        // Navigate to role-based dashboard
+        router.push(`/dashboard/${role}`);
+      } else {
+        // Handle login failure
+        toast({
+          title: "Login Failed",
+          description: "Please check your credentials and try again.",
+          variant: "destructive",
+        });
+        console.log(response.data);
+      }
+    } catch (error) {
+      // Handle API error
+      toast({
+        title: "Error",
+        description: "An error occurred while logging in. Please try again.",
+        variant: "destructive",
+      });
+      console.error("Login error:", error);
+    }
   };
 
   return (
@@ -80,15 +122,17 @@ const Login = ({role}:LoginRoleProps) => {
           >
             <FormField
               control={form.control}
-              name="email"
+              name="Email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                  <FormLabel
+                  // className="uppercase text-xs font-bold text-zinc-500 dark:text-white"
+                  >
                     Email
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                       placeholder="Enter Email"
                       {...field}
                     />
@@ -99,19 +143,22 @@ const Login = ({role}:LoginRoleProps) => {
             />
             <FormField
               control={form.control}
-              name="password"
+              name="Password"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex justify-between">
-                    <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
-                      Password
-                    </FormLabel>
-                    <Link href={`/${role}/forget-password`} className="text-xs text-blue-500 underline">Forgot Password?</Link>
+                    <FormLabel>Password</FormLabel>
+                    <Link
+                      href={`/${role}/forget-password`}
+                      className="text-xs text-blue-500 underline"
+                    >
+                      Forgot Password?
+                    </Link>
                   </div>
                   <FormControl>
                     <Input
                       type="password"
-                      className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                       placeholder="Enter Password"
                       {...field}
                     />
