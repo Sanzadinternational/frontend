@@ -1,7 +1,9 @@
 "use client";
 
 import * as z from "zod";
-import { useState } from "react";
+import Image from "next/image";
+import { useState} from "react";
+
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -37,7 +39,8 @@ import { useToast } from "@/hooks/use-toast";
 
 interface Country {
   name: string;
-  unicodeFlag: string;
+  flag: string;
+  dialCode: string;
   cities: string[];
 }
 const tags = ["GST", "Adhar", "PAN", "Passport"];
@@ -50,7 +53,7 @@ const formSchema = z.object({
     .email({ message: "Please enter valid email" }),
   Password: z.string().min(1, { message: "Password is Required" }),
   Zip_code: z.string().min(1, { message: "Zipcode is Required" }),
-  Owner: z.string().min(1,{message:"Owner Name is required"}),
+  Owner: z.string().min(1, { message: "Owner Name is required" }),
   Country: z.string().min(1, { message: "Country is required" }),
   City: z.string().min(1, { message: "City is required" }),
   Gst_Vat_Tax_number: z.string(),
@@ -70,6 +73,8 @@ const SupplierRegistration: React.FC = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [selectedCurrency, setSelectedCurrency] = useState<string>("");
+  const [selectedDialCode, setSelectedDialCode] = useState<string>("");
+  const [selectedFlag, setSelectedFlag] = useState<string>(""); // To store the Unicode flag
   const [otpSent, setOtpSent] = useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
   const [isSendingOtp, setIsSendingOtp] = useState(false); // For sending OTP
@@ -89,7 +94,7 @@ const SupplierRegistration: React.FC = () => {
       Zip_code: "",
       Owner: "",
       Gst_Vat_Tax_number: "",
-      PAN_number:"",
+      PAN_number: "",
       Otp: "",
       Contact_Person: "",
     },
@@ -153,8 +158,20 @@ const SupplierRegistration: React.FC = () => {
     }
   };
 
+
+
+
   const { toast } = useToast();
   const handleSubmit: SubmitHandler<FormData> = async (data) => {
+    // Concatenate dial code with office number and mobile number
+    const officeNumberWithDialCode = `${selectedDialCode}${data.Office_number}`;
+    const mobileNumberWithDialCode = `${selectedDialCode}${data.Mobile_number}`;
+    // Prepare the updated data
+    const updatedData = {
+      ...data,
+      Office_number: officeNumberWithDialCode,
+      Mobile_number: mobileNumberWithDialCode,
+    };
     if (isOtpVerified) {
       try {
         const registrationResponse = await fetch(
@@ -162,7 +179,7 @@ const SupplierRegistration: React.FC = () => {
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
+            body: JSON.stringify(updatedData),
           }
         );
 
@@ -185,17 +202,27 @@ const SupplierRegistration: React.FC = () => {
     }
   };
 
+  // const handleCountryChange = (value: string) => {
+  //   setSelectedCountry(value);
+  //   form.setValue("Country", value);
+  //   form.setValue("City", "");
+  //   setSelectedCity("");
+  // };
+
+
   const handleCountryChange = (value: string) => {
-    setSelectedCountry(value);
-    form.setValue("Country", value);
-    form.setValue("City", "");
-    setSelectedCity("");
+    const country = countries.find((country) => country.name === value);
+    if (country) {
+      setSelectedCountry(value);
+      setSelectedDialCode(country.dialCode); // Assuming API response has dialCode
+      setSelectedFlag(country.flag); // Assuming API response has unicodeFlag
+      form.setValue("Country", value);
+      form.trigger("Country");
+      form.setValue("City", "");
+      setSelectedCity("");
+    }
   };
 
-  // const handleCityChange = (value: string) => {
-  //   setSelectedCity(value);
-  //   form.setValue("City", value);
-  // };
   const handleCityChange = (value: string) => {
     setSelectedCity(value);
     form.setValue("City", value);
@@ -204,6 +231,11 @@ const SupplierRegistration: React.FC = () => {
 
   const cities =
     countries.find((country) => country.name === selectedCountry)?.cities || [];
+
+ 
+
+
+
 
   const handleCurrencyChange = (value: string) => {
     setSelectedCurrency(value);
@@ -214,9 +246,9 @@ const SupplierRegistration: React.FC = () => {
     <Card>
       <CountryCityAPI onDataFetched={setCountries} />
       <CardHeader>
-        <CardTitle>Register</CardTitle>
+        <CardTitle>Sign Up</CardTitle>
         <CardDescription>
-          Register to your account with the right credentials
+          Sign Up to your account with the right credentials
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -230,7 +262,7 @@ const SupplierRegistration: React.FC = () => {
               name="Company_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel 
+                  <FormLabel
                   // className="uppercase text-xs font-bold text-zinc-500 dark:text-white"
                   >
                     Company Name
@@ -251,9 +283,7 @@ const SupplierRegistration: React.FC = () => {
               name="Owner"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel >
-                    Owner Name
-                  </FormLabel>
+                  <FormLabel>Owner Name</FormLabel>
                   <FormControl>
                     <Input
                       type="text"
@@ -271,9 +301,7 @@ const SupplierRegistration: React.FC = () => {
               name="Address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel >
-                    Address
-                  </FormLabel>
+                  <FormLabel>Address</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Enter Your Address"
@@ -291,9 +319,7 @@ const SupplierRegistration: React.FC = () => {
               name="Country"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel >
-                    Country
-                  </FormLabel>
+                  <FormLabel>Country</FormLabel>
                   <FormControl>
                     <Select
                       {...field}
@@ -308,10 +334,7 @@ const SupplierRegistration: React.FC = () => {
                           .slice() // create a copy of the array
                           .sort((a, b) => a.name.localeCompare(b.name)) // sort alphabetically by country name
                           .map((country) => (
-                            <SelectItem
-                              key={country.name}
-                              value={country.name}
-                            >
+                            <SelectItem key={country.name} value={country.name}>
                               {country.name}
                             </SelectItem>
                           ))}
@@ -322,15 +345,12 @@ const SupplierRegistration: React.FC = () => {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="City"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel >
-                    City
-                  </FormLabel>
+                  <FormLabel>City</FormLabel>
                   <FormControl>
                     <Select
                       {...field}
@@ -342,7 +362,7 @@ const SupplierRegistration: React.FC = () => {
                         <SelectValue placeholder="Select a city" />
                       </SelectTrigger>
                       <SelectContent>
-                        {cities.map((city,index) => (
+                        {cities.map((city, index) => (
                           <SelectItem key={index} value={city}>
                             {city}
                           </SelectItem>
@@ -360,9 +380,7 @@ const SupplierRegistration: React.FC = () => {
               name="Zip_code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel >
-                    Zip Code
-                  </FormLabel>
+                  <FormLabel>Zip Code</FormLabel>
                   <FormControl>
                     <Input
                       type="text"
@@ -376,29 +394,45 @@ const SupplierRegistration: React.FC = () => {
               )}
             />
 
-            
-
-            
             <FormField
-                  control={form.control}
-                  name="Office_number"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel >
-                        Office Number
-                      </FormLabel>
-                      <FormControl>
-                        <Input
+              control={form.control}
+              name="Office_number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Office Number</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center">
+                      {selectedFlag && (
+                        <Image
+                          src={selectedFlag}
+                          alt="flag"
+                          width={30}
+                          height={30}
+                        /> // Display flag
+                      )}
+                      {selectedDialCode && (
+                        <span className=" px-1 py-1">
+                          {selectedDialCode || "+XX"}
+                        </span>
+                      )}
+
+                      <Input
+                        type="text"
+                        placeholder="Enter Office Number"
+                        {...field}
+                      />
+                    </div>
+                    {/* <Input
                           type="number"
                           // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                           placeholder="Enter Office Number"
                           {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        /> */}
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             {/* Email and Send OTP */}
             <FormField
               control={form.control}
@@ -480,15 +514,12 @@ const SupplierRegistration: React.FC = () => {
 
             {isOtpVerified && (
               <>
-                
                 <FormField
                   control={form.control}
                   name="Password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel >
-                        Password
-                      </FormLabel>
+                      <FormLabel>Create Password</FormLabel>
                       <FormControl>
                         <Input
                           // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
@@ -506,9 +537,7 @@ const SupplierRegistration: React.FC = () => {
                   name="Contact_Person"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel >
-                        Contact Person
-                      </FormLabel>
+                      <FormLabel>Contact Person</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
@@ -521,21 +550,56 @@ const SupplierRegistration: React.FC = () => {
                     </FormItem>
                   )}
                 />
-                
 
                 <FormField
                   control={form.control}
                   name="Mobile_number"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel >
-                        Mobile Number
-                      </FormLabel>
+                      <FormLabel>Mobile Number</FormLabel>
                       <FormControl>
-                        <Input
+                        <div className="flex items-center space-x-2">
+                          {selectedFlag && (
+                            <Image
+                              src={selectedFlag}
+                              alt="flag"
+                              width={30}
+                              height={30}
+                            /> // Display flag
+                          )}
+                          {selectedDialCode && (
+                            <span className="bg-gray-100 border border-gray-300 px-1 py-1">
+                              {selectedDialCode || "+XX"}
+                            </span>
+                          )}
+                          <Input
+                            type="text"
+                            placeholder="Enter Mobile Number"
+                            {...field}
+                          />
+                        </div>
+                        {/* <Input
                           type="number"
                           // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                           placeholder="Enter Mobile Number"
+                          {...field}
+                        /> */}
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="Gst_Vat_Tax_number"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>GST/VAT/TAX Number</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                          placeholder="Enter GST/VAT/TAX Number"
                           {...field}
                         />
                       </FormControl>
@@ -544,53 +608,29 @@ const SupplierRegistration: React.FC = () => {
                   )}
                 />
                 <FormField
-              control={form.control}
-              name="Gst_Vat_Tax_number"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel >
-                    GST/VAT/TAX Number
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
-                      placeholder="Enter GST/VAT/TAX Number"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="PAN_number"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel >
-                    PAN Number
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
-                      placeholder="Enter PAN Number"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                  control={form.control}
+                  name="PAN_number"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>PAN Number</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                          placeholder="Enter PAN Number"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="Currency"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel >
-                        Currency
-                      </FormLabel>
+                      <FormLabel>Currency</FormLabel>
                       <FormControl>
                         <Select
                           {...field}
@@ -633,9 +673,7 @@ const SupplierRegistration: React.FC = () => {
                   name="Gst_Tax_Certificate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel >
-                        Upload Documents
-                      </FormLabel>
+                      <FormLabel>Upload Documents</FormLabel>
                       <FormControl>
                         <Input
                           type="file"

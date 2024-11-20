@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import TransferMultiStepForm from "@/components/agent/TransferMultiStepForm";
 
 // import bg from "../../public/Sanzad-International-Hero_Image.jpg";
 const features = [
@@ -86,6 +87,9 @@ export default function Home() {
             ))
           }
         </div>
+      </div>
+      <div className="mx-10">
+      <TransferMultiStepForm/>
       </div>
     </>
   );
