@@ -84,6 +84,7 @@ const Login = ({ role }: LoginRoleProps) => {
         });
         // Store the token if needed (localStorage/sessionStorage)
         localStorage.setItem("authToken", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
         // Navigate to role-based dashboard
         router.push(`/dashboard/${role}`);
       } else {

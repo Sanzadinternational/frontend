@@ -1,4 +1,5 @@
 "use client";
+import { useEffect,useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Collapsible,
@@ -63,8 +64,18 @@ export default function AppSidebar({
 }) {
   const {role} = useRole();
   const pathname = usePathname();
+  const [userData, setUserData] = useState<any>(null); // Replace `any` with your data type
+
+  // Load user data from localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUserData(JSON.parse(storedUser));
+    }
+  }, []);
   // const rolename = role;
   const roleData = sideBarItems.filter((name) => name.role === role);
+  
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
@@ -138,59 +149,7 @@ export default function AppSidebar({
                   );
                 })
               )}
-              {/* {sideBarItems.map((item) => {
-                const Icon = item.icon ? Icons[item.icon] : Icons.logo;
-                return item?.items && item?.items?.length > 0 ? (
-                  <Collapsible
-                    key={item.title}
-                    asChild
-                    defaultOpen={item.isActive}
-                    className="group/collapsible"
-                  >
-                    <SidebarMenuItem>
-                      <CollapsibleTrigger asChild>
-                        <SidebarMenuButton
-                          tooltip={item.title}
-                          isActive={pathname === item.url}
-                        >
-                          {item.icon && <Icon />}
-                          <span>{item.title}</span>
-                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                        </SidebarMenuButton>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent>
-                        <SidebarMenuSub>
-                          {item.items?.map((subItem) => (
-                            <SidebarMenuSubItem key={subItem.title}>
-                              <SidebarMenuSubButton
-                                asChild
-                                isActive={pathname === subItem.url}
-                              >
-                                <Link href={subItem.url}>
-                                  <span>{subItem.title}</span>
-                                </Link>
-                              </SidebarMenuSubButton>
-                            </SidebarMenuSubItem>
-                          ))}
-                        </SidebarMenuSub>
-                      </CollapsibleContent>
-                    </SidebarMenuItem>
-                  </Collapsible>
-                ) : (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      tooltip={item.title}
-                      isActive={pathname === item.url}
-                    >
-                      <Link href={item.url}>
-                        <Icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })} */}
+             
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>
@@ -213,21 +172,21 @@ export default function AppSidebar({
                           'CN'}
                       </AvatarFallback> */}
                       <AvatarImage
-                        src="https://github.com/shadcn.png"
+                        src={userData?.avatar || "https://github.com/shadcn.png1"}
                         alt="avatar"
                       />
                       <AvatarFallback className="text-black rounded-lg">
-                        AK
+                        {userData?.Company_name?.slice(0, 2) || "NA"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">
                         {/* {session?.user?.name || ''} */}
-                        name
+                        {userData?.Company_name || "User Name"}
                       </span>
                       <span className="truncate text-xs">
                         {/* {session?.user?.email || ''} */}
-                        email
+                        {userData?.Email || "user@example.com"}
                       </span>
                     </div>
                     <ChevronsUpDown className="ml-auto size-4" />
@@ -251,22 +210,22 @@ export default function AppSidebar({
                             'CN'}
                         </AvatarFallback> */}
                         <AvatarImage
-                          src="https://github.com/shadcn.png"
+                          src={userData?.avatar || "https://github.com/shadcn.png1"}
                           alt="avatar"
                         />
                         <AvatarFallback className="text-black rounded-lg">
-                          AK
+                          {userData?.Company_name?.slice(0, 2) || "NA"}
                         </AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 text-left text-sm leading-tight">
                         <span className="truncate font-semibold">
                           {/* {session?.user?.name || ''} */}
-                          name
+                          {userData?.Company_name || "User Name"}
                         </span>
                         <span className="truncate text-xs">
                           {" "}
                           {/* {session?.user?.email || ''} */}
-                          email
+                          {userData?.Email || "user@example.com"}
                         </span>
                       </div>
                     </div>
@@ -278,10 +237,15 @@ export default function AppSidebar({
                       <BadgeCheck />
                       Account
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <CreditCard />
-                      Billing
-                    </DropdownMenuItem>
+                    {
+                      role==='supplier'&&(<DropdownMenuItem>
+                        <Link href='/dashboard/supplier/api' className="flex">
+                        <CreditCard />
+                        Integrate API
+                        </Link>
+                      </DropdownMenuItem>)
+                    }
+                    
                     <DropdownMenuItem>
                       <Bell />
                       Notifications
@@ -304,7 +268,7 @@ export default function AppSidebar({
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
-            Dashbaord
+            Dashboard
           </div>
           {/* <div className=" hidden w-1/3 items-center gap-2 px-4 md:flex ">
             <h4>serch</h4>
