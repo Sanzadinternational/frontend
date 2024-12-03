@@ -1,10 +1,13 @@
+import DashboardContainer from '@/components/layout/DashboardContainer'
 import SupplierAPI from '@/components/supplier/SupplierAPI'
 
 const page = () => {
   return (
-    <div className='flex items-center justify-center'>
-        <SupplierAPI/>
+    <DashboardContainer scrollable>
+      <div className='flex items-center justify-center'>
+      <SupplierAPI/>
     </div>
+    </DashboardContainer>
   )
 }
 

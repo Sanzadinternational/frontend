@@ -1,4 +1,6 @@
 "use client"
+import { useState,useEffect } from 'react';
+import axios from 'axios';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {useForm} from 'react-hook-form';
@@ -19,75 +21,91 @@ import {
   } from "@/components/ui/form";
   import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-// import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 const formSchema = z.object({
-    api:z.string().min(1,{
+  Api:z.string().min(1,{
         message:'API is required'
     }),
-    username:z.string().min(1,{
+    Api_User:z.string().min(1,{
         message:'Username is required'
     }),
-    Password:z.string().min(1,{
+    Api_Password:z.string().min(1,{
         message:'Password is required'
     })
 })
-
+interface UserData {
+  id: string;
+}
 const SupplierAPI = () => {
-    // const { toast } = useToast();
+    const { toast } = useToast();
+    const [userData, setUserData] = useState<UserData | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    // Load user data from localStorage
+    useEffect(() => {
+      try {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          setUserData(JSON.parse(storedUser));
+        }
+      } catch (e) {
+        console.error("Failed to parse user data:", e);
+      }
+    }, []);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-          api: "",
-          username:"",
-          Password: "",
+          Api: "",
+          Api_User:"",
+          Api_Password: "",
         },
       });
       const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-        console.log(data);
-        // toast({
-        //   title: "Supplier API",
-        //   description: "API added Successful",
-        // });
-        // try {
-        //   // Define the API endpoint dynamically based on the role
-        //   const loginEndpoint = `http://localhost:8000/api/V1/${role}/login`;
+        // console.log("Submitting data:", data);
+        // console.log("User data:", userData);
+        setIsLoading(true);
+        try {
+          // Define the API endpoint dynamically based on the role
+          const loginEndpoint = `http://localhost:8000/api/V1/supplier/CreateSupplierApi`;
     
-        //   // Call the API for login with email and password
-        //   const response = await axios.post(loginEndpoint, {
-        //     Email: data.Email,
-        //     Password: data.Password,
-        //   });
+          // Call the API for login with email and password
+          const response = await axios.post(loginEndpoint, {
+            Api: data.Api,
+            Api_User: data.Api_User,
+            Api_Password: data.Api_Password,
+            Api_Id_Foreign:userData?.id,
+          });
     
-        //   if (response.status === 200) {
-        //     // console.log(response.data);
-        //     // If login is successful
-        //     toast({
-        //       title: `${roleTitle} Login`,
-        //       description: "Login Successful",
-        //     });
-        //     // Store the token if needed (localStorage/sessionStorage)
-        //     localStorage.setItem("authToken", response.data.token);
-        //     localStorage.setItem("user", JSON.stringify(response.data.user));
-        //     // Navigate to role-based dashboard
-        //     router.push(`/dashboard/${role}`);
-        //   } else {
-        //     // Handle login failure
-        //     toast({
-        //       title: "Login Failed",
-        //       description: "Please check your credentials and try again.",
-        //       variant: "destructive",
-        //     });
-        //     console.log(response.data);
-        //   }
-        // } catch (error) {
-        //   // Handle API error
-        //   toast({
-        //     title: "Error",
-        //     description: "An error occurred while logging in. Please try again.",
-        //     variant: "destructive",
-        //   });
-        //   console.error("Login error:", error);
-        // }
+          if (response.status === 200) {
+            // console.log(response.data);
+            // If login is successful
+            toast({
+              title: "Supplier API",
+              description: "API added Successful",
+            });
+          } else {
+            // Handle login failure
+            toast({
+              title: "Supplier API",
+              description: "API Integration Failed!",
+              variant: "destructive",
+            });
+            console.log(response.data);
+          }
+        } catch (error) {
+          // Handle API error
+          const errorMessage =
+    error.response?.data?.message ||
+    error.response?.statusText ||
+    "Unknown error occurred";
+          toast({
+            title: "Error",
+            description: `Error: ${errorMessage}`,
+            variant: "destructive",
+          });
+          console.error("Error details:", error.response || error.message || error);
+        }finally {
+          setIsLoading(false);
+        }
       };
   return (
     <Card>
@@ -105,7 +123,7 @@ const SupplierAPI = () => {
         >
           <FormField
             control={form.control}
-            name="api"
+            name="Api"
             render={({ field }) => (
               <FormItem>
                 <FormLabel
@@ -126,7 +144,7 @@ const SupplierAPI = () => {
           />
           <FormField
             control={form.control}
-            name="username"
+            name="Api_User"
             render={({ field }) => (
               <FormItem>
                 <FormLabel
@@ -147,7 +165,7 @@ const SupplierAPI = () => {
           />
           <FormField
             control={form.control}
-            name="Password"
+            name="Api_Password"
             render={({ field }) => (
               <FormItem>
                   <FormLabel>Password</FormLabel>
@@ -163,7 +181,9 @@ const SupplierAPI = () => {
               </FormItem>
             )}
           />
-          <Button className="w-full">Submit</Button>
+          <Button type='submit' className="w-full" disabled={isLoading}>
+          {isLoading ? "Submitting..." : "Submit"}
+          </Button>
         </form>
       </Form>
     </CardContent>
