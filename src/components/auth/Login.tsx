@@ -1,6 +1,6 @@
 "use client";
 import * as z from "zod";
-import { useEffect } from "react";
+import { useEffect,useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -43,6 +43,7 @@ interface LoginRoleProps {
 }
 
 const Login = ({ role }: LoginRoleProps) => {
+  const [isSubmiting, setIsSubmiting] = useState(false);
   const { setRole } = useRole();
   const { toast } = useToast();
   const router = useRouter();
@@ -59,7 +60,8 @@ const Login = ({ role }: LoginRoleProps) => {
   });
   const roleTitle: string = role[0].toUpperCase() + role.slice(1);
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+    setIsSubmiting(true);
+    // console.log(data);
     // toast({
     //   title: `${roleTitle} Login`,
     //   description: "Login Successful",
@@ -78,6 +80,7 @@ const Login = ({ role }: LoginRoleProps) => {
       if (response.status === 200) {
         // console.log(response.data);
         // If login is successful
+
         toast({
           title: `${roleTitle} Login`,
           description: "Login Successful",
@@ -104,6 +107,8 @@ const Login = ({ role }: LoginRoleProps) => {
         variant: "destructive",
       });
       console.error("Login error:", error);
+    }finally{
+      setIsSubmiting(false);
     }
   };
 
@@ -168,7 +173,9 @@ const Login = ({ role }: LoginRoleProps) => {
                 </FormItem>
               )}
             />
-            <Button className="w-full">Sign In</Button>
+            <Button className="w-full" disabled={isSubmiting}>
+            {isSubmiting ? "Signing In..." : "Sign In"}
+            </Button>
           </form>
         </Form>
       </CardContent>

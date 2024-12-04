@@ -60,8 +60,7 @@ const SupplierAPI = () => {
         },
       });
       const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-        // console.log("Submitting data:", data);
-        // console.log("User data:", userData);
+        
         setIsLoading(true);
         try {
           // Define the API endpoint dynamically based on the role
@@ -82,6 +81,8 @@ const SupplierAPI = () => {
               title: "Supplier API",
               description: "API added Successful",
             });
+            // Reset form fields
+             form.reset();
           } else {
             // Handle login failure
             toast({
@@ -93,16 +94,12 @@ const SupplierAPI = () => {
           }
         } catch (error) {
           // Handle API error
-          const errorMessage =
-    error.response?.data?.message ||
-    error.response?.statusText ||
-    "Unknown error occurred";
           toast({
             title: "Error",
-            description: `Error: ${errorMessage}`,
+            description: "An error occurred while API Integration. Please try again.",
             variant: "destructive",
           });
-          console.error("Error details:", error.response || error.message || error);
+          console.error("Login error:", error);
         }finally {
           setIsLoading(false);
         }

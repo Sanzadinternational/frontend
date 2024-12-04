@@ -77,7 +77,7 @@ const AgentRegistration: React.FC = () => {
   const [isOtpVerified, setIsOtpVerified] = useState(false);
   const [isSendingOtp, setIsSendingOtp] = useState(false); // For sending OTP
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false); // For verifying OTP
-  // const [otp, setOtp] = useState("");
+  const [isSubmiting,setIsSubmiting] = useState(false);
   const router = useRouter();
 
   const form = useForm<FormData>({
@@ -156,6 +156,7 @@ const AgentRegistration: React.FC = () => {
 
   const { toast } = useToast();
   const handleSubmit: SubmitHandler<FormData> = async (data) => {
+    setIsSubmiting(true);
     // Concatenate dial code with office number and mobile number
     const officeNumberWithDialCode = `${selectedDialCode}${data.Office_number}`;
     const mobileNumberWithDialCode = `${selectedDialCode}${data.Mobile_number}`;
@@ -191,6 +192,8 @@ const AgentRegistration: React.FC = () => {
       } catch (error) {
         console.log("Error during registration:", error);
         console.log(data);
+      }finally{
+        setIsSubmiting(false);
       }
     } else {
       console.log("Please verify the OTP first.");
@@ -667,8 +670,8 @@ const AgentRegistration: React.FC = () => {
                   )}
                 />
 
-                <Button type="submit" className="w-full">
-                  Sign Up
+                <Button type="submit" className="w-full" disabled={isSubmiting}>
+                {isSubmiting ? "Signing Up..." : "Sign Up"}
                 </Button>
               </>
             )}

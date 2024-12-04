@@ -79,7 +79,7 @@ const SupplierRegistration: React.FC = () => {
   const [isOtpVerified, setIsOtpVerified] = useState(false);
   const [isSendingOtp, setIsSendingOtp] = useState(false); // For sending OTP
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false); // For verifying OTP
-  // const [otp, setOtp] = useState("");
+  const [isSumbiting,setIsSubmiting] = useState(false);
   const router = useRouter();
 
   const form = useForm<FormData>({
@@ -149,6 +149,7 @@ const SupplierRegistration: React.FC = () => {
         setIsOtpVerified(true);
         console.log("OTP verified successfully!");
       } else {
+        setIsOtpVerified(false);
         console.log("Invalid OTP.");
       }
     } catch (error) {
@@ -163,6 +164,7 @@ const SupplierRegistration: React.FC = () => {
 
   const { toast } = useToast();
   const handleSubmit: SubmitHandler<FormData> = async (data) => {
+    setIsSubmiting(true);
     // Concatenate dial code with office number and mobile number
     const officeNumberWithDialCode = `${selectedDialCode}${data.Office_number}`;
     const mobileNumberWithDialCode = `${selectedDialCode}${data.Mobile_number}`;
@@ -196,6 +198,8 @@ const SupplierRegistration: React.FC = () => {
         }
       } catch (error) {
         console.log("Error during registration:", error);
+      }finally{
+        setIsSubmiting(false);
       }
     } else {
       console.log("Please verify the OTP first.");
@@ -693,8 +697,8 @@ const SupplierRegistration: React.FC = () => {
                   )}
                 />
 
-                <Button type="submit" className="w-full">
-                  Sign Up
+                <Button type="submit" className="w-full" disabled={isSumbiting}>
+                {isSumbiting ? "Signing Up..." : "Sign Up"}
                 </Button>
               </>
             )}
