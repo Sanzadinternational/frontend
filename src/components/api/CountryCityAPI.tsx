@@ -73,7 +73,7 @@ interface Country {
   name: string;
   flag: string;
   dialCode: string;
-  // cities: string[];
+  cities: string[];
 }
 
 // Define a fetcher function for SWR
@@ -81,14 +81,14 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const CountryCityAPI = ({ onDataFetched }: { onDataFetched: (countries: Country[]) => void }) => {
   // Use SWR to fetch country data
-  // const { data, error, isLoading } = useSWR(
-  //   'https://countriesnow.space/api/v0.1/countries/info?returns=flag,dialCode,cities',
-  //   fetcher
-  // );
   const { data, error, isLoading } = useSWR(
-    'https://countriesnow.space/api/v0.1/countries/info?returns=flag,dialCode',
+    'https://countriesnow.space/api/v0.1/countries/info?returns=flag,dialCode,cities',
     fetcher
   );
+  // const { data, error, isLoading } = useSWR(
+  //   'https://countriesnow.space/api/v0.1/countries/info?returns=flag,dialCode',
+  //   fetcher
+  // );
   // useEffect to trigger the onDataFetched callback only after data is available
   useEffect(() => {
     if (data && !isLoading && !error) {
