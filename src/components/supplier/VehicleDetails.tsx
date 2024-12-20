@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-// import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 const formSchema = z.object({
   VehicleType: z.string().min(1, {
     message: "Vehicle Type is required",
@@ -73,7 +73,7 @@ const formSchema = z.object({
 });
 
 const VehicleDetails = () => {
-  // const { toast } = useToast();
+  const { toast } = useToast();
   // const [isLoading, setIsLoading] = useState(false);
   const [rows, setRows] = useState([
     { TransferFrom: "", TransferTo: "", Vice_Versa: false, Price: "" },
@@ -87,10 +87,6 @@ const VehicleDetails = () => {
   const [pax, setPax] = useState("");
   const [mediumBag, setMediumBag] = useState("");
   const [smallBag, setSmallBag] = useState("");
-  const [currency, setCurrency] = useState("Rs");
-  // const [transferTo, setTransferTo] = useState("");
-  // const [transferFrom, setTransferFrom] = useState("");
-  // const [showCurrency,setShowCurrency] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -98,22 +94,25 @@ const VehicleDetails = () => {
       VehicleBrand: "",
       ServiceType: "",
       VehicleModel: "",
-      ExtraSpace: [""],
-      Currency: "",
+      ExtraSpace: [],
+      Currency: "Rs",
       Cargo: "",
-
       rows,
       VehicleRent: "",
       ParkingFee: "",
       TollFee: "",
       Others: "",
       Tip: "",
-      // TransferFrom: "",
-      // TransferTo: "",
-      // Price: "",
+      Fuel: "included",
+      Driver: "included",
+      HalfDayRide:"no",
+      FullDayRide:"no",
+      Parking:"included",
+      TollTax:"included",
+      DriverTips:"included",
     },
   });
-
+  const Currency = form.watch("Currency");
   const HalfDayRide = form.watch("HalfDayRide");
   const FullDayRide = form.watch("FullDayRide");
   const Parking = form.watch("Parking");
@@ -128,7 +127,10 @@ const VehicleDetails = () => {
     "Extended Cargo Space",
   ];
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log("form submitted");
+    toast({
+      title:"Adding Vehicle",
+      description:"Vehicle Added Sucessfully"
+    })
     console.log(data);
   };
   const handleVehicleTypeChange = (value: string) => {
@@ -167,11 +169,10 @@ const VehicleDetails = () => {
     setSmallBag(value);
     form.setValue("SmallBag", value);
   };
-  const handleCurrencyChange = (value: string) => {
-    setCurrency(value);
-    form.setValue("Currency", value);
-    // setShowCurrency(true);
-  };
+  // const handleCurrencyChange = (value: string) => {
+  //   setCurrency(value);
+  //   form.setValue("Currency", value);
+  // };
   // const handleTransferToChange = (value: string) => {
   //   setTransferTo(value);
   //   form.setValue("TransferTo", value);
@@ -231,9 +232,10 @@ const VehicleDetails = () => {
                           // onValueChange={(value) => field.onChange(value)}
                           onValueChange={handleVehicleTypeChange}
                           value={vehicleType}
+                          
                         >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Vehicle Type" />
+                          <SelectTrigger className="w-full ">
+                            <SelectValue placeholder="Vehicle Type"/>
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="Sedan">Sedan</SelectItem>
@@ -571,10 +573,10 @@ const VehicleDetails = () => {
                       <FormControl>
                         <Select
                           {...field}
-                          // value={`${field.value}`}
-                          // onValueChange={(value) => field.onChange(value)}
-                          onValueChange={handleCurrencyChange}
-                          value={currency}
+                          value={`${field.value}`}
+                          onValueChange={(value) => field.onChange(value)}
+                          // onValueChange={handleCurrencyChange}
+                          // value={currency}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select Currency" />
@@ -679,7 +681,7 @@ const VehicleDetails = () => {
                         <FormControl>
                           <div className="flex justify-center">
                             <span className="bg-secondary px-2 py-1 rounded-sm">
-                              {currency.toUpperCase()}
+                              {Currency.toUpperCase()}
                             </span>
                             <Input
                               placeholder="Enter Price"
@@ -732,7 +734,7 @@ const VehicleDetails = () => {
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          defaultValue={field.value||"no"}
                           className="flex items-center"
                         >
                           <FormItem className="flex items-center space-x-3 space-y-0">
@@ -762,7 +764,7 @@ const VehicleDetails = () => {
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          defaultValue={field.value||"no"}
                           className="flex items-center"
                         >
                           <FormItem className="flex items-center space-x-3 space-y-0">
@@ -800,7 +802,7 @@ const VehicleDetails = () => {
                           <FormControl>
                             <div className="flex justify-center">
                               <span className="bg-secondary px-2 py-1 rounded-sm">
-                                {currency.toUpperCase()}
+                                {Currency.toUpperCase()}
                               </span>
                               <Input placeholder="Vehicle Rent" {...field} />
                             </div>
@@ -819,7 +821,7 @@ const VehicleDetails = () => {
                             <FormControl>
                               <RadioGroup
                                 onValueChange={field.onChange}
-                                defaultValue={field.value}
+                                defaultValue={field.value||"included"}
                                 className="flex items-center"
                               >
                                 <FormItem className="flex items-center space-x-3 space-y-0">
@@ -853,7 +855,7 @@ const VehicleDetails = () => {
                             <FormControl>
                               <RadioGroup
                                 onValueChange={field.onChange}
-                                defaultValue={field.value}
+                                defaultValue={field.value||"included"}
                                 className="flex items-center"
                               >
                                 <FormItem className="flex items-center space-x-3 space-y-0">
@@ -890,7 +892,7 @@ const VehicleDetails = () => {
                               <FormControl>
                                 <RadioGroup
                                   onValueChange={field.onChange}
-                                  defaultValue={field.value}
+                                  defaultValue={field.value||"included"}
                                   className="flex items-center"
                                 >
                                   <FormItem className="flex items-center space-x-3 space-y-0">
@@ -925,7 +927,7 @@ const VehicleDetails = () => {
                                 <FormControl>
                                   <div className="flex justify-center">
                                     <span className="bg-secondary px-2 py-1 rounded-sm">
-                                      {currency.toUpperCase()}
+                                      {Currency.toUpperCase()}
                                     </span>
                                     <Input
                                       placeholder="Parking Fee"
@@ -949,7 +951,7 @@ const VehicleDetails = () => {
                               <FormControl>
                                 <RadioGroup
                                   onValueChange={field.onChange}
-                                  defaultValue={field.value}
+                                  defaultValue={field.value||"included"}
                                   className="flex items-center"
                                 >
                                   <FormItem className="flex items-center space-x-3 space-y-0">
@@ -984,7 +986,7 @@ const VehicleDetails = () => {
                                 <FormControl>
                                   <div className="flex justify-center">
                                     <span className="bg-secondary px-2 py-1 rounded-sm">
-                                      {currency.toUpperCase()}
+                                      {Currency.toUpperCase()}
                                     </span>
                                     <Input placeholder="Toll Fees" {...field} />
                                   </div>
@@ -1005,7 +1007,7 @@ const VehicleDetails = () => {
                               <FormControl>
                                 <RadioGroup
                                   onValueChange={field.onChange}
-                                  defaultValue={field.value}
+                                  defaultValue={field.value||"included"}
                                   className="flex items-center"
                                 >
                                   <FormItem className="flex items-center space-x-3 space-y-0">
@@ -1040,7 +1042,7 @@ const VehicleDetails = () => {
                                 <FormControl>
                                   <div className="flex justify-center">
                                     <span className="bg-secondary px-2 py-1 rounded-sm">
-                                      {currency.toUpperCase()}
+                                      {Currency.toUpperCase()}
                                     </span>
                                     <Input placeholder="Tip" {...field} />
                                   </div>

@@ -47,10 +47,10 @@ export default function Home() {
           <Button className="my-2">Contact</Button>
         </div>
         <div className="absolute right-0 top-[-10px] hidden md:block">
-          <Image src="/Sanzad-International-Hero_Image.png" alt="Hero Image" width={350} height={350}/>
+          <Image src="/Sanzad_International_Travel.svg" alt="Hero Image" width={350} height={350}/>
         </div>
         <div className="flex justify-center w-full h-[300px] absolute md:bottom-[-200px] left-0">
-          <div className="w-[80%] bg-slate-500/[.5] rounded-md px-4 py-2">
+          <div className="w-[80%] bg-blue-100/[.5] rounded-md px-4 py-2">
             <h2 className="text-center text-2xl font-medium">Book Your Rides</h2>
           </div>
         </div>

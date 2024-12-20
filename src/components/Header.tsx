@@ -13,26 +13,26 @@ import {
 
 const Header = () => {
   return (
-    <div className="text-white bg-slate-800 py-2 px-5 mx-10 my-4 flex justify-between rounded-sm items-center">
+    <div className="text-white py-2 px-5 mx-10 my-4 flex justify-between rounded-sm items-center" style={{backgroundColor:'#2f2483'}}>
       <div>
         <Link href="/">
           <Image src="/sanzad-logo.png" alt="Logo" width={80} height={80} />
         </Link>
       </div>
       <div className="hidden md:flex justify-between items-center gap-4">
-        <Link className="hover:bg-slate-700 rounded-md px-2 py-1" href="/">
+        <Link className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1" href="/">
           Home
         </Link>
-        <Link className="hover:bg-slate-700 rounded-md px-2 py-1" href="/agent">
+        <Link className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1" href="/agent">
           Agent
         </Link>
         <Link
-          className="hover:bg-slate-700 rounded-md px-2 py-1"
+          className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
           href="/supplier"
         >
           Supplier
         </Link>
-        <Link className="hover:bg-slate-700 rounded-md px-2 py-1" href="/admin">
+        <Link className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1" href="/admin">
           Admin
         </Link>
       </div>
