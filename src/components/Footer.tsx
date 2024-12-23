@@ -4,7 +4,7 @@ import { SocialIcon } from "react-social-icons"
 
 const Footer = () => {
   return (
-    <div className="text-white py-2 px-5 mx-10 my-4 rounded-sm flex flex-col gap-5" style={{backgroundColor:'#2f2483'}}>
+    <div className="text-white py-4 px-10 mx-10 my-4 rounded-sm flex flex-col gap-5" style={{backgroundColor:'#2f2483'}}>
         <div className="grid grid-cols-3 justify-items-center">
             <div>
                 <h3 className="text-xl font-medium">Address</h3>
@@ -39,8 +39,8 @@ const Footer = () => {
             </div>
         </div>
         <div className="flex justify-center divide-x divide-white">
-            <Link className="px-1" href="/privacy-policy">Privacy-Policy</Link>
-            <Link className="px-1" href="/terms">Terms & Conditions</Link>
+            <Link className="px-1 text-sm" href="/privacy-policy">Privacy-Policy</Link>
+            <Link className="px-1 text-sm" href="/terms">Terms & Conditions</Link>
         </div>
         
     </div>

@@ -41,7 +41,7 @@ interface Country {
   name: string;
   flag: string;
   dialCode: string;
-  cities: string[];
+  // cities: string[];
 }
 const tags = ["GST", "Adhar", "PAN", "Passport"];
 const formSchema = z.object({
@@ -71,7 +71,7 @@ type FormData = z.infer<typeof formSchema>;
 const SupplierRegistration: React.FC = () => {
   const [countries, setCountries] = useState<Country[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>("");
-  const [selectedCity, setSelectedCity] = useState<string>("");
+  // const [selectedCity, setSelectedCity] = useState<string>("");
   const [selectedCurrency, setSelectedCurrency] = useState<string>("");
   const [selectedDialCode, setSelectedDialCode] = useState<string>("");
   const [selectedFlag, setSelectedFlag] = useState<string>(""); // To store the Unicode flag
@@ -223,18 +223,18 @@ const SupplierRegistration: React.FC = () => {
       form.setValue("Country", value);
       form.trigger("Country");
       form.setValue("City", "");
-      setSelectedCity("");
+      // setSelectedCity("");
     }
   };
 
-  const handleCityChange = (value: string) => {
-    setSelectedCity(value);
-    form.setValue("City", value);
-    form.trigger("City"); // Ensure city validation is triggered
-  };
+  // const handleCityChange = (value: string) => {
+  //   setSelectedCity(value);
+  //   form.setValue("City", value);
+  //   form.trigger("City"); // Ensure city validation is triggered
+  // };
 
-  const cities =
-    countries.find((country) => country.name === selectedCountry)?.cities || [];
+  // const cities =
+  //   countries.find((country) => country.name === selectedCountry)?.cities || [];
 
  
 
@@ -356,7 +356,7 @@ const SupplierRegistration: React.FC = () => {
                 <FormItem>
                   <FormLabel>City</FormLabel>
                   <FormControl>
-                    <Select
+                    {/* <Select
                       {...field}
                       onValueChange={handleCityChange}
                       value={selectedCity}
@@ -372,13 +372,13 @@ const SupplierRegistration: React.FC = () => {
                           </SelectItem>
                         ))}
                       </SelectContent>
-                    </Select>
-                     {/* <Input
+                    </Select> */}
+                     <Input
                       type="text"
                       // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                       placeholder="Enter Your City"
                       {...field}
-                    /> */}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

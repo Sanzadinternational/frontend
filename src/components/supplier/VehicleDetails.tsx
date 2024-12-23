@@ -1,4 +1,6 @@
 "use client";
+import { DatePicker } from "../DatePicker";
+import CountryCityAPI from "../api/CountryCityAPI";
 import { useState } from "react";
 // import axios from 'axios';
 import * as z from "zod";
@@ -31,6 +33,12 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
+interface Country {
+  name: string;
+  // flag: string;
+  // dialCode: string;
+  // cities: string[];
+}
 const formSchema = z.object({
   VehicleType: z.string().min(1, {
     message: "Vehicle Type is required",
@@ -50,12 +58,24 @@ const formSchema = z.object({
   SmallBag: z.string().min(1, { message: "Small Bag is required" }),
   ExtraSpace: z.array(z.string()).optional(),
   Currency: z.string().min(1, { message: "Currency is required" }),
+  Country: z.string().min(1, { message: "Country is required" }),
+  City: z.string().min(1, { message: "City is required" }),
+  TransferInfo: z.string().optional(),
+  DateRange: z
+    .object({
+      from: z.date().nullable(),
+      to: z.date().nullable(),
+    })
+    .nullable(),
   rows: z.array(
     z.object({
       TransferFrom: z.string().min(1, { message: "Transfer From is required" }),
       TransferTo: z.string().min(1, { message: "Transfer To is required" }),
       Vice_Versa: z.boolean().optional(),
       Price: z.string().min(1, { message: "Price is required" }),
+      NightTime: z.enum(["yes", "no"]).optional(),
+      // Night_Vice_Versa:z.boolean().optional(),
+      NightTime_Price: z.string().optional(),
     })
   ),
   HalfDayRide: z.enum(["yes", "no"]).optional(),
@@ -70,6 +90,8 @@ const formSchema = z.object({
   TollFee: z.string().optional(),
   Tip: z.string().optional(),
   Others: z.string().optional(),
+  HalfFullNightTime: z.enum(["yes", "no"]).optional(),
+  HalfFullNightTimePrice: z.string().optional(),
 });
 
 const VehicleDetails = () => {
@@ -78,6 +100,9 @@ const VehicleDetails = () => {
   const [rows, setRows] = useState([
     { TransferFrom: "", TransferTo: "", Vice_Versa: false, Price: "" },
   ]);
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
+  // const [selectedCity, setSelectedCity] = useState<string>("");
   const [vehicleType, setVehicleType] = useState("");
   const [vehicleBrand, setVehicleBrand] = useState("");
   const [serviceType, setServiceType] = useState("");
@@ -97,7 +122,24 @@ const VehicleDetails = () => {
       ExtraSpace: [],
       Currency: "Rs",
       Cargo: "",
-      rows,
+      Country: "",
+      City: "",
+      TransferInfo: "",
+      DateRange: {
+        from: new Date(),
+        to: new Date(new Date().setMonth(new Date().getMonth() + 1)), // Default to next month
+      },
+      rows: [
+        {
+          TransferFrom: "",
+          TransferTo: "",
+          Vice_Versa: false,
+          Price: "",
+          NightTime: "no",
+          // Night_Vice_Versa: false,
+          NightTime_Price: "",
+        },
+      ],
       VehicleRent: "",
       ParkingFee: "",
       TollFee: "",
@@ -105,11 +147,12 @@ const VehicleDetails = () => {
       Tip: "",
       Fuel: "included",
       Driver: "included",
-      HalfDayRide:"no",
-      FullDayRide:"no",
-      Parking:"included",
-      TollTax:"included",
-      DriverTips:"included",
+      HalfDayRide: "no",
+      FullDayRide: "no",
+      Parking: "included",
+      TollTax: "included",
+      DriverTips: "included",
+      HalfFullNightTime: "no",
     },
   });
   const Currency = form.watch("Currency");
@@ -118,6 +161,8 @@ const VehicleDetails = () => {
   const Parking = form.watch("Parking");
   const TollTax = form.watch("TollTax");
   const DriverTips = form.watch("DriverTips");
+  const HalfFullNightTime = form.watch("HalfFullNightTime");
+
   // Generate numbers from 1 to 100
   const numbers = Array.from({ length: 100 }, (_, i) => i + 1);
 
@@ -127,10 +172,36 @@ const VehicleDetails = () => {
     "Extended Cargo Space",
   ];
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
+    // try {
+    //   const response = await fetch(
+    //     "http://localhost:8000/api/V1/supplier/verify-otp",
+    //     {
+    //       method: "POST",
+    //       headers: { "Content-Type": "application/json" },
+    //       body: JSON.stringify({ data }),
+    //     }
+    //   );
+
+    //   if (response.ok) {
+    //     toast({
+    //   title: "Adding Vehicle",
+    //   description: "Vehicle Added Sucessfully",
+    // });
+    // console.log(data);
+    //   } else {
+    //     console.log("failed");
+    //     console.log(response);
+    //   }
+    // } catch (error) {
+    //   console.log("Error adding vehicle:", error);
+    // }
+    //  finally {
+    //   setIsVerifyingOtp(false); // Stop verifying OTP
+    // }
     toast({
-      title:"Adding Vehicle",
-      description:"Vehicle Added Sucessfully"
-    })
+      title: "Adding Vehicle",
+      description: "Vehicle Added Sucessfully",
+    });
     console.log(data);
   };
   const handleVehicleTypeChange = (value: string) => {
@@ -169,6 +240,26 @@ const VehicleDetails = () => {
     setSmallBag(value);
     form.setValue("SmallBag", value);
   };
+  const handleCountryChange = (value: string) => {
+    const country = countries.find((country) => country.name === value);
+    if (country) {
+      setSelectedCountry(value);
+      form.setValue("Country", value);
+      form.trigger("Country");
+      form.setValue("City", "");
+      // setSelectedCity("");
+    }
+  };
+
+  // const handleCityChange = (value: string) => {
+  //   setSelectedCity(value);
+  //   form.setValue("City", value);
+  //   form.trigger("City"); // Ensure city validation is triggered
+  // };
+
+  // const cities =
+  //   countries.find((country) => country.name === selectedCountry)?.cities || [];
+
   // const handleCurrencyChange = (value: string) => {
   //   setCurrency(value);
   //   form.setValue("Currency", value);
@@ -187,10 +278,13 @@ const VehicleDetails = () => {
       TransferTo: "",
       Vice_Versa: false,
       Price: "",
+      NightTime: "no",
+      NightTime_Price: "",
     };
     setRows((prevRows) => [...prevRows, newRow]); // Add a new row
     form.setValue("rows", [...form.getValues("rows"), newRow]); // Update the form state
   };
+
   const handleDeleteRow = (index: number) => {
     setRows((prevRows) => prevRows.filter((_, i) => i !== index)); // Update the rows state
     form.setValue(
@@ -201,6 +295,7 @@ const VehicleDetails = () => {
 
   return (
     <Card>
+      <CountryCityAPI onDataFetched={setCountries} />
       <CardHeader>
         <CardTitle>Add Your Vehicle</CardTitle>
       </CardHeader>
@@ -232,10 +327,9 @@ const VehicleDetails = () => {
                           // onValueChange={(value) => field.onChange(value)}
                           onValueChange={handleVehicleTypeChange}
                           value={vehicleType}
-                          
                         >
                           <SelectTrigger className="w-full ">
-                            <SelectValue placeholder="Vehicle Type"/>
+                            <SelectValue placeholder="Vehicle Type" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="Sedan">Sedan</SelectItem>
@@ -563,12 +657,81 @@ const VehicleDetails = () => {
               <CardDescription className="text-lg">
                 Transfer Details
               </CardDescription>
-              <div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 items-center mb-2">
+                <FormField
+                  control={form.control}
+                  name="Country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Country</FormLabel>
+                      <FormControl>
+                        <Select
+                          {...field}
+                          onValueChange={handleCountryChange}
+                          value={selectedCountry}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a country" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {countries
+                              .slice() // create a copy of the array
+                              .sort((a, b) => a.name.localeCompare(b.name)) // sort alphabetically by country name
+                              .map((country) => (
+                                <SelectItem
+                                  key={country.name}
+                                  value={country.name}
+                                >
+                                  {country.name}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="City"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City</FormLabel>
+                      <FormControl>
+                        {/* <Select
+                          {...field}
+                          onValueChange={handleCityChange}
+                          value={selectedCity}
+                          disabled={!selectedCountry}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a city" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {cities.map((city, index) => (
+                              <SelectItem key={index} value={city}>
+                                {city}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select> */}
+                        <Input
+                      type="text"
+                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      placeholder="Enter Your City"
+                      {...field}
+                    />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="Currency"
                   render={({ field }) => (
-                    <FormItem className="w-1/4">
+                    <FormItem>
                       <FormLabel>Currency</FormLabel>
                       <FormControl>
                         <Select
@@ -592,118 +755,215 @@ const VehicleDetails = () => {
                     </FormItem>
                   )}
                 />
-              </div>
-              {rows.map((row, index) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-2 md:grid-cols-4 gap-4 items-end"
-                >
-                  <FormField
-                    control={form.control}
-                    name={`rows.${index}.TransferFrom`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>From</FormLabel>
-                        <FormControl>
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value || ""}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="From" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Airport">Airport</SelectItem>
-                              <SelectItem value="Cruise">Cruise</SelectItem>
-                              <SelectItem value="Station">Station</SelectItem>
-                              <SelectItem value="City Center">
-                                City Center
-                              </SelectItem>
-                              <SelectItem value="Hotel">Hotel</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name={`rows.${index}.TransferTo`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>To</FormLabel>
-                        <FormControl>
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value || ""}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="To" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Airport">Airport</SelectItem>
-                              <SelectItem value="Cruise">Cruise</SelectItem>
-                              <SelectItem value="Station">Station</SelectItem>
-                              <SelectItem value="City Center">
-                                City Center
-                              </SelectItem>
-                              <SelectItem value="Hotel">Hotel</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name={`rows.${index}.Vice_Versa`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <Checkbox
-                          checked={field.value || false}
-                          onCheckedChange={field.onChange}
+                <FormField
+                  control={form.control}
+                  name="TransferInfo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Transfer Info</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Transfer Info"
+                          {...field}
+                          value={field.value || ""}
                         />
-                        <FormLabel className="pl-1">Vice-Versa</FormLabel>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name={`rows.${index}.Price`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Price</FormLabel>
-                        <FormControl>
-                          <div className="flex justify-center">
-                            <span className="bg-secondary px-2 py-1 rounded-sm">
-                              {Currency.toUpperCase()}
-                            </span>
-                            <Input
-                              placeholder="Enter Price"
-                              {...field}
-                              value={field.value || ""}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => handleDeleteRow(index)}
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="DateRange"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Choose Date</FormLabel>
+                      <FormControl>
+                        <DatePicker
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+              </div>
+              {rows.map((row, index) => {
+                const nightTime = form.watch(`rows.${index}.NightTime`);
+                return (
+                  <div
+                    key={index}
+                    className="grid grid-cols-2 md:grid-cols-4 gap-4 items-end"
                   >
-                    Delete
-                  </Button>
-                </div>
-              ))}
+                    <FormField
+                      control={form.control}
+                      name={`rows.${index}.TransferFrom`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>From</FormLabel>
+                          <FormControl>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value || ""}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="From" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Airport">Airport</SelectItem>
+                                <SelectItem value="Cruise">Cruise</SelectItem>
+                                <SelectItem value="Station">Station</SelectItem>
+                                <SelectItem value="City Center">
+                                  City Center
+                                </SelectItem>
+                                <SelectItem value="Hotel">Hotel</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`rows.${index}.TransferTo`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>To</FormLabel>
+                          <FormControl>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value || ""}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="To" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Airport">Airport</SelectItem>
+                                <SelectItem value="Cruise">Cruise</SelectItem>
+                                <SelectItem value="Station">Station</SelectItem>
+                                <SelectItem value="City Center">
+                                  City Center
+                                </SelectItem>
+                                <SelectItem value="Hotel">Hotel</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`rows.${index}.Vice_Versa`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <Checkbox
+                            checked={field.value || false}
+                            onCheckedChange={field.onChange}
+                          />
+                          <FormLabel className="pl-1">Vice-Versa</FormLabel>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`rows.${index}.Price`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Price</FormLabel>
+                          <FormControl>
+                            <div className="flex justify-center">
+                              <span className="bg-secondary px-2 py-1 rounded-sm">
+                                {Currency.toUpperCase()}
+                              </span>
+                              <Input
+                                placeholder="Enter Price"
+                                {...field}
+                                value={field.value || ""}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name={`rows.${index}.NightTime`}
+                        render={({ field }) => (
+                          <FormItem className="space-y-3">
+                            <FormLabel>
+                              Night Time Supplements (10PM-06AM)
+                            </FormLabel>
+                            <FormControl>
+                              <RadioGroup
+                                onValueChange={field.onChange}
+                                value={field.value || "no"}
+                                className="flex items-center"
+                              >
+                                <FormItem className="flex items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <RadioGroupItem value="yes" />
+                                  </FormControl>
+                                  <FormLabel className="font-normal">
+                                    Yes
+                                  </FormLabel>
+                                </FormItem>
+                                <FormItem className="flex items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <RadioGroupItem value="no" />
+                                  </FormControl>
+                                  <FormLabel className="font-normal">
+                                    No
+                                  </FormLabel>
+                                </FormItem>
+                              </RadioGroup>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      {nightTime === "yes" && (
+                        <FormField
+                          control={form.control}
+                          name={`rows.${index}.NightTime_Price`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Night Time Price (per hour)</FormLabel>
+                              <FormControl>
+                                <div className="flex justify-center">
+                                  <span className="bg-secondary px-2 py-1 rounded-sm">
+                                    {Currency.toUpperCase()}
+                                  </span>
+                                  <Input
+                                    placeholder="Night Time Price"
+                                    {...field}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </div>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => handleDeleteRow(index)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                );
+              })}
 
               <Button
                 type="button"
@@ -734,7 +994,7 @@ const VehicleDetails = () => {
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
-                          defaultValue={field.value||"no"}
+                          defaultValue={field.value || "no"}
                           className="flex items-center"
                         >
                           <FormItem className="flex items-center space-x-3 space-y-0">
@@ -764,7 +1024,7 @@ const VehicleDetails = () => {
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
-                          defaultValue={field.value||"no"}
+                          defaultValue={field.value || "no"}
                           className="flex items-center"
                         >
                           <FormItem className="flex items-center space-x-3 space-y-0">
@@ -786,9 +1046,71 @@ const VehicleDetails = () => {
                   )}
                 />
               </div>
+
               {/* Show Inclusions Only If HalfDayRide or FullDayRide is "yes" */}
               {(HalfDayRide === "yes" || FullDayRide === "yes") && (
                 <div>
+                  <div className="mt-2">
+                    <FormField
+                      control={form.control}
+                      name="HalfFullNightTime"
+                      render={({ field }) => (
+                        <FormItem className="space-y-3">
+                          <FormLabel>
+                            Night Time Supplements (10PM-06AM)
+                          </FormLabel>
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={field.onChange}
+                              defaultValue={field.value || "no"}
+                              className="flex items-center"
+                            >
+                              <FormItem className="flex items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <RadioGroupItem value="yes" />
+                                </FormControl>
+                                <FormLabel className="font-normal">
+                                  Yes
+                                </FormLabel>
+                              </FormItem>
+                              <FormItem className="flex items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <RadioGroupItem value="no" />
+                                </FormControl>
+                                <FormLabel className="font-normal">
+                                  No
+                                </FormLabel>
+                              </FormItem>
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {HalfFullNightTime === "yes" && (
+                      <FormField
+                        control={form.control}
+                        name="HalfFullNightTimePrice"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Night Time Price (per hour)</FormLabel>
+                            <FormControl>
+                              <div className="flex justify-center w-1/2 md:w-1/4">
+                                <span className="bg-secondary px-2 py-1 rounded-sm">
+                                  {Currency.toUpperCase()}
+                                </span>
+                                <Input
+                                  placeholder="Night Time Price"
+                                  {...field}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                  </div>
                   <CardDescription className="text-lg mt-2">
                     Inclusions
                   </CardDescription>
@@ -821,7 +1143,7 @@ const VehicleDetails = () => {
                             <FormControl>
                               <RadioGroup
                                 onValueChange={field.onChange}
-                                defaultValue={field.value||"included"}
+                                defaultValue={field.value || "included"}
                                 className="flex items-center"
                               >
                                 <FormItem className="flex items-center space-x-3 space-y-0">
@@ -855,7 +1177,7 @@ const VehicleDetails = () => {
                             <FormControl>
                               <RadioGroup
                                 onValueChange={field.onChange}
-                                defaultValue={field.value||"included"}
+                                defaultValue={field.value || "included"}
                                 className="flex items-center"
                               >
                                 <FormItem className="flex items-center space-x-3 space-y-0">
@@ -892,7 +1214,7 @@ const VehicleDetails = () => {
                               <FormControl>
                                 <RadioGroup
                                   onValueChange={field.onChange}
-                                  defaultValue={field.value||"included"}
+                                  defaultValue={field.value || "included"}
                                   className="flex items-center"
                                 >
                                   <FormItem className="flex items-center space-x-3 space-y-0">
@@ -951,7 +1273,7 @@ const VehicleDetails = () => {
                               <FormControl>
                                 <RadioGroup
                                   onValueChange={field.onChange}
-                                  defaultValue={field.value||"included"}
+                                  defaultValue={field.value || "included"}
                                   className="flex items-center"
                                 >
                                   <FormItem className="flex items-center space-x-3 space-y-0">
@@ -1007,7 +1329,7 @@ const VehicleDetails = () => {
                               <FormControl>
                                 <RadioGroup
                                   onValueChange={field.onChange}
-                                  defaultValue={field.value||"included"}
+                                  defaultValue={field.value || "included"}
                                   className="flex items-center"
                                 >
                                   <FormItem className="flex items-center space-x-3 space-y-0">
