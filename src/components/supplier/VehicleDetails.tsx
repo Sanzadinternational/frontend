@@ -69,9 +69,11 @@ const formSchema = z.object({
     .nullable(),
   rows: z.array(
     z.object({
-      TransferFrom: z.string().min(1, { message: "Transfer From is required" }),
-      TransferTo: z.string().min(1, { message: "Transfer To is required" }),
-      Vice_Versa: z.boolean().optional(),
+      Transfer_from: z
+        .string()
+        .min(1, { message: "Transfer From is required" }),
+      Transfer_to: z.string().min(1, { message: "Transfer To is required" }),
+      Vice_versa: z.boolean().optional(),
       Price: z.string().min(1, { message: "Price is required" }),
       NightTime: z.enum(["yes", "no"]).optional(),
       // Night_Vice_Versa:z.boolean().optional(),
@@ -131,9 +133,9 @@ const VehicleDetails = () => {
       },
       rows: [
         {
-          TransferFrom: "",
-          TransferTo: "",
-          Vice_Versa: false,
+          Transfer_from: "",
+          Transfer_to: "",
+          Vice_versa: false,
           Price: "",
           NightTime: "no",
           // Night_Vice_Versa: false,
@@ -172,6 +174,131 @@ const VehicleDetails = () => {
     "Extended Cargo Space",
   ];
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
+    try {
+      // Generate a unique ID for linking data
+      const uniqueId = `vehicle_${Date.now()}`;
+
+      // Prepare data for the whole form API
+      const wholeFormData = {
+        // ...data,
+        uniqueId,
+        VehicleType: data.VehicleType,
+        VehicleBrand: data.VehicleBrand,
+        ServiceType: data.ServiceType,
+        VehicleModel: data.VehicleModel,
+        Doors: data.Doors,
+        Seats: data.Seats,
+        Cargo: data.Cargo,
+        Country: data.Country,
+        City: data.City,
+        Passengers: data.Passengers,
+        MediumBag: data.MediumBag,
+        SmallBag: data.SmallBag,
+        TransferInfo: data.TransferInfo,
+        HalfDayRide: data.HalfDayRide,
+        FullDayRide: data.FullDayRide,
+        HalfFullNightTime: data.HalfFullNightTime,
+        HalfFullNightTimePrice: data.HalfFullNightTimePrice,
+        VehicleRent: data.VehicleRent,
+        Fuel: data.Fuel,
+        Driver: data.Driver,
+        ParkingFee: data.ParkingFee,
+        TollTax: data.TollTax,
+        Tip: data.Tip,
+        TollFee: data.TollFee,
+        Parking: data.Parking,
+        Currency: data.Currency,
+        Others: data.Others,
+      };
+
+      // Prepare data for the extraspace API
+      const extraspaceData = {
+        uniqueId,
+        ExtraSpace: data.ExtraSpace,
+      };
+
+      // Prepare data for the rows API
+      const rowsData = data.rows.map((row) => ({
+        uniqueId,
+        ...row,
+      }));
+      // Prepare data for the dateRange API
+      const dateRange = {
+        uniqueId,
+        DateRange: data.DateRange,
+      };
+
+      // Sequential API calls
+      const wholeFormResponse = await fetch(
+        "http://localhost:8000/api/V1/supplier/CreateCartDetail",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(wholeFormData),
+        }
+      );
+
+      if (!wholeFormResponse.ok) {
+        throw new Error("Failed to save the whole form data");
+      }
+
+      const extraspaceResponse = await fetch(
+        "http://localhost:8000/api/V1/supplier/CreateExtraSpaces",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(extraspaceData),
+        }
+      );
+
+      if (!extraspaceResponse.ok) {
+        throw new Error("Failed to save the extraspace data");
+      }
+
+      const rowsResponse = await fetch(
+        "http://localhost:8000/api/V1/supplier/CreateRows",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(rowsData),
+        }
+      );
+
+      if (!rowsResponse.ok) {
+        throw new Error("Failed to save the rows data");
+      }
+    
+      const dateRangeResponse = await fetch(
+        "http://localhost:8000/api/V1/supplier/CreateDateRange",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(dateRange),
+        }
+      );
+
+      if (!dateRangeResponse.ok) {
+        throw new Error("Failed to save the dateRange data");
+      }
+
+      // Show success toast
+      toast({
+        title: "Success!",
+        description: "All data saved successfully.",
+      });
+
+      // Reset form after successful submission
+      form.reset();
+      console.log(data);
+    } catch (error) {
+      // Show error toast
+      toast({
+        title: "Error",
+        description: (error as Error).message,
+      });
+      console.log(data);
+    }
+
     // try {
     //   const response = await fetch(
     //     "http://localhost:8000/api/V1/supplier/verify-otp",
@@ -198,11 +325,11 @@ const VehicleDetails = () => {
     //  finally {
     //   setIsVerifyingOtp(false); // Stop verifying OTP
     // }
-    toast({
-      title: "Adding Vehicle",
-      description: "Vehicle Added Sucessfully",
-    });
-    console.log(data);
+    // toast({
+    //   title: "Adding Vehicle",
+    //   description: "Vehicle Added Sucessfully",
+    // });
+    // console.log(data);
   };
   const handleVehicleTypeChange = (value: string) => {
     setVehicleType(value);
@@ -274,9 +401,9 @@ const VehicleDetails = () => {
   // };
   const handleAddRow = () => {
     const newRow = {
-      TransferFrom: "",
-      TransferTo: "",
-      Vice_Versa: false,
+      Transfer_from: "",
+      Transfer_to: "",
+      Vice_versa: false,
       Price: "",
       NightTime: "no",
       NightTime_Price: "",
@@ -309,10 +436,17 @@ const VehicleDetails = () => {
             // onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-6"
           >
-            <div>
-              <CardDescription className="text-lg">
+            <div className="relative flex py-3 items-center">
+              <div className="flex-grow border-t border-gray-400"></div>
+              <span className="flex-shrink mx-4 text-gray-400">
                 Vehicle Details
-              </CardDescription>
+              </span>
+              <div className="flex-grow border-t border-gray-400"></div>
+            </div>
+            <div>
+              {/* <CardDescription className="text-lg">
+                Vehicle Details
+              </CardDescription> */}
               <div className="grid grid-cols-2 md:grid-cols-4 justify-between items-center gap-2">
                 <FormField
                   control={form.control}
@@ -542,10 +676,17 @@ const VehicleDetails = () => {
                 />
               </div>
             </div>
-            <div>
-              <CardDescription className="text-lg">
+            <div className="relative flex py-3 items-center">
+              <div className="flex-grow border-t border-gray-400"></div>
+              <span className="flex-shrink mx-4 text-gray-400">
                 Luggage Info
-              </CardDescription>
+              </span>
+              <div className="flex-grow border-t border-gray-400"></div>
+            </div>
+            <div>
+              {/* <CardDescription className="text-lg">
+                Luggage Info
+              </CardDescription> */}
               <div className="grid grid-cols-1 md:grid-cols-2 items-baseline gap-2">
                 <div className="grid grid-cols-2 justify-between items-center gap-2">
                   <FormField
@@ -653,10 +794,17 @@ const VehicleDetails = () => {
                 </div>
               </div>
             </div>
-            <div>
-              <CardDescription className="text-lg">
+            <div className="relative flex py-3 items-center">
+              <div className="flex-grow border-t border-gray-400"></div>
+              <span className="flex-shrink mx-4 text-gray-400">
                 Transfer Details
-              </CardDescription>
+              </span>
+              <div className="flex-grow border-t border-gray-400"></div>
+            </div>
+            <div>
+              {/* <CardDescription className="text-lg">
+                Transfer Details
+              </CardDescription> */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 items-center mb-2">
                 <FormField
                   control={form.control}
@@ -717,11 +865,11 @@ const VehicleDetails = () => {
                           </SelectContent>
                         </Select> */}
                         <Input
-                      type="text"
-                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
-                      placeholder="Enter Your City"
-                      {...field}
-                    />
+                          type="text"
+                          // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                          placeholder="Enter Your City"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -788,7 +936,6 @@ const VehicleDetails = () => {
                     </FormItem>
                   )}
                 />
-                
               </div>
               {rows.map((row, index) => {
                 const nightTime = form.watch(`rows.${index}.NightTime`);
@@ -799,7 +946,7 @@ const VehicleDetails = () => {
                   >
                     <FormField
                       control={form.control}
-                      name={`rows.${index}.TransferFrom`}
+                      name={`rows.${index}.Transfer_from`}
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>From</FormLabel>
@@ -809,7 +956,7 @@ const VehicleDetails = () => {
                               value={field.value || ""}
                             >
                               <SelectTrigger>
-                                <SelectValue placeholder="From" />
+                                <SelectValue placeholder="Transfer From" />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="Airport">Airport</SelectItem>
@@ -829,7 +976,7 @@ const VehicleDetails = () => {
 
                     <FormField
                       control={form.control}
-                      name={`rows.${index}.TransferTo`}
+                      name={`rows.${index}.Transfer_to`}
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>To</FormLabel>
@@ -839,7 +986,7 @@ const VehicleDetails = () => {
                               value={field.value || ""}
                             >
                               <SelectTrigger>
-                                <SelectValue placeholder="To" />
+                                <SelectValue placeholder="Transfer To" />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="Airport">Airport</SelectItem>
@@ -859,7 +1006,7 @@ const VehicleDetails = () => {
 
                     <FormField
                       control={form.control}
-                      name={`rows.${index}.Vice_Versa`}
+                      name={`rows.${index}.Vice_versa`}
                       render={({ field }) => (
                         <FormItem>
                           <Checkbox
@@ -979,10 +1126,18 @@ const VehicleDetails = () => {
             {/* {isLoading ? "Submitting..." : "Submit"} */}
             {/* Submit */}
             {/* </Button> */}
+
+            <div className="relative flex py-3 items-center">
+              <div className="flex-grow border-t border-gray-400"></div>
+              <span className="flex-shrink mx-4 text-gray-400">
+                Others Details
+              </span>
+              <div className="flex-grow border-t border-gray-400"></div>
+            </div>
             <div>
-              <CardDescription className="text-lg">
+              {/* <CardDescription className="text-lg">
                 Othes Details
-              </CardDescription>
+              </CardDescription> */}
 
               <div className="grid grid-cols-2 justify-between items-center">
                 <FormField
