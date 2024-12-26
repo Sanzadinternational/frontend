@@ -118,12 +118,26 @@ const SupplierRegistration: React.FC = () => {
 
         if (response.ok) {
           setOtpSent(true);
+          toast({
+            title:"Sending OTP",
+            description:"OTP sent to email"
+          })
           console.log("OTP sent to email!");
         } else {
+          toast({
+            title:"Error",
+            description:"Failed to send OTP.",
+            variant:"destructive"
+          })
           console.log("Failed to send OTP.");
           console.log(response);
         }
       } catch (error) {
+        toast({
+          title:"Error",
+          description:(error as Error).message,
+          variant:"destructive"
+        })
         console.error("Error sending OTP:", error);
       } finally {
         setIsSendingOtp(false); // Stop sending OTP
@@ -147,12 +161,25 @@ const SupplierRegistration: React.FC = () => {
 
       if (response.ok) {
         setIsOtpVerified(true);
+        toast({
+          title:"OTP Verification",
+          description:"OTP verified successfully!"
+        })
         console.log("OTP verified successfully!");
       } else {
         setIsOtpVerified(false);
+        toast({
+          title:"Error",
+          description:"Invalid OTP.",
+          variant:"destructive"
+        })
         console.log("Invalid OTP.");
       }
     } catch (error) {
+      toast({
+        title:"Error",
+        description:(error as Error).message,
+      })
       console.log("Error verifying OTP:", error);
     } finally {
       setIsVerifyingOtp(false); // Stop verifying OTP

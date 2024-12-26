@@ -98,7 +98,7 @@ const formSchema = z.object({
 
 const VehicleDetails = () => {
   const { toast } = useToast();
-  // const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [rows, setRows] = useState([
     { TransferFrom: "", TransferTo: "", Vice_Versa: false, Price: "" },
   ]);
@@ -174,6 +174,7 @@ const VehicleDetails = () => {
     "Extended Cargo Space",
   ];
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
     try {
       // Generate a unique ID for linking data
       const uniqueId = `vehicle_${Date.now()}`;
@@ -212,11 +213,13 @@ const VehicleDetails = () => {
       };
 
       // Prepare data for the extraspace API
-      const extraspaceData = {
+      const extraspaceData = [{
         uniqueId,
-        ExtraSpace: data.ExtraSpace,
-      };
-
+        Roof_Rack: data.ExtraSpace?.includes("Roof Rack") ? "Selected" : "",
+        Trailer_Hitch: data.ExtraSpace?.includes("Trailer Hitch") ? "Selected" : "",
+        Extended_Cargo_Space: data.ExtraSpace?.includes("Extended Cargo Space") ? "Selected" : "",
+      }];
+      console.log("Submitting extraspaceData:", extraspaceData);
       // Prepare data for the rows API
       const rowsData = data.rows.map((row) => ({
         uniqueId,
@@ -225,9 +228,13 @@ const VehicleDetails = () => {
       // Prepare data for the dateRange API
       const dateRange = {
         uniqueId,
-        DateRange: data.DateRange,
+        // DateRange: data.DateRange,
+        DateRange: {
+          from: data.DateRange?.from || null,
+          to: data.DateRange?.to || null,
+        },
       };
-
+      console.log("Submitting daterange:", dateRange);
       // Sequential API calls
       const wholeFormResponse = await fetch(
         "http://localhost:8000/api/V1/supplier/CreateCartDetail",
@@ -252,7 +259,10 @@ const VehicleDetails = () => {
       );
 
       if (!extraspaceResponse.ok) {
-        throw new Error("Failed to save the extraspace data");
+        // throw new Error("Failed to save the extraspace data");
+        const error = await extraspaceResponse.json();
+      console.error("Extraspace API Error:", error);
+      throw new Error(error.message || "Failed to save extraspace data");
       }
 
       const rowsResponse = await fetch(
@@ -278,7 +288,10 @@ const VehicleDetails = () => {
       );
 
       if (!dateRangeResponse.ok) {
-        throw new Error("Failed to save the dateRange data");
+        // throw new Error("Failed to save the dateRange data");
+        const error = await dateRangeResponse.json();
+      console.error("DateRange API Error:", error);
+      throw new Error(error.message || "Failed to save daterange data");
       }
 
       // Show success toast
@@ -297,39 +310,10 @@ const VehicleDetails = () => {
         description: (error as Error).message,
       });
       console.log(data);
+    }finally{
+      setIsLoading(false);
     }
 
-    // try {
-    //   const response = await fetch(
-    //     "http://localhost:8000/api/V1/supplier/verify-otp",
-    //     {
-    //       method: "POST",
-    //       headers: { "Content-Type": "application/json" },
-    //       body: JSON.stringify({ data }),
-    //     }
-    //   );
-
-    //   if (response.ok) {
-    //     toast({
-    //   title: "Adding Vehicle",
-    //   description: "Vehicle Added Sucessfully",
-    // });
-    // console.log(data);
-    //   } else {
-    //     console.log("failed");
-    //     console.log(response);
-    //   }
-    // } catch (error) {
-    //   console.log("Error adding vehicle:", error);
-    // }
-    //  finally {
-    //   setIsVerifyingOtp(false); // Stop verifying OTP
-    // }
-    // toast({
-    //   title: "Adding Vehicle",
-    //   description: "Vehicle Added Sucessfully",
-    // });
-    // console.log(data);
   };
   const handleVehicleTypeChange = (value: string) => {
     setVehicleType(value);
@@ -638,6 +622,7 @@ const VehicleDetails = () => {
                           // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                           placeholder="Enter Cargo"
                           {...field}
+                          type="number"
                         />
                       </FormControl>
                       <FormMessage />
@@ -1033,6 +1018,7 @@ const VehicleDetails = () => {
                                 placeholder="Enter Price"
                                 {...field}
                                 value={field.value || ""}
+                                type="number"
                               />
                             </div>
                           </FormControl>
@@ -1092,6 +1078,8 @@ const VehicleDetails = () => {
                                   <Input
                                     placeholder="Night Time Price"
                                     {...field}
+                                    value={field.value || ""}
+                                    type="number"
                                   />
                                 </div>
                               </FormControl>
@@ -1122,10 +1110,7 @@ const VehicleDetails = () => {
               </Button>
             </div>
 
-            {/* <Button type="submit" className="w-full"> */}
-            {/* {isLoading ? "Submitting..." : "Submit"} */}
-            {/* Submit */}
-            {/* </Button> */}
+            
 
             <div className="relative flex py-3 items-center">
               <div className="flex-grow border-t border-gray-400"></div>
@@ -1257,6 +1242,8 @@ const VehicleDetails = () => {
                                 <Input
                                   placeholder="Night Time Price"
                                   {...field}
+                                  value={field.value || ""}
+                                  type="number"
                                 />
                               </div>
                             </FormControl>
@@ -1281,7 +1268,7 @@ const VehicleDetails = () => {
                               <span className="bg-secondary px-2 py-1 rounded-sm">
                                 {Currency.toUpperCase()}
                               </span>
-                              <Input placeholder="Vehicle Rent" {...field} />
+                              <Input placeholder="Vehicle Rent" {...field} type="number"/>
                             </div>
                           </FormControl>
                           <FormMessage />
@@ -1409,6 +1396,7 @@ const VehicleDetails = () => {
                                     <Input
                                       placeholder="Parking Fee"
                                       {...field}
+                                      type="number"
                                     />
                                   </div>
                                 </FormControl>
@@ -1465,7 +1453,7 @@ const VehicleDetails = () => {
                                     <span className="bg-secondary px-2 py-1 rounded-sm">
                                       {Currency.toUpperCase()}
                                     </span>
-                                    <Input placeholder="Toll Fees" {...field} />
+                                    <Input placeholder="Toll Fees" {...field} type="number" />
                                   </div>
                                 </FormControl>
                                 <FormMessage />
@@ -1521,7 +1509,7 @@ const VehicleDetails = () => {
                                     <span className="bg-secondary px-2 py-1 rounded-sm">
                                       {Currency.toUpperCase()}
                                     </span>
-                                    <Input placeholder="Tip" {...field} />
+                                    <Input placeholder="Tip" {...field} type="number"/>
                                   </div>
                                 </FormControl>
                                 <FormMessage />
@@ -1549,8 +1537,14 @@ const VehicleDetails = () => {
                 </div>
               )}
             </div>
+              {/* <Button type="submit" className="w-full"> */}
+            {/* {isLoading ? "Submitting..." : "Submit"} */}
+            {/* Submit */}
+            {/* </Button> */}
+            <Button type="submit">
+            {isLoading ? "Adding Vehicle..." : "Add More Vehicle"}
 
-            <Button type="submit">Add More Vehicle</Button>
+            </Button>
           </form>
         </Form>
       </CardContent>
