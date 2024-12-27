@@ -96,7 +96,7 @@ const AgentRegistration: React.FC = () => {
       Contact_Person: "",
     },
   });
-
+  const { toast } = useToast();
   const handleSendOtp = async () => {
     const email = form.getValues("Email");
     if (email) {
@@ -115,11 +115,25 @@ const AgentRegistration: React.FC = () => {
 
         if (response.ok) {
           setOtpSent(true);
+          toast({
+            title:"Sending OTP",
+            description:"OTP sent to email"
+          })
           console.log("OTP sent to email!");
         } else {
+          toast({
+            title:"Error",
+            description:"Failed to send OTP.",
+            variant:"destructive"
+          })
           console.log("Failed to send OTP.");
         }
       } catch (error) {
+        toast({
+          title:"Error",
+          description:(error as Error).message,
+          variant:"destructive"
+        })
         console.error("Error sending OTP:", error);
       } finally {
         setIsSendingOtp(false); // Stop sending OTP
@@ -143,18 +157,31 @@ const AgentRegistration: React.FC = () => {
 
       if (response.ok) {
         setIsOtpVerified(true);
+        toast({
+          title:"OTP Verification",
+          description:"OTP verified successfully!"
+        })
         console.log("OTP verified successfully!");
       } else {
+        toast({
+          title:"OTP Verification",
+          description:"Invalid OTP.",
+          variant:"destructive"
+        })
         console.log("Invalid OTP.");
       }
     } catch (error) {
+      toast({
+        title:"Error",
+        description:(error as Error).message,
+      })
       console.log("Error verifying OTP:", error);
     } finally {
       setIsVerifyingOtp(false); // Stop verifying OTP
     }
   };
 
-  const { toast } = useToast();
+  
   const handleSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmiting(true);
     // Concatenate dial code with office number and mobile number

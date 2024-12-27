@@ -99,7 +99,7 @@ const SupplierRegistration: React.FC = () => {
       Contact_Person: "",
     },
   });
-
+  const { toast } = useToast();
   const handleSendOtp = async () => {
     const email = form.getValues("Email");
     if (email) {
@@ -169,7 +169,7 @@ const SupplierRegistration: React.FC = () => {
       } else {
         setIsOtpVerified(false);
         toast({
-          title:"Error",
+          title:"OTP Verification",
           description:"Invalid OTP.",
           variant:"destructive"
         })
@@ -186,10 +186,6 @@ const SupplierRegistration: React.FC = () => {
     }
   };
 
-
-
-
-  const { toast } = useToast();
   const handleSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmiting(true);
     // Concatenate dial code with office number and mobile number
@@ -220,10 +216,20 @@ const SupplierRegistration: React.FC = () => {
           router.push("/");
         } else {
           const errorData = await registrationResponse.json();
+          toast({
+            title:'Error during registration',
+            description:(errorData.message),
+            variant:'destructive',
+          })
           console.log("Registration failed:", errorData);
           console.log(data);
         }
       } catch (error) {
+        toast({
+          title:'Error during registration',
+          description:(error as Error).message,
+          variant:'destructive',
+        })
         console.log("Error during registration:", error);
       }finally{
         setIsSubmiting(false);

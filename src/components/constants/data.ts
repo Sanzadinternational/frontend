@@ -73,11 +73,22 @@ export interface Role{
           items: [] // Empty array as there are no child items for Dashboard
         },
         {
-          title: 'Add Car',
-          url: '/dashboard/supplier/AddVehicle',
+          title: 'Vehicles',
+          url: '',
            icon: 'car',
-          isActive: false,
-          items: [] // No child items
+          isActive: true,
+          items: [
+            {
+              title: 'Available Vehicles',
+              url: '/dashboard/supplier/vehicles',
+              icon: 'car',
+            },
+            {
+              title: 'Add New Vehicle',
+              url: '/dashboard/supplier/AddVehicle',
+              icon: 'car',
+            }
+          ] // No child items
         },
         {
           title: 'Booking',
