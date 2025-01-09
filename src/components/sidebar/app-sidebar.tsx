@@ -50,7 +50,9 @@ import { usePathname } from "next/navigation";
 import ThemeToggler from "../theme/ThemeToggler";
 import { Icons } from "../icons";
 import { UserNav } from "../layout/user-nav";
-import { useRole } from "../context/RoleContext";
+import { fetchWithAuth } from "@/components/utils/api";
+import { removeToken } from "@/components/utils/auth";
+// import { useRole } from "../context/RoleContext";
 export const company = {
   name: "Sanzad",
   logo: Car,
@@ -62,20 +64,41 @@ export default function AppSidebar({
 }: {
   children: React.ReactNode;
 }) {
-  const {role} = useRole();
+  // const {role} = useRole();
   const pathname = usePathname();
   const [userData, setUserData] = useState<any>(null); // Replace `any` with your data type
+  const [error, setError] = useState<string>("");
 
   // Load user data from localStorage
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem("user");
+  //   if (storedUser) {
+  //     setUserData(JSON.parse(storedUser));
+  //   }
+  // }, []);
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUserData(JSON.parse(storedUser));
-    }
+    const fetchUserData = async () => {
+      try {
+        const data = await fetchWithAuth(
+          "http://localhost:8000/api/V1/supplier/dashboard"
+        );
+        setUserData(data);
+        console.log(data.role);
+      } catch (err: any) {
+        setError(err.message);
+        removeToken();
+        window.location.href = "/login";
+      }
+    };
+
+    fetchUserData();
   }, []);
-  // const rolename = role;
-  const roleData = sideBarItems.filter((name) => name.role === role);
-  
+
+  if (error) return <p>Error: {error}</p>;
+  if (!userData) return <p>Loading...</p>;
+
+  const rolename = userData.role;
+  const roleData = sideBarItems.filter((name) => name.role === rolename);
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
@@ -238,7 +261,7 @@ export default function AppSidebar({
                       Account
                     </DropdownMenuItem>
                     {
-                      role==='supplier'&&(<DropdownMenuItem>
+                      rolename==='supplier'&&(<DropdownMenuItem>
                         <Link href='/dashboard/supplier/api' className="flex">
                         <CreditCard />
                         Integrate API

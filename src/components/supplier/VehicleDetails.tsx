@@ -1,7 +1,9 @@
 "use client";
 import { DatePicker } from "../DatePicker";
 import CountryCityAPI from "../api/CountryCityAPI";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchWithAuth } from "@/components/utils/api";
+import { removeToken } from "@/components/utils/auth";
 // import axios from 'axios';
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -97,6 +99,26 @@ const formSchema = z.object({
 });
 
 const VehicleDetails = () => {
+  const [user, setUser] = useState<any>(null);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const data = await fetchWithAuth("http://localhost:8000/api/V1/supplier/dashboard");
+        console.log("User Data:", data); // Debugging log for API response
+        setUser(data);
+      } catch (err: any) {
+        console.error("Error fetching user data:", err); // Debugging log for errors
+        setError(err.message);
+        removeToken();
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [rows, setRows] = useState([
@@ -206,10 +228,13 @@ const VehicleDetails = () => {
         ParkingFee: data.ParkingFee,
         TollTax: data.TollTax,
         Tip: data.Tip,
+        From: data.DateRange?.from || null,
+        To: data.DateRange?.to || null,
         TollFee: data.TollFee,
         Parking: data.Parking,
         Currency: data.Currency,
         Others: data.Others,
+        SupplierId: user.userId
       };
 
       // Prepare data for the extraspace API
@@ -229,15 +254,13 @@ const VehicleDetails = () => {
       const dateRange = {
         uniqueId,
         // DateRange: data.DateRange,
-        DateRange: {
           from: data.DateRange?.from || null,
           to: data.DateRange?.to || null,
-        },
       };
       console.log("Submitting daterange:", dateRange);
       // Sequential API calls
       const wholeFormResponse = await fetch(
-        "http://localhost:8000/api/V1/supplier/CreateCartDetail",
+        "http://localhost:8000/api/V1/supplier/CreateCarDetail",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -278,21 +301,21 @@ const VehicleDetails = () => {
         throw new Error("Failed to save the rows data");
       }
     
-      const dateRangeResponse = await fetch(
-        "http://localhost:8000/api/V1/supplier/CreateDateRange",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(dateRange),
-        }
-      );
+      // const dateRangeResponse = await fetch(
+      //   "http://localhost:8000/api/V1/supplier/CreateDateRange",
+      //   {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify(dateRange),
+      //   }
+      // );
 
-      if (!dateRangeResponse.ok) {
-        // throw new Error("Failed to save the dateRange data");
-        const error = await dateRangeResponse.json();
-      console.error("DateRange API Error:", error);
-      throw new Error(error.message || "Failed to save daterange data");
-      }
+      // if (!dateRangeResponse.ok) {
+      //   // throw new Error("Failed to save the dateRange data");
+      //   const error = await dateRangeResponse.json();
+      // console.error("DateRange API Error:", error);
+      // throw new Error(error.message || "Failed to save daterange data");
+      // }
 
       // Show success toast
       toast({

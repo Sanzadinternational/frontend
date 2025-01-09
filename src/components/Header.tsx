@@ -1,3 +1,4 @@
+"use client"
 import Image from "next/image";
 import Link from "next/link";
 import ThemeToggler from "./theme/ThemeToggler";
@@ -10,8 +11,33 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useEffect, useState } from "react";
+import { fetchWithAuth } from "@/components/utils/api";
+import { removeToken } from "./utils/auth";
 
 const Header = () => {
+  const [user, setUser] = useState<any>(null);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const data = await fetchWithAuth("http://localhost:8000/api/V1/supplier/dashboard");
+        console.log("User Data:", data); // Debugging log for API response
+        setUser(data);
+      } catch (err: any) {
+        console.error("Error fetching user data:", err); // Debugging log for errors
+        setError(err.message);
+        removeToken();
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  if (error) {
+    // return <p className="text-red-500 text-center">Error: {error}</p>;
+  }
   return (
     <div className="text-white py-2 px-5 mx-10 my-4 flex justify-between rounded-sm items-center" style={{backgroundColor:'#2f2483'}}>
       <div>
@@ -59,6 +85,20 @@ const Header = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+        </div>
+        <div className="mr-2 flex items-center">
+        {user?.user_information || user !== null ? (
+            <div>
+              <span className="font-semibold">{user.user_information}</span>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="hover:text-indigo-400 font-medium"
+            >
+              Login
+            </Link>
+          )}
         </div>
         <div className="grid grid-cols-2 divide-x divide-white border border-slate-100 mr-2 p-1 rounded-sm">
           <div>
