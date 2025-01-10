@@ -98,7 +98,7 @@ const formSchema = z.object({
   HalfFullNightTimePrice: z.string().optional(),
 });
 
-const VehicleDetails = () => {
+const UpdateVehicle = () => {
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string>("");
 
@@ -108,7 +108,6 @@ const VehicleDetails = () => {
         const data = await fetchWithAuth("http://localhost:8000/api/V1/supplier/dashboard");
         console.log("User Data:", data); // Debugging log for API response
         setUser(data);
-        
       } catch (err: any) {
         console.error("Error fetching user data:", err); // Debugging log for errors
         setError(err.message);
@@ -307,6 +306,7 @@ const VehicleDetails = () => {
         title: "Success!",
         description: "All data saved successfully.",
       });
+
       // Reset form after successful submission
       form.reset();
       console.log(data);
@@ -1538,4 +1538,4 @@ const VehicleDetails = () => {
   );
 };
 
-export default VehicleDetails;
+export default UpdateVehicle;

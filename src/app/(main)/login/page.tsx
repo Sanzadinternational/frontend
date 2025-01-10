@@ -38,11 +38,11 @@ const formSchema = z.object({
     message: "Password is Required",
   }),
 });
-interface LoginRoleProps {
-  role: string;
-}
+// interface LoginRoleProps {
+//   role: string;
+// }
 
-const Login = ({ role }: LoginRoleProps) => {
+const Login = () => {
   const [isSubmiting, setIsSubmiting] = useState(false);
   const { toast } = useToast();
  
@@ -113,6 +113,7 @@ const Login = ({ role }: LoginRoleProps) => {
   };
 
   return (
+    <div className="flex justify-center items-center my-8">
     <Card>
       <CardHeader>
         <CardTitle>Login</CardTitle>
@@ -155,7 +156,8 @@ const Login = ({ role }: LoginRoleProps) => {
                   <div className="flex justify-between">
                     <FormLabel>Password</FormLabel>
                     <Link
-                      href={`/${role}/forget-password`}
+                      // href={`/${role}/forget-password`}
+                      href=''
                       className="text-xs text-blue-500 underline"
                     >
                       Forgot Password?
@@ -180,6 +182,7 @@ const Login = ({ role }: LoginRoleProps) => {
         </Form>
       </CardContent>
     </Card>
+    </div>
   );
 };
 
