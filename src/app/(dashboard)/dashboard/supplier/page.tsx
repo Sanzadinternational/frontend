@@ -21,7 +21,7 @@ const Page = () => {
     const fetchUserData = async () => {
       try {
         const data = await fetchWithAuth(
-          "http://localhost:8000/api/V1/supplier/dashboard"
+          "http://localhost:8000/api/V1/dashboard"
         );
         setUser(data);
       } catch (err: any) {
@@ -42,7 +42,7 @@ const Page = () => {
       <div className="space-y-2">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">
-            Hi, Supplier {user.user_information} {user.message}
+            Hi, Supplier {user.Company_name} {user.message}
           </h2>
           <div className="hidden items-center space-x-2 md:flex">
             {/* Additional buttons or tools can go here */}

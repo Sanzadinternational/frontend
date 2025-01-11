@@ -22,7 +22,7 @@ const Header = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const data = await fetchWithAuth("http://localhost:8000/api/V1/supplier/dashboard");
+        const data = await fetchWithAuth("http://localhost:8000/api/V1/dashboard");
         console.log("User Data:", data); // Debugging log for API response
         setUser(data);
       } catch (err: any) {
@@ -87,9 +87,9 @@ const Header = () => {
           </DropdownMenu>
         </div>
         <div className="mr-2 flex items-center">
-        {user?.user_information || user !== null ? (
+        {user?.Company_name || user !== null ? (
             <div>
-              <span className="font-semibold">{user.user_information}</span>
+              <span className="font-semibold">{user.Company_name}</span>
             </div>
           ) : (
             <Link
