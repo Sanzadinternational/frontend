@@ -63,7 +63,7 @@ export default function Home() {
           <Button className="my-2 bg-blue-500 dark:bg-card-foreground">Contact</Button>
         </div>
         <div className="flex justify-center">
-          <Image src="/SANZAD_INTERNATIONAL.png" alt="Hero Image" width={350} height={350}/>
+          <Image src="/Transfer-Rides_Sanzad-International.webp" alt="Hero Image" width={350} height={350}/>
         </div>
       </div>
       <div className="flex justify-center mt-[-80px]">
