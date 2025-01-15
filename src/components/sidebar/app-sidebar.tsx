@@ -76,6 +76,14 @@ export default function AppSidebar({
   //     setUserData(JSON.parse(storedUser));
   //   }
   // }, []);
+  const logout = () => {
+    try {
+      removeToken();
+      window.location.href = '/';
+    } catch (error) {
+      console.error("Failed to navigate:", error);
+    }
+  };
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -83,7 +91,7 @@ export default function AppSidebar({
           "http://localhost:8000/api/V1/supplier/dashboard"
         );
         setUserData(data);
-        console.log(data.role);
+        console.log("role:",data.role);
       } catch (err: any) {
         setError(err.message);
         removeToken();
@@ -258,7 +266,7 @@ export default function AppSidebar({
                   <DropdownMenuGroup>
                     <DropdownMenuItem>
                       <BadgeCheck />
-                      Account
+                      Profile
                     </DropdownMenuItem>
                     {
                       rolename==='supplier'&&(<DropdownMenuItem>
@@ -275,7 +283,7 @@ export default function AppSidebar({
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={logout}>
                     <LogOut />
                     Log out
                   </DropdownMenuItem>
