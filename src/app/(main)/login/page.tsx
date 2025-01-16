@@ -10,7 +10,7 @@ import {
   CardTitle,
   CardContent,
   CardDescription,
-} from "../ui/card";
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -23,8 +23,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import { useRole } from "../context/RoleContext";
 import axios from "axios";
+import { fetchWithAuth } from "@/components/utils/api";
+import { removeToken } from "@/components/utils/auth";
 const formSchema = z.object({
   Email: z
     .string()
@@ -38,19 +39,41 @@ const formSchema = z.object({
     message: "Password is Required",
   }),
 });
-interface LoginRoleProps {
-  role: string;
-}
+// interface LoginRoleProps {
+//   role: string;
+// }
 
-const Login = ({ role }: LoginRoleProps) => {
+const Login = () => {
+  const [user, setUser] = useState<any>(null);
+    const [error, setError] = useState<string>("");
+  
+    useEffect(() => {
+      const fetchUserData = async () => {
+        try {
+          
+
+          const data = await fetchWithAuth(
+            "http://localhost:8000/api/V1/dashboard"
+          );
+          setUser(data);
+          console.log(data);
+          window.location.href = `/dashboard/${data.role}`;
+          
+        } catch (err: any) {
+          setError(err.message);
+          removeToken();
+          // window.location.href = "/login";
+        }
+      };
+  
+      fetchUserData();
+    }, []);
   const [isSubmiting, setIsSubmiting] = useState(false);
-  const { setRole } = useRole();
   const { toast } = useToast();
+ 
   const router = useRouter();
   // Use useEffect to set the role after the component renders
-  useEffect(() => {
-    setRole(role);
-  }, [role, setRole]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,7 +81,7 @@ const Login = ({ role }: LoginRoleProps) => {
       Password: "",
     },
   });
-  const roleTitle: string = role[0].toUpperCase() + role.slice(1);
+
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsSubmiting(true);
     // console.log(data);
@@ -69,7 +92,7 @@ const Login = ({ role }: LoginRoleProps) => {
     // router.push(`/dashboard/${role}`);
     try {
       // Define the API endpoint dynamically based on the role
-      const loginEndpoint = `http://localhost:8000/api/V1/${role}/login`;
+      const loginEndpoint = `http://localhost:8000/api/V1/login`;
 
       // Call the API for login with email and password
       const response = await axios.post(loginEndpoint, {
@@ -82,14 +105,16 @@ const Login = ({ role }: LoginRoleProps) => {
         // If login is successful
 
         toast({
-          title: `${roleTitle} Login`,
+          // title: `Login`,
+          title: `${response.data.role} Login`,
           description: "Login Successful",
         });
         // Store the token if needed (localStorage/sessionStorage)
         localStorage.setItem("authToken", response.data.accessToken);
+        console.log(data);
         // localStorage.setItem("user", JSON.stringify(response.data.user));
         // Navigate to role-based dashboard
-        router.push(`/dashboard/${role}`);
+        router.push(`/dashboard/${response.data.role}`);
       } else {
         // Handle login failure
         toast({
@@ -113,6 +138,7 @@ const Login = ({ role }: LoginRoleProps) => {
   };
 
   return (
+    <div className="flex justify-center items-center my-8">
     <Card>
       <CardHeader>
         <CardTitle>Login</CardTitle>
@@ -155,7 +181,8 @@ const Login = ({ role }: LoginRoleProps) => {
                   <div className="flex justify-between">
                     <FormLabel>Password</FormLabel>
                     <Link
-                      href={`/${role}/forget-password`}
+                      // href={`/${role}/forget-password`}
+                      href=''
                       className="text-xs text-blue-500 underline"
                     >
                       Forgot Password?
@@ -180,6 +207,7 @@ const Login = ({ role }: LoginRoleProps) => {
         </Form>
       </CardContent>
     </Card>
+    </div>
   );
 };
 
