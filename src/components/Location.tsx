@@ -338,7 +338,7 @@ export default function Location() {
     // </div>
 
     <div className="w-[70%]">
-      <Card className=" bg-blue-100/[.5] dark:bg-card">
+      <Card className=" bg-blue-100/[.5] dark:bg-blend-darken dark:text-primary-foreground">
         <CardHeader>
           <CardTitle className="text-center text-2xl font-medium">Book Your Rides</CardTitle>
           {/* <CardDescription>
@@ -487,7 +487,7 @@ export default function Location() {
 
               {/* Return Button to toggle return fields */}
               <Button
-                className="mr-1"
+                className="mr-1 bg-blue-500 dark:bg-card-foreground"
                 type="button"
                 onClick={toggleReturnFields}
               >
@@ -543,7 +543,7 @@ export default function Location() {
                   />
                 </div>
               )}
-              <Button type="submit">See Results</Button>
+              <Button className="bg-blue-500 dark:bg-card-foreground" type="submit">See Results</Button>
             </form>
           </Form>
         </CardContent>

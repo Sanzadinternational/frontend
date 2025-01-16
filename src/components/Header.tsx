@@ -47,7 +47,7 @@ const Header = () => {
     // return <p className="text-red-500 text-center">Error: {error}</p>;
   }
   return (
-    <div className="text-white py-2 px-5 mx-10 my-4 flex justify-between rounded-sm items-center" style={{backgroundColor:'#2f2483'}}>
+    <div className="text-white py-2 px-5 mx-10 my-4 flex justify-between rounded-sm items-center" style={{backgroundColor:'rgba(47, 36, 131,1)'}}>
       <div>
         <Link href="/">
           <Image src="/sanzad-logo.png" alt="Logo" width={80} height={80} />
@@ -109,7 +109,7 @@ const Header = () => {
             </Link>
           )}
         </div>
-        <div className="grid grid-cols-2 divide-x divide-white border border-slate-100 mr-2 p-1 rounded-sm">
+        <div className="hidden md:grid grid-cols-2 divide-x divide-white border border-slate-100 mr-2 p-1 rounded-sm">
           <div>
             <Flag width={20} height={20} />
           </div>
@@ -117,7 +117,9 @@ const Header = () => {
             <IndianRupee width={20} height={20} />
           </div>
         </div>
+        <div className="hidden md:block">
         <ThemeToggler />
+        </div>
       </div>
     </div>
   );

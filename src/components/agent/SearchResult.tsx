@@ -21,7 +21,7 @@ const SearchResult = () => {
   return (
     <div className="flex flex-col md:flex-row gap-5">
       <ScrollArea className="md:w-1/3 whitespace-nowrap rounded-md border">
-      <div className="md:h-96 flex md:flex-col px-2 py-4">
+      <div className="md:h-96 flex flex-col px-2 py-4">
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
@@ -80,7 +80,7 @@ const SearchResult = () => {
       </ScrollArea>
       <ScrollArea className="md:w-2/3 whitespace-nowrap rounded-md border">
         <h2 className="text-2xl px-4 pt-2">Available Vehicles</h2>
-        <div className="flex w-max space-x-4 p-4">
+        <div className="flex flex-col gap-5 p-4 md:h-96">
           <Card className="">
             <CardHeader>
               <CardTitle>Car Name</CardTitle>
@@ -115,7 +115,7 @@ const SearchResult = () => {
                       </div>
                     </dl>
                     <HoverCard>
-                      <HoverCardTrigger className="flex items-center text-sky-500">
+                      <HoverCardTrigger className="flex items-center text-blue-500 cursor-pointer">
                         <BadgeInfo width={15} height={15} />
                         Transfer Info
                       </HoverCardTrigger>
@@ -127,7 +127,7 @@ const SearchResult = () => {
                     </HoverCard>
                   </div>
                 </div>
-                <div className="w-1/2 md:w-[25%] bg-secondary dark:bg-secondary rounded-sm px-2 py-1 flex flex-col justify-between">
+                <div className="w-1/2 md:w-[25%] bg-slate-50 dark:bg-slate-800 rounded-sm px-2 py-1 flex flex-col justify-between">
                   <div>
                     <p>One Way</p>
                     <h2 className="text-2xl font-medium">Rs 345</h2>
@@ -179,7 +179,7 @@ const SearchResult = () => {
                       </div>
                     </dl>
                     <HoverCard>
-                      <HoverCardTrigger className="flex items-center text-sky-500">
+                      <HoverCardTrigger className="flex items-center text-blue-500 cursor-pointer">
                         <BadgeInfo width={15} height={15} />
                         Transfer Info
                       </HoverCardTrigger>
@@ -210,7 +210,7 @@ const SearchResult = () => {
             </CardFooter>
           </Card>
         </div>
-        <ScrollBar orientation="horizontal" />
+        {/* <ScrollBar orientation="horizontal" /> */}
       </ScrollArea>
     </div>
   );

@@ -59,14 +59,14 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-2 py-2 px-5 mx-10 my-4 z-[-1] rounded-md bg-slate-100 dark:bg-primary dark:text-black">
       <div className="py-4 px-5">
           <h1 className="text-3xl md:text-6xl font-bold">Sanzad International</h1>
-          <p>Transfer Rides in all Country</p>
-          <Button className="my-2">Contact</Button>
+          <p>Transfer Rides in all Countries</p>
+          <Button className="my-2 bg-blue-500 dark:bg-card-foreground">Contact</Button>
         </div>
-        <div className="flex justify-center items-end">
+        <div className="flex justify-center">
           <Image src="/SANZAD_INTERNATIONAL.png" alt="Hero Image" width={350} height={350}/>
         </div>
       </div>
-      <div className="flex justify-center mt-[-100px]">
+      <div className="flex justify-center mt-[-80px]">
         <Location/>
       </div>
       <div className="flex flex-col md:grid grid-cols-2 gap-5 mt-32 mb-20 px-10">
