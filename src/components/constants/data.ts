@@ -25,7 +25,7 @@ export interface Role{
       role:'agent',
       roleItems:[
         {
-          title: 'Ag-Dashboard',
+          title: 'Agent-Dashboard',
           url: '/dashboard/',
           icon: 'dashboard',
           isActive: false,
@@ -66,15 +66,15 @@ export interface Role{
       role:'supplier',
       roleItems:[
         {
-          title: 'Sup-Dashboard',
-          url: '/dashboard/',
+          title: 'Supplier-Dashboard',
+          url: '#',
           icon: 'dashboard',
           isActive: false,
           items: [] // Empty array as there are no child items for Dashboard
         },
         {
           title: 'Vehicles',
-          url: '',
+          url: '#',
            icon: 'car',
           isActive: true,
           items: [
@@ -125,8 +125,8 @@ export interface Role{
       role:'admin',
       roleItems:[
         {
-          title: 'Ad-Dashboard',
-          url: '/dashboard/',
+          title: 'Admin-Dashboard',
+          url: '#',
           icon: 'dashboard',
           isActive: false,
           items: [] // Empty array as there are no child items for Dashboard
@@ -163,39 +163,45 @@ export interface Role{
       ]      
     },
     {
-      role:'super-admin',
+      role:'superadmin',
       roleItems:[
         {
-          title: 'Sup-Dashboard',
-          url: '/dashboard/',
+          title: 'Super Admin-Dashboard',
+          url: '#',
           icon: 'dashboard',
           isActive: false,
           items: [] // Empty array as there are no child items for Dashboard
         },
         {
-          title: 'Booking',
-          url: '/dashboard/',
+          title: 'Admin',
+          url: '#',
            icon: 'car',
-          isActive: false,
-          items: [] // No child items
+          isActive: true,
+          items: [
+            {
+              title:'Add Admin',
+              url:'/dashboard/superadmin/add-admin',
+              icon:'userPen'
+            }
+          ] // No child items
         },
         {
-          title: 'Voucher',
-          url: '/dashboard/',
+          title: 'Agent',
+          url: '#',
           icon: 'page',
           isActive: false,
           items: [] // No child items
         },
         {
-          title: 'Invoice',
-          url: '/dashboard/',
+          title: 'Supplier',
+          url: '#',
           icon: 'billing',
           isActive: false,
           items: [] // No child items
         },
         {
           title: 'Reports',
-          url: '/dashboard',
+          url: '#',
           icon: 'reports',
           isActive: false,
           items: [] // No child items

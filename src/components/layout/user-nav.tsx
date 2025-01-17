@@ -38,7 +38,7 @@ const [user, setUser] = useState<any>(null);
     const fetchUserData = async () => {
       try {
         const data = await fetchWithAuth("http://localhost:8000/api/V1/dashboard");
-        console.log("User Data:", data); // Debugging log for API response
+        console.log("API data from navbar:", data); // Debugging log for API response
         setUser(data);
       } catch (err: any) {
         console.error("Error fetching user data:", err); // Debugging log for errors
@@ -57,7 +57,7 @@ const [user, setUser] = useState<any>(null);
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+          <Button variant="ghost" className="relative h-8 w-8">
             <Avatar className="h-8 w-8">
               {/* <AvatarImage
                 src={session.user?.image ?? ''}
@@ -70,7 +70,7 @@ const [user, setUser] = useState<any>(null);
                         alt="avatar"
                       />
               {/* <AvatarFallback className="text-black">AK</AvatarFallback> */}
-              <AvatarFallback className="text-black rounded-lg">
+              <AvatarFallback className="bg-primary text-primary-foreground rounded-lg">
                         {user?.Company_name?.slice(0, 2) || "NA"}
                       </AvatarFallback>
             </Avatar>

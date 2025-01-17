@@ -44,7 +44,6 @@ import {
   LogOut,
   Car,
 } from "lucide-react";
-// import { useSession } from 'next-auth/react';
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ThemeToggler from "../theme/ThemeToggler";
@@ -52,6 +51,7 @@ import { Icons } from "../icons";
 import { UserNav } from "../layout/user-nav";
 import { fetchWithAuth } from "@/components/utils/api";
 import { removeToken } from "@/components/utils/auth";
+import { useRouter } from "next/navigation";
 // import { useRole } from "../context/RoleContext";
 export const company = {
   name: "Sanzad",
@@ -68,14 +68,7 @@ export default function AppSidebar({
   const pathname = usePathname();
   const [userData, setUserData] = useState<any>(null); // Replace `any` with your data type
   const [error, setError] = useState<string>("");
-
-  // Load user data from localStorage
-  // useEffect(() => {
-  //   const storedUser = localStorage.getItem("user");
-  //   if (storedUser) {
-  //     setUserData(JSON.parse(storedUser));
-  //   }
-  // }, []);
+const router = useRouter();
   const logout = () => {
     try {
       removeToken();
@@ -88,14 +81,16 @@ export default function AppSidebar({
     const fetchUserData = async () => {
       try {
         const data = await fetchWithAuth(
-          "http://localhost:8000/api/V1/supplier/dashboard"
+          "http://localhost:8000/api/V1/dashboard"
         );
+        console.log("API Data from sidebar:",data);
         setUserData(data);
-        console.log("role:",data.role);
       } catch (err: any) {
+        console.log("API error fetching data",err);
         setError(err.message);
         removeToken();
-        window.location.href = "/login";
+        // window.location.href = "/login";
+        router.push('/login')
       }
     };
 
@@ -105,14 +100,14 @@ export default function AppSidebar({
   if (error) return <p>Error: {error}</p>;
   if (!userData) return <p>Loading...</p>;
 
-  const rolename = userData.role;
+  const rolename = userData?.role;
   const roleData = sideBarItems.filter((name) => name.role === rolename);
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <div className="flex gap-2 py-2 text-sidebar-accent-foreground ">
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-slate-700 text-sidebar-primary-foreground">
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <company.logo className="size-4" />
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
@@ -206,7 +201,7 @@ export default function AppSidebar({
                         src={userData?.avatar || "https://github.com/shadcn.png1"}
                         alt="avatar"
                       />
-                      <AvatarFallback className="text-black rounded-lg">
+                      <AvatarFallback className="bg-primary text-primary-foreground rounded-lg">
                         {userData?.Company_name?.slice(0, 2) || "NA"}
                       </AvatarFallback>
                     </Avatar>
@@ -244,7 +239,7 @@ export default function AppSidebar({
                           src={userData?.avatar || "https://github.com/shadcn.png1"}
                           alt="avatar"
                         />
-                        <AvatarFallback className="text-black rounded-lg">
+                        <AvatarFallback className="bg-primary text-primary-foreground rounded-lg">
                           {userData?.Company_name?.slice(0, 2) || "NA"}
                         </AvatarFallback>
                       </Avatar>
