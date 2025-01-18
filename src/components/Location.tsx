@@ -260,16 +260,21 @@ export default function Location() {
 
     const payload = {
       ...data, // Form data (pickup, dropoff, pax, date, time, etc.)
-      pickupLocation: {
-        address: data.pickup,
-        latitude: fromCoords.lat,
-        longitude: fromCoords.lng,
-      },
-      dropoffLocation: {
-        address: data.dropoff,
-        latitude: toCoords.lat,
-        longitude: toCoords.lng,
-      },
+      // pickupLocation: {
+      //   address: data.pickup,
+      //   latitude: fromCoords.lat,
+      //   longitude: fromCoords.lng,
+      // },
+      // dropoffLocation: {
+      //   // address: data.dropoff,
+      //   // latitude: toCoords.lat,
+      //   // longitude: toCoords.lng,
+      // },
+      // dropoffLocation:{
+      //   location:`${toCoords.lat},${toCoords.lng}`
+      // }
+      pickupLocation:`${toCoords.lat},${toCoords.lng}`,
+      dropoffLocation:`${toCoords.lat},${toCoords.lng}`,
     };
 
     console.log("Form Data with Coordinates:", payload);

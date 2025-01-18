@@ -28,8 +28,8 @@ const Footer = () => {
             <Link className="hover:text-blue-400" href="/supplier">
               Supplier
             </Link>
-            <Link className="hover:text-blue-400" href="/admin">
-              Admin
+            <Link className="hover:text-blue-400" href="/login">
+              Login
             </Link>
           </div>
         </div>

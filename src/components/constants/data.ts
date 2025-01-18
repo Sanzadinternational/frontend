@@ -179,10 +179,16 @@ export interface Role{
           isActive: true,
           items: [
             {
+              title:'All Admin',
+              url:'/dashboard/superadmin/all-admin',
+              icon:'add',
+            },
+            {
               title:'Add Admin',
               url:'/dashboard/superadmin/add-admin',
               icon:'userPen'
-            }
+            },
+            
           ] // No child items
         },
         {

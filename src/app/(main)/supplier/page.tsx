@@ -1,11 +1,15 @@
-import Login from "@/components/auth/Login";
+// import Login from "@/components/auth/Login";
 import SupplierRegistration from "@/components/auth/SupplierRegistration";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+// import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 const AgentLoginRegistration = () => {
   return (
     <div className="flex flex-col justify-center items-center">
-      <h1 className="text-3xl font-bold mb-3">Supplier Login</h1>
-      <Tabs defaultValue="login" className="w-[400px]">
+      <h1 className="text-3xl font-bold mb-3">Supplier Registration</h1>
+      <ScrollArea className="h-96">
+        <SupplierRegistration/>
+      </ScrollArea>
+      {/* <Tabs defaultValue="login" className="w-[400px]">
         <TabsList className="grid grid-cols-2 w-full">
           <TabsTrigger value="login">Account</TabsTrigger>
           <TabsTrigger value="register">Register</TabsTrigger>
@@ -16,7 +20,7 @@ const AgentLoginRegistration = () => {
         <TabsContent value="register">
           <SupplierRegistration />
         </TabsContent>
-      </Tabs>
+      </Tabs> */}
     </div>
   );
 };
