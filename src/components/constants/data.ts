@@ -173,37 +173,49 @@ export interface Role{
           items: [] // Empty array as there are no child items for Dashboard
         },
         {
-          title: 'Admin',
+          title: 'Agent',
           url: '#',
-           icon: 'car',
+          icon: 'user',
           isActive: true,
           items: [
             {
-              title:'All Admin',
-              url:'/dashboard/superadmin/all-admin',
+              title:'Available Agent',
+              url:'/dashboard/admin/all-agent',
               icon:'add',
             },
-            {
-              title:'Add Admin',
-              url:'/dashboard/superadmin/add-admin',
-              icon:'userPen'
-            },
-            
           ] // No child items
-        },
-        {
-          title: 'Agent',
-          url: '#',
-          icon: 'page',
-          isActive: false,
-          items: [] // No child items
         },
         {
           title: 'Supplier',
           url: '#',
-          icon: 'billing',
-          isActive: false,
-          items: [] // No child items
+          icon: 'user',
+          isActive: true,
+          items: [
+            {
+              title:'Available Supplier',
+              url:'/dashboard/admin/all-supplier',
+              icon:'add',
+            },
+          ] // No child items
+        },
+        {
+          title: 'Admin',
+          url: '#',
+           icon: 'user',
+          isActive: true,
+          items: [
+            {
+              title:'All Admin',
+              url:'/dashboard/admin/all-admin',
+              icon:'add',
+            },
+            {
+              title:'Add Admin',
+              url:'/dashboard/admin/add-admin',
+              icon:'userPen'
+            },
+            
+          ] // No child items
         },
         {
           title: 'Reports',

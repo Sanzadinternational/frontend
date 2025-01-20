@@ -136,7 +136,7 @@ const AddAdmin = () => {
             <CardDescription>
               Give permission to Admin by selecting the field
             </CardDescription>
-            <div className="flex justify-between items-center gap-4">
+            <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <div className="flex items-center space-x-2">
                   <FormLabel>Agent</FormLabel>
