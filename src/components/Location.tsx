@@ -131,8 +131,8 @@ const formSchema = z.object({
   pax: z.string().min(1, { message: "Passenger is required" }),
   date: z.string().min(1, { message: "Date is required" }), // Date for the journey
   time: z.string().min(1, { message: "Time is required" }), // Time for the journey
-  returnDate: z.string().optional(), // Optional return date
-  returnTime: z.string().optional(), // Optional return time
+  // returnDate: z.string().optional(), // Optional return date
+  // returnTime: z.string().optional(), // Optional return time
 });
 type FormData = z.infer<typeof formSchema>;
 export default function Location() {
@@ -159,8 +159,8 @@ export default function Location() {
       pax: "",
       date: "",
       time: "",
-      returnDate: "",
-      returnTime: "",
+      // returnDate: "",
+      // returnTime: "",
     },
   });
 
@@ -252,32 +252,75 @@ export default function Location() {
     }
   };
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async(data: FormData) => {
+
+
     if (!fromCoords || !toCoords) {
       alert("Please select valid locations for both Pickup and Dropoff.");
       return;
     }
-
+  
     const payload = {
-      ...data, // Form data (pickup, dropoff, pax, date, time, etc.)
-      // pickupLocation: {
-      //   address: data.pickup,
-      //   latitude: fromCoords.lat,
-      //   longitude: fromCoords.lng,
-      // },
-      // dropoffLocation: {
-      //   // address: data.dropoff,
-      //   // latitude: toCoords.lat,
-      //   // longitude: toCoords.lng,
-      // },
-      // dropoffLocation:{
-      //   location:`${toCoords.lat},${toCoords.lng}`
-      // }
-      pickupLocation:`${toCoords.lat},${toCoords.lng}`,
-      dropoffLocation:`${toCoords.lat},${toCoords.lng}`,
-    };
+      ...data, 
+        pickupLocation:`${toCoords.lat},${toCoords.lng}`,
+        dropoffLocation:`${toCoords.lat},${toCoords.lng}`,
 
-    console.log("Form Data with Coordinates:", payload);
+      // pickup: {
+      //   address: data.pickup,
+      //   coordinates: `${fromCoords.lat},${fromCoords.lng}`,
+      // },
+      // dropoff: {
+      //   address: data.dropoff,
+      //   coordinates: `${toCoords.lat},${toCoords.lng}`,
+      // },
+      // passengers: data.pax,
+      // date: data.date,
+      // time: data.time,
+      // returnDetails: showReturnFields
+      //   ? {
+      //       date: data.returnDate,
+      //       time: data.returnTime,
+      //     }
+      //   : null,
+    };
+  
+    console.log("Payload to Send:", payload);
+  
+    try {
+      const response = await axios.post("http://localhost:8000/api/V1/data/search", payload, {
+        headers: {
+          "Content-Type": "application/json",
+          
+        },
+      });
+  
+      if (response.status === 200) {
+        alert("Booking successfully submitted!");
+        console.log("API Response:", response.data);
+         // Store the response data in the state
+      setPriceEstimate(response.data.data || []);
+      } else {
+        alert("Something went wrong, please try again.");
+        console.error("API Error:", response.data);
+      }
+    } catch (error) {
+      alert("An error occurred while submitting the booking.");
+      console.error("API Error:", error.response?.data || error.message);
+    }
+
+
+    // if (!fromCoords || !toCoords) {
+    //   alert("Please select valid locations for both Pickup and Dropoff.");
+    //   return;
+    // }
+
+    // const payload = {
+    //   ...data, 
+    //   pickupLocation:`${toCoords.lat},${toCoords.lng}`,
+    //   dropoffLocation:`${toCoords.lat},${toCoords.lng}`,
+    // };
+
+    // console.log("Form Data with Coordinates:", payload);
   };
 
   const toggleReturnFields = () => {
@@ -491,13 +534,13 @@ export default function Location() {
               
 
               {/* Return Button to toggle return fields */}
-              <Button
+              {/* <Button
                 className="mr-1 bg-blue-500 dark:bg-card-foreground"
                 type="button"
                 onClick={toggleReturnFields}
               >
                 {showReturnFields ? "Remove Return" : "Add Return"}
-              </Button>
+              </Button> */}
 
               {/* Conditional Return Date and Time Fields */}
               {showReturnFields && (
@@ -564,6 +607,45 @@ export default function Location() {
            {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
          </GoogleMap>
        </LoadScript> */}
+
+
+
+       {/* Price Estimate Section */}
+    <div className="mt-6">
+      <h2 className="text-xl font-semibold text-blue-500 dark:text-white">
+        Price Estimates
+      </h2>
+      {priceEstimate.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {priceEstimate.map((item, index) => (
+            <div
+              key={index}
+              className="p-4 bg-slate-100 dark:bg-slate-700 rounded shadow"
+            >
+              <h3 className="font-bold text-lg text-blue-400 dark:text-white">
+                {item.brand} - {item.vehicalType}
+              </h3>
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                <strong>Passengers:</strong> {item.passengers}
+              </p>
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                <strong>Medium Bags:</strong> {item.mediumBag}
+              </p>
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                <strong>Price:</strong> {item.currency} {item.price}
+              </p>
+              {/* <p className="text-sm text-gray-700 dark:text-gray-300">
+                <strong>Source:</strong> {item.source}
+              </p> */}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-gray-700 dark:text-gray-300">
+          No price estimates available.
+        </p>
+      )}
+    </div>
     </div>
   );
 }

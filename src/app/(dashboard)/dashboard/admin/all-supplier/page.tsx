@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import DashboardContainer from "@/components/layout/DashboardContainer";
-import { DataTable } from "../all-agent/data-table";
+import { DataTable } from "./data-table"
 import { User, columns } from "./column";
 
 async function getData(): Promise<User[]> {
@@ -45,12 +45,12 @@ export default function DemoPage() {
 
   const handleAction = async (email: string, status: number) => {
     try {
-      const response = await fetch("API_URL_HERE", {
-        method: "POST",
+      const response = await fetch(`http://localhost:8000/api/V1/admin/ChangeSupplierApprovalStatus/${email}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, status }),
+        body: JSON.stringify({ IsApproved:status }),
       });
 
       if (!response.ok) {

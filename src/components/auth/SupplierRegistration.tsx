@@ -213,7 +213,7 @@ const SupplierRegistration: React.FC = () => {
             title: "User Registration",
             description: "Registered Sucessfully...",
           });
-          router.push("/");
+          router.push("/login");
         } else {
           const errorData = await registrationResponse.json();
           toast({

@@ -45,14 +45,13 @@ export default function DemoPage() {
 
   const handleAction = async (email: string, status: number) => {
     try {
-      const response = await fetch("API_URL_HERE", {
-        method: "POST",
+      const response = await fetch(`http://localhost:8000/api/V1/admin/ChangeAgentApprovalStatus/${email}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, status }),
+        body: JSON.stringify({ isApproved:status }),
       });
-
       if (!response.ok) {
         throw new Error("Failed to update status");
       }
