@@ -2,11 +2,12 @@
 
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { Toaster } from "@/components/ui/toaster";
-import { RoleProvider } from "@/components/context/RoleContext";
+// import { RoleProvider } from "@/components/context/RoleContext";
+import { BookingProvider } from "@/components/context/BookingContext";
 
 export default function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
-    <RoleProvider>
+    <BookingProvider>
       <ThemeProvider
         attribute="class"
         defaultTheme="system"
@@ -16,6 +17,6 @@ export default function ClientProviders({ children }: { children: React.ReactNod
         {children}
         <Toaster />
       </ThemeProvider>
-    </RoleProvider>
+      </BookingProvider>
   );
 }

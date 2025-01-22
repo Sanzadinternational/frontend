@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import TransferMultiStepForm from "@/components/agent/TransferMultiStepForm";
 import Location from "@/components/Location";
-// import bg from "../../public/Sanzad-International-Hero_Image.jpg";
+
 const features = [
   {
   title:'No Extra Charge',
@@ -32,30 +32,6 @@ const features = [
 export default function Home() {
   return (
     <>
-      {/* <div
-        className="relative py-2 px-5 mx-10 my-4 z-[-1] rounded-md h-[400px] bg-slate-100 dark:bg-primary dark:text-black"
-        // style={{
-        //   backgroundImage: `url(${bg.src})`,
-        //   backgroundSize: "cover",
-        //   backgroundRepeat: "no-repeat",
-        //   backgroundPosition:"center",
-        // }}
-      >
-        <div className="text-center md:text-left md:absolute md:top-10 md:left-10 w-[450px] h-[200px]">
-          <h1 className="text-6xl font-bold">Sanzad International</h1>
-          <p>Transfer Rides in all Country</p>
-          <Button className="my-2">Contact</Button>
-        </div>
-        <div className="absolute right-0 top-[-10px] hidden md:block">
-          <Image src="/SANZAD_INTERNATIONAL.png" alt="Hero Image" width={350} height={350}/>
-        </div>
-        <div className="flex justify-center w-full h-[300px] absolute md:bottom-[-200px] left-0">
-          <div className="w-[80%] bg-blue-100/[.5] rounded-md px-4 py-2">
-            <h2 className="text-center text-2xl font-medium">Book Your Rides</h2>
-
-          </div>
-        </div>
-      </div> */}
       <div className="grid grid-cols-1 md:grid-cols-2 py-2 px-5 mx-10 my-4 z-[-1] rounded-md bg-slate-100 dark:bg-primary dark:text-black">
       <div className="py-4 px-5">
           <h1 className="text-3xl md:text-6xl font-bold">Sanzad International</h1>
@@ -68,6 +44,9 @@ export default function Home() {
       </div>
       <div className="flex justify-center mt-[-80px]">
         <Location/>
+      </div>
+      <div className="mx-10 mt-20">
+      <TransferMultiStepForm/>
       </div>
       <div className="flex flex-col md:grid grid-cols-2 gap-5 mt-32 mb-20 px-10">
         <Card>
@@ -102,9 +81,7 @@ export default function Home() {
           }
         </div>
       </div>
-      <div className="mx-10">
-      <TransferMultiStepForm/>
-      </div>
+      
     </>
   );
 }
