@@ -1,3 +1,4 @@
+"use client";
 import DashboardContainer from "@/components/layout/DashboardContainer";
 import {
     Card,
@@ -7,14 +8,38 @@ import {
     CardTitle
   } from '@/components/ui/card';
   import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+  import { useEffect,useState } from "react";
+  import { fetchWithAuth } from "@/components/utils/api";
+  import { removeToken } from "@/components/utils/auth";
+const Page = () => {
+  const [user, setUser] = useState<any>(null);
+  const [error, setError] = useState<string>("");
 
-const page = () => {
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const data = await fetchWithAuth(
+          "http://localhost:8000/api/V1/dashboard"
+        );
+        setUser(data);
+      } catch (err: any) {
+        setError(err.message);
+        removeToken();
+        window.location.href = "/login";
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  if (error) return <p>Error: {error}</p>;
+  if (!user) return <p>Loading...</p>;
   return (
     <DashboardContainer scrollable>
         <div className="space-y-2">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">
-            Hi, Admin 👋
+            Hi, {user.Company_name} 👋
           </h2>
           <div className="hidden items-center space-x-2 md:flex">
             {/* <CalendarDateRangePicker />
@@ -165,4 +190,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

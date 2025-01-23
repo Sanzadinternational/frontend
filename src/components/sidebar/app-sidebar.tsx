@@ -1,5 +1,5 @@
 "use client";
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Collapsible,
@@ -68,11 +68,11 @@ export default function AppSidebar({
   const pathname = usePathname();
   const [userData, setUserData] = useState<any>(null); // Replace `any` with your data type
   const [error, setError] = useState<string>("");
-const router = useRouter();
+  const router = useRouter();
   const logout = () => {
     try {
       removeToken();
-      window.location.href = '/';
+      window.location.href = "/";
     } catch (error) {
       console.error("Failed to navigate:", error);
     }
@@ -83,14 +83,14 @@ const router = useRouter();
         const data = await fetchWithAuth(
           "http://localhost:8000/api/V1/dashboard"
         );
-        console.log("API Data from sidebar:",data);
+        // console.log("API Data from sidebar:",data);
         setUserData(data);
       } catch (err: any) {
-        console.log("API error fetching data",err);
+        console.log("API error fetching data", err);
         setError(err.message);
         removeToken();
         // window.location.href = "/login";
-        router.push('/login')
+        router.push("/login");
       }
     };
 
@@ -175,7 +175,6 @@ const router = useRouter();
                   );
                 })
               )}
-             
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>
@@ -198,7 +197,9 @@ const router = useRouter();
                           'CN'}
                       </AvatarFallback> */}
                       <AvatarImage
-                        src={userData?.avatar || "https://github.com/shadcn.png1"}
+                        src={
+                          userData?.avatar || "https://github.com/shadcn.png1"
+                        }
                         alt="avatar"
                       />
                       <AvatarFallback className="bg-primary text-primary-foreground rounded-lg">
@@ -236,7 +237,9 @@ const router = useRouter();
                             'CN'}
                         </AvatarFallback> */}
                         <AvatarImage
-                          src={userData?.avatar || "https://github.com/shadcn.png1"}
+                          src={
+                            userData?.avatar || "https://github.com/shadcn.png1"
+                          }
                           alt="avatar"
                         />
                         <AvatarFallback className="bg-primary text-primary-foreground rounded-lg">
@@ -260,18 +263,33 @@ const router = useRouter();
 
                   <DropdownMenuGroup>
                     <DropdownMenuItem>
-                      <BadgeCheck />
-                      Profile
-                    </DropdownMenuItem>
-                    {
-                      rolename==='supplier'&&(<DropdownMenuItem>
-                        <Link href='/dashboard/supplier/api' className="flex">
-                        <CreditCard />
-                        Integrate API
+                      {rolename === "superadmin" ? (
+                        <Link
+                          href={`/dashboard/admin/profile`}
+                          className="flex items-center gap-2"
+                        >
+                          <BadgeCheck />
+                          Profile
                         </Link>
-                      </DropdownMenuItem>)
-                    }
-                    
+                      ) : (
+                        <Link
+                          href={`/dashboard/${rolename}/profile`}
+                          className="flex items-center gap-2"
+                        >
+                          <BadgeCheck />
+                          Profile
+                        </Link>
+                      )}
+                    </DropdownMenuItem>
+                    {rolename === "supplier" && (
+                      <DropdownMenuItem>
+                        <Link href="/dashboard/supplier/api" className="flex">
+                          <CreditCard />
+                          Integrate API
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+
                     <DropdownMenuItem>
                       <Bell />
                       Notifications

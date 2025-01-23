@@ -315,7 +315,7 @@ setIsSubmitting(true);
         formData: data,
         responseData: response.data.data,
       });
-      form.reset();
+      
       } else {
         toast({
           title:'API Error',
