@@ -96,7 +96,10 @@ const Header = () => {
             <DropdownMenu>
               <DropdownMenuTrigger className="focus:outline-none">
                 <div>
-                  <span className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1 cursor-pointer">{user.Company_name}</span>
+                  <span className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1 cursor-pointer hidden md:block">{user?.Company_name ||
+                            "NA"}</span>
+                            <span className="bg-blue-200 text-indigo-700 rounded-md px-2 py-1 cursor-pointer md:hidden">{user?.Company_name?.slice(0, 2)?.toUpperCase() ||
+                            "NA"}</span>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent>

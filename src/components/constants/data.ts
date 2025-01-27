@@ -26,35 +26,35 @@ export interface Role{
       roleItems:[
         {
           title: 'Agent-Dashboard',
-          url: '/dashboard/',
+          url: '/dashboard/agent',
           icon: 'dashboard',
           isActive: false,
           items: [] // Empty array as there are no child items for Dashboard
         },
         {
           title: 'Booking',
-          url: '/dashboard/',
+          url: '#',
           icon: 'car',
           isActive: false,
           items: [] // No child items
         },
         {
           title: 'Voucher',
-          url: '/dashboard/',
+          url: '#',
           icon: 'page',
           isActive: false,
           items: [] // No child items
         },
         {
           title: 'Invoice',
-          url: '/dashboard/',
+          url: '#',
           icon: 'billing',
           isActive: false,
           items: [] // No child items
         },
         {
           title: 'Reports',
-          url: '/dashboard',
+          url: '#',
           icon: 'reports',
           isActive: false,
           items: [] // No child items
@@ -67,7 +67,7 @@ export interface Role{
       roleItems:[
         {
           title: 'Supplier-Dashboard',
-          url: '#',
+          url: '/dashboard/supplier',
           icon: 'dashboard',
           isActive: false,
           items: [] // Empty array as there are no child items for Dashboard
@@ -92,28 +92,28 @@ export interface Role{
         },
         {
           title: 'Booking',
-          url: '/dashboard/',
+          url: '#',
            icon: 'car',
           isActive: false,
           items: [] // No child items
         },
         {
           title: 'Voucher',
-          url: '/dashboard/',
+          url: '#',
           icon: 'page',
           isActive: false,
           items: [] // No child items
         },
         {
           title: 'Invoice',
-          url: '/dashboard/',
+          url: '#',
           icon: 'billing',
           isActive: false,
           items: [] // No child items
         },
         {
           title: 'Reports',
-          url: '/dashboard',
+          url: '#',
           icon: 'reports',
           isActive: false,
           items: [] // No child items
@@ -126,35 +126,35 @@ export interface Role{
       roleItems:[
         {
           title: 'Admin-Dashboard',
-          url: '#',
+          url: '/dashboard/admin',
           icon: 'dashboard',
           isActive: false,
           items: [] // Empty array as there are no child items for Dashboard
         },
         {
           title: 'Booking',
-          url: '/dashboard/',
+          url: '#',
            icon: 'car',
           isActive: false,
           items: [] // No child items
         },
         {
           title: 'Voucher',
-          url: '/dashboard/',
+          url: '#',
           icon: 'page',
           isActive: false,
           items: [] // No child items
         },
         {
           title: 'Invoice',
-          url: '/dashboard/',
+          url: '#',
           icon: 'billing',
           isActive: false,
           items: [] // No child items
         },
         {
           title: 'Reports',
-          url: '/dashboard',
+          url: '#',
           icon: 'reports',
           isActive: false,
           items: [] // No child items
@@ -167,7 +167,7 @@ export interface Role{
       roleItems:[
         {
           title: 'Super Admin-Dashboard',
-          url: '#',
+          url: '/dashboard/admin',
           icon: 'dashboard',
           isActive: false,
           items: [] // Empty array as there are no child items for Dashboard
