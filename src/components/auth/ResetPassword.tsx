@@ -487,7 +487,6 @@
 // export default ResetPassword;
 
 
-
 "use client";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
@@ -514,55 +513,57 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
-// Zod validation schemas
+// ✅ Email validation schema
 const emailSchema = z.object({
   email: z.string().email("Please enter a valid email"),
 });
 
+// ✅ Password validation schema
 const passwordSchema = z.object({
-  newpassword: z.string().min(4, {
-    message: "Password must be at least 4 characters long",
-  }),
+  newpassword: z.string().min(4, "Password must be at least 4 characters long"),
 });
 
-const ResetPassword = () => {
+const ForgotPassword = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token"); // Get token from URL
+  
+  // ✅ Get token & email from URL
+  const token = searchParams.get("token");
+const emailFromURL = searchParams.get("Email");
+
   const { toast } = useToast();
   const [isTokenValid, setIsTokenValid] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
   const [isPasswordSent, setIsPasswordSent] = useState(false);
-  const [savedEmail, setSavedEmail] = useState(""); // Store email for later use
+  const [savedEmail, setSavedEmail] = useState("");
 
-  // Email Form
+  // ✅ Email form
   const emailForm = useForm<z.infer<typeof emailSchema>>({
     resolver: zodResolver(emailSchema),
     defaultValues: { email: "" },
   });
 
-  // Password Form
+  // ✅ Password form
   const passwordForm = useForm<z.infer<typeof passwordSchema>>({
     resolver: zodResolver(passwordSchema),
     defaultValues: { newpassword: "" },
   });
 
-  // Handle email submission (Request Reset Link)
+  // ✅ Handle email submission (request reset link)
   const handleEmailSubmit = async (data: z.infer<typeof emailSchema>) => {
     setIsEmailSent(true);
     try {
       const response = await axios.post(
         "http://localhost:8000/api/V1/forgetpassword",
-        { Email: data.email } // Ensure key matches API
+        { Email: data.email }
       );
 
       if (response.status === 200) {
-        setSavedEmail(data.email); // Store email for later use
+        setSavedEmail(data.email);
         toast({
           title: "Email Sent",
           description: "A password reset link has been sent to your email.",
         });
-        
       }
     } catch (error) {
       toast({
@@ -571,49 +572,53 @@ const ResetPassword = () => {
         variant: "destructive",
       });
       console.error("Email submission error:", error);
-    }
-    finally{
+    } finally {
       setIsEmailSent(false);
     }
   };
 
-  // Verify reset token
+  // ✅ Verify reset token when user clicks the link
   useEffect(() => {
-    if (!token) return;
+    if (!token || !emailFromURL) {
+      console.log("❌ Missing token or email in URL!");
+      return; // ❌ Don't redirect, just show email form
+    }
 
     const verifyToken = async () => {
       try {
         const response = await axios.post(
           "http://localhost:8000/api/V1/verify_token",
-          { Token: token }
+          { Token: token, Email: emailFromURL }
         );
 
+        console.log("✅ Token Verified:", response.data);
         if (response.status === 200) {
           setIsTokenValid(true);
+          setSavedEmail(emailFromURL);
         } else {
-          toast({
-            title: "Invalid Token",
-            description: "The reset link is invalid or has expired.",
-            variant: "destructive",
-          });
-          router.push("/");
+          throw new Error("Invalid token response");
         }
       } catch (error) {
-        console.error("Token verification error:", error);
+        console.error("❌ Token verification error:", error.response?.data || error);
+        toast({
+          title: "Invalid Token",
+          description: "The reset link is invalid or has expired.",
+          variant: "destructive",
+        });
       }
     };
 
     verifyToken();
-  }, [token, router, toast]);
+  }, [token, emailFromURL]);
 
-  // Handle new password submission
+  // ✅ Handle new password submission
   const handlePasswordSubmit = async (data: z.infer<typeof passwordSchema>) => {
     setIsPasswordSent(true);
     try {
       const response = await axios.post("http://localhost:8000/api/V1/resetpassword", {
-        Password: data.newpassword, // Match API expected key
-        Email: savedEmail, // Use saved email
-        Token: token, // Use token from URL
+        Password: data.newpassword,
+        Email: savedEmail,
+        Token: token,
       });
 
       if (response.status === 200) {
@@ -621,7 +626,6 @@ const ResetPassword = () => {
           title: "Success",
           description: "Password reset successfully. You can now log in.",
         });
-       
         router.push("/login");
       } else {
         toast({
@@ -637,8 +641,7 @@ const ResetPassword = () => {
         variant: "destructive",
       });
       console.error("Password reset error:", error);
-    }
-    finally{
+    } finally {
       setIsPasswordSent(false);
     }
   };
@@ -648,14 +651,14 @@ const ResetPassword = () => {
       <CardHeader>
         <CardTitle>Reset Password</CardTitle>
         <CardDescription>
-          {token
+          {token && emailFromURL
             ? "Enter a new password"
             : "Enter your email to receive a password reset link"}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
-        {/* Email Form (Request Reset Link) */}
-        {!token && (
+        {/* ✅ Email Form (Request Reset Link) */}
+        {!token && !emailFromURL && (
           <Form {...emailForm}>
             <form
               onSubmit={emailForm.handleSubmit(handleEmailSubmit)}
@@ -675,14 +678,14 @@ const ResetPassword = () => {
                 )}
               />
               <Button type="submit" className="w-full" disabled={isEmailSent}>
-                {isEmailSent?"Sending Reset Link":"Send Reset Link"}
+                {isEmailSent ? "Sending Reset Link..." : "Send Reset Link"}
               </Button>
             </form>
           </Form>
         )}
 
-        {/* Password Reset Form */}
-        {token && isTokenValid && (
+        {/* ✅ Password Reset Form (if token is valid) */}
+        {token && emailFromURL && isTokenValid && (
           <Form {...passwordForm}>
             <form
               onSubmit={passwordForm.handleSubmit(handlePasswordSubmit)}
@@ -702,7 +705,7 @@ const ResetPassword = () => {
                 )}
               />
               <Button type="submit" className="w-full" disabled={isPasswordSent}>
-                {isPasswordSent?"Resetting Password":"Reset Password"}
+                {isPasswordSent ? "Resetting Password..." : "Reset Password"}
               </Button>
             </form>
           </Form>
@@ -712,4 +715,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword;
+export default ForgotPassword;
