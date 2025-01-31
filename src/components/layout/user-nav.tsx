@@ -45,7 +45,6 @@ export function UserNav() {
         }
 
         const data = await fetchWithAuth("http://localhost:8000/api/V1/dashboard");
-        console.log("API data from navbar:", data);
         setUser(data);
       } catch (err: any) {
         console.error("Error fetching user data:", err);

@@ -45,10 +45,10 @@ export default function Home() {
       <div className="flex justify-center mt-[-80px]">
         <Location/>
       </div>
-      <div className="mx-10 mt-20">
+      {/* <div className="mx-10 mt-20">
       <TransferMultiStepForm/>
-      </div>
-      <div className="flex flex-col md:grid grid-cols-2 gap-5 mt-32 mb-20 px-10">
+      </div> */}
+      <div className="flex flex-col md:grid grid-cols-2 gap-5 mt-20 mb-20 px-10">
         <Card>
           <CardHeader>
             <CardTitle>About</CardTitle>

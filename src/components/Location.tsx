@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
   CardContent,
-  CardDescription,
+  // CardDescription,
 } from "@/components/ui/card";
 import {
   Form,
@@ -20,30 +20,33 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useState, useEffect, useRef } from "react";
-import {
-  GoogleMap,
-  LoadScript,
-  Marker,
-  DirectionsRenderer,
-} from "@react-google-maps/api";
+// import {
+//   GoogleMap,
+//   LoadScript,
+//   Marker,
+//   DirectionsRenderer,
+// } from "@react-google-maps/api";
 import axios from "axios";
-
+import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
-const MapContainerStyle = {
-  width: "100%",
-  height: "400px",
-};
+// const MapContainerStyle = {
+//   width: "100%",
+//   height: "400px",
+// };
+
+
 
 const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
 
   useEffect(() => {
     const initializeAutocomplete = () => {
       if (inputRef.current && window.google?.maps) {
-        const autocomplete = new window.google.maps.places.Autocomplete(
-          inputRef.current,
-          { types: ["geocode"] }
-        );
+        setIsGoogleLoaded(true); // Google Maps API is ready
+        const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
+          types: ["geocode"],
+        });
 
         autocomplete.addListener("place_changed", () => {
           const place = autocomplete.getPlace();
@@ -54,33 +57,98 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
       }
     };
 
-    if (!window.google?.maps) {
+    const loadGoogleMapsScript = () => {
+      if (document.querySelector("#google-maps-script")) {
+        // If script already exists, wait for it to be ready
+        waitForGoogleMaps(initializeAutocomplete);
+        return;
+      }
+
       const script = document.createElement("script");
+      script.id = "google-maps-script";
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
       script.async = true;
       script.defer = true;
-      script.onload = () => {
-        setTimeout(() => {
-          initializeAutocomplete();
-        }, 500);
-      };
+      script.onload = () => waitForGoogleMaps(initializeAutocomplete);
       document.head.appendChild(script);
-    } else {
+    };
+
+    const waitForGoogleMaps = (callback: () => void) => {
+      const checkInterval = setInterval(() => {
+        if (window.google?.maps?.places?.Autocomplete) {
+          clearInterval(checkInterval);
+          callback();
+        }
+      }, 500);
+    };
+
+    // If Google Maps API is already loaded, initialize immediately
+    if (window.google?.maps?.places?.Autocomplete) {
       initializeAutocomplete();
+    } else {
+      loadGoogleMapsScript();
     }
-  }, [apiKey]);
+  }, [apiKey, onPlaceSelected]);
 
   return (
     <input
-    
       ref={inputRef}
       type="text"
-      // className="border p-2 w-full"
       className="bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-1"
-      placeholder="Enter a location"
+      placeholder={isGoogleLoaded ? "Enter a location" : "Loading Google Maps..."}
+      disabled={!isGoogleLoaded} // Disable input until Google Maps is ready
     />
   );
 };
+
+
+// const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
+//   const inputRef = useRef<HTMLInputElement>(null);
+
+//   useEffect(() => {
+//     const initializeAutocomplete = () => {
+//       if (inputRef.current && window.google?.maps) {
+//         const autocomplete = new window.google.maps.places.Autocomplete(
+//           inputRef.current,
+//           { types: ["geocode"] }
+//         );
+
+//         autocomplete.addListener("place_changed", () => {
+//           const place = autocomplete.getPlace();
+//           if (place.geometry) {
+//             onPlaceSelected(place);
+//           }
+//         });
+//       }
+//     };
+
+//     if (!window.google?.maps) {
+//       const script = document.createElement("script");
+//       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+//       script.async = true;
+//       script.defer = true;
+//       script.onload = () => {
+//         setTimeout(() => {
+//           initializeAutocomplete();
+//         }, 500);
+//       };
+//       document.head.appendChild(script);
+//     } else {
+//       initializeAutocomplete();
+//     }
+//   }, [apiKey,onPlaceSelected]);
+
+//   return (
+//     <input
+    
+//       ref={inputRef}
+//       type="text"
+//       // className="border p-2 w-full"
+//       className="bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-1"
+//       placeholder="Enter a location"
+//     />
+//   );
+// };
 
 
 // const AutocompleteInput = ({ apiKey, onPlaceSelected, ...props }: any) => {
@@ -145,9 +213,9 @@ export default function Location() {
   const [toCoords, setToCoords] = useState<{ lat: number; lng: number } | null>(
     null
   );
-  const [priceEstimate, setPriceEstimate] = useState<any[]>([]);
+  // const [priceEstimate, setPriceEstimate] = useState<any[]>([]);
   const [authToken, setAuthToken] = useState<string | null>(null);
-  const [directionsResponse, setDirectionsResponse] = useState<any>(null);
+  // const [directionsResponse, setDirectionsResponse] = useState<any>(null);
   const [showReturnFields, setShowReturnFields] = useState(false); // State to toggle return date/time fields
   const apiUsername = "1863";
   const apiPassword = "1830Voldemort";
@@ -155,6 +223,7 @@ export default function Location() {
 const {toast} = useToast();
 const { setBookingData } = useBooking();
 const [isSubmiting,setIsSubmitting] = useState(false);
+const router = useRouter();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -236,25 +305,25 @@ const [isSubmiting,setIsSubmitting] = useState(false);
     }
   };
 
-  const handleGetDirections = () => {
-    if (fromCoords && toCoords) {
-      const directionsService = new google.maps.DirectionsService();
-      directionsService.route(
-        {
-          origin: fromCoords,
-          destination: toCoords,
-          travelMode: google.maps.TravelMode.DRIVING,
-        },
-        (result, status) => {
-          if (status === "OK") {
-            setDirectionsResponse(result);
-          } else {
-            console.error(`Directions request failed due to ${status}`);
-          }
-        }
-      );
-    }
-  };
+  // const handleGetDirections = () => {
+  //   if (fromCoords && toCoords) {
+  //     const directionsService = new google.maps.DirectionsService();
+  //     directionsService.route(
+  //       {
+  //         origin: fromCoords,
+  //         destination: toCoords,
+  //         travelMode: google.maps.TravelMode.DRIVING,
+  //       },
+  //       (result, status) => {
+  //         if (status === "OK") {
+  //           setDirectionsResponse(result);
+  //         } else {
+  //           console.error(`Directions request failed due to ${status}`);
+  //         }
+  //       }
+  //     );
+  //   }
+  // };
   
   const onSubmit = async(data: FormData) => {
 setIsSubmitting(true);
@@ -315,7 +384,7 @@ setIsSubmitting(true);
         formData: data,
         responseData: response.data.data,
       });
-      
+      router.push("/transfer");
       } else {
         toast({
           title:'API Error',
@@ -336,9 +405,10 @@ setIsSubmitting(true);
     }
   };
 
-  const toggleReturnFields = () => {
-    setShowReturnFields(!showReturnFields); // Toggle return date/time fields
-  };
+  // const toggleReturnFields = () => {
+  //   setShowReturnFields(!showReturnFields); // Toggle return date/time fields
+  // };
+
   return (
     // <div>
     //   <h1>Google Maps Integration with Price Estimate</h1>

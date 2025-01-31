@@ -8,7 +8,10 @@ import {
   } from "../ui/card";
   import { CircleCheckBig } from "lucide-react";
   import { Separator } from "../ui/separator";
-const Confirm = () => {
+const Confirm = ({bookingInfo}) => {
+  if (!bookingInfo) {
+    return <p>Loading...</p>;
+  }
   return (
     <div className="flex justify-center items-center">
     <Card className="w-1/2">

@@ -246,12 +246,255 @@
 // export default ResetPassword;
 
 
+// "use client";
+// import * as z from "zod";
+// import { useForm } from "react-hook-form";
+// import { zodResolver } from "@hookform/resolvers/zod";
+// import { useSearchParams,useRouter } from "next/navigation";
+// import { useState, useEffect } from "react";
+// import {
+//   Card,
+//   CardHeader,
+//   CardTitle,
+//   CardContent,
+//   CardDescription,
+// } from "../ui/card";
+// import {
+//   Form,
+//   FormControl,
+//   FormField,
+//   FormItem,
+//   FormLabel,
+//   FormMessage,
+// } from "@/components/ui/form";
+// import { Input } from "@/components/ui/input";
+// import { Button } from "@/components/ui/button";
+// // import { useRole } from "../context/RoleContext";
+// import { useToast } from "@/hooks/use-toast";
+// import axios from "axios";
+
+// // Zod schema for email verification and new password
+// const emailSchema = z.object({
+//   email: z.string().email("Please enter a valid email"),
+// });
+
+// const passwordSchema = z.object({
+//   newpassword: z.string().min(6, {
+//     message: "Password must be at least 6 characters long",
+//   }),
+// });
+
+// // interface LoginRoleProps {
+// //   role: string;
+// // }
+
+// const ResetPassword = () => {
+//   const router = useRouter();
+//   const searchParams = useSearchParams();
+//   const token = searchParams.get("token");
+//   const { toast } = useToast();
+//   const [isTokenValid, setIsTokenValid] = useState(false);
+//   // const { setRole } = useRole();
+//   // setRole(role);
+
+//   // Separate form for email
+//   const emailForm = useForm<z.infer<typeof emailSchema>>({
+//     resolver: zodResolver(emailSchema),
+//     defaultValues: { email: "" },
+//   });
+
+//   // Separate form for new password
+//   const passwordForm = useForm<z.infer<typeof passwordSchema>>({
+//     resolver: zodResolver(passwordSchema),
+//     defaultValues: { newpassword: "" },
+//   });
+
+//   const [isEmailSent, setIsEmailSent] = useState(false);
+
+//   // Handle email verification form submission
+//   const handleEmailSubmit = async (data: z.infer<typeof emailSchema>) => {
+//     try {
+//       const response = await fetch(
+//         `http://localhost:8000/api/V1/forgetpassword`,
+//         {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify({ email: data.email }),
+//         }
+//       );
+
+//       if (response.ok) {
+//         toast({
+//           title: "Email Sent",
+//           description: "A password reset link has been sent to your email.",
+//         });
+//         setIsEmailSent(true);
+//       } else {
+//         toast({
+//           title: "Email Failed",
+//           description: "Invalid email or user not found.",
+//           variant: "destructive",
+//         });
+//       }
+//     } catch (error) {
+//       toast({
+//         title: "Error",
+//         description: "Error sending reset link.",
+//         variant: "destructive",
+//       });
+//       console.log(error);
+//     }
+//   };
+
+//   // Verify token on component load (for reset password flow)
+//   useEffect(() => {
+//     if (token) {
+//       const verifyToken = async () => {
+//         try {
+//           const response = await fetch(
+//             `http://localhost:8000/api/V1/verify_token`,
+//             {
+//               method: "POST",
+//               headers: { "Content-Type": "application/json" },
+//               body: JSON.stringify({ token }),
+//             }
+//           );
+//           if (response.ok) {
+//             setIsTokenValid(true); // Token is valid
+//           } else {
+//             toast({
+//               title: "Invalid Token",
+//               description: "The reset link is invalid or has expired.",
+//               variant: "destructive",
+//             });
+//             router.push("/"); // Redirect to homepage or login
+//           }
+//         } catch (error) {
+//           console.error("Token verification error:", error);
+//         }
+//       };
+//       verifyToken();
+//     }
+//   }, [token,toast,router]);
+
+//   // Handle new password submission
+//   const handlePasswordSubmit = async (data: z.infer<typeof passwordSchema>) => {
+//     try {
+//       const response = await axios.post(
+//         `http://localhost:8000/api/V1/resetpassword`,
+//         {
+//           token, // Pass the token received from the reset link
+//           newPassword: data.newpassword,
+//         }
+//       );
+
+//       if (response.status === 200) {
+//         toast({
+//           title: "Password Reset Successful",
+//           description: "You can now log in with your new password.",
+//         });
+//         router.push(`/${role}`);
+//       } else {
+//         toast({
+//           title: "Password Reset Failed",
+//           description: "An error occurred. Please try again.",
+//           variant: "destructive",
+//         });
+//       }
+//     } catch (error) {
+//       toast({
+//         title: "Error",
+//         description: "Error resetting password.",
+//         variant: "destructive",
+//       });
+//       console.log(error);
+//     }
+//   };
+
+//   return (
+//     <Card>
+//       <CardHeader>
+//         <CardTitle>Reset Password</CardTitle>
+//         <CardDescription>
+//           {token ? "Enter a new password" : "Enter your email to reset your password"}
+//         </CardDescription>
+//       </CardHeader>
+//       <CardContent className="space-y-2">
+//         {!token && (
+//           <Form {...emailForm}>
+//             <form
+//               onSubmit={emailForm.handleSubmit(handleEmailSubmit)}
+//               className="space-y-6"
+//             >
+//               <FormField
+//                 control={emailForm.control}
+//                 name="email"
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel>Email</FormLabel>
+//                     <FormControl>
+//                       <Input
+//                         type="email"
+//                         placeholder="Enter your email"
+//                         {...field}
+//                       />
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+//               <Button type="submit" className="w-full">
+//                 Send Reset Link
+//               </Button>
+//             </form>
+//           </Form>
+//         )}
+
+//         {token && isTokenValid && (
+//           <Form {...passwordForm}>
+//             <form
+//               onSubmit={passwordForm.handleSubmit(handlePasswordSubmit)}
+//               className="space-y-6"
+//             >
+//               <FormField
+//                 control={passwordForm.control}
+//                 name="newpassword"
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel>New Password</FormLabel>
+//                     <FormControl>
+//                       <Input
+//                         type="password"
+//                         placeholder="Enter new password"
+//                         {...field}
+//                       />
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+//               <Button type="submit" className="w-full">
+//                 Reset Password
+//               </Button>
+//             </form>
+//           </Form>
+//         )}
+//       </CardContent>
+//     </Card>
+//   );
+// };
+
+// export default ResetPassword;
+
+
+
 "use client";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/router";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Card,
   CardHeader,
@@ -269,134 +512,121 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useRole } from "../context/RoleContext";
 import { useToast } from "@/hooks/use-toast";
-import axios from "axios";
 
-// Zod schema for email verification and new password
+// Zod validation schemas
 const emailSchema = z.object({
   email: z.string().email("Please enter a valid email"),
 });
 
 const passwordSchema = z.object({
-  newpassword: z.string().min(6, {
-    message: "Password must be at least 6 characters long",
+  newpassword: z.string().min(4, {
+    message: "Password must be at least 4 characters long",
   }),
 });
 
-interface LoginRoleProps {
-  role: string;
-}
-
-const ResetPassword = ({ role }: LoginRoleProps) => {
+const ResetPassword = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token"); // Get token from URL
   const { toast } = useToast();
-  const { token } = router.query; // Get token from URL
   const [isTokenValid, setIsTokenValid] = useState(false);
-  const { setRole } = useRole();
-  setRole(role);
+  const [isEmailSent, setIsEmailSent] = useState(false);
+  const [isPasswordSent, setIsPasswordSent] = useState(false);
+  const [savedEmail, setSavedEmail] = useState(""); // Store email for later use
 
-  // Separate form for email
+  // Email Form
   const emailForm = useForm<z.infer<typeof emailSchema>>({
     resolver: zodResolver(emailSchema),
     defaultValues: { email: "" },
   });
 
-  // Separate form for new password
+  // Password Form
   const passwordForm = useForm<z.infer<typeof passwordSchema>>({
     resolver: zodResolver(passwordSchema),
     defaultValues: { newpassword: "" },
   });
 
-  const [isEmailSent, setIsEmailSent] = useState(false);
-
-  // Handle email verification form submission
+  // Handle email submission (Request Reset Link)
   const handleEmailSubmit = async (data: z.infer<typeof emailSchema>) => {
+    setIsEmailSent(true);
     try {
-      const response = await fetch(
-        `http://localhost:8000/api/V1/${role}/send-reset-link`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: data.email }),
-        }
+      const response = await axios.post(
+        "http://localhost:8000/api/V1/forgetpassword",
+        { Email: data.email } // Ensure key matches API
       );
 
-      if (response.ok) {
+      if (response.status === 200) {
+        setSavedEmail(data.email); // Store email for later use
         toast({
           title: "Email Sent",
           description: "A password reset link has been sent to your email.",
         });
-        setIsEmailSent(true);
-      } else {
-        toast({
-          title: "Email Failed",
-          description: "Invalid email or user not found.",
-          variant: "destructive",
-        });
+        
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error sending reset link.",
+        description: "Invalid email or user not found.",
         variant: "destructive",
       });
-      console.log(error);
+      console.error("Email submission error:", error);
+    }
+    finally{
+      setIsEmailSent(false);
     }
   };
 
-  // Verify token on component load (for reset password flow)
+  // Verify reset token
   useEffect(() => {
-    if (token) {
-      const verifyToken = async () => {
-        try {
-          const response = await fetch(
-            `http://localhost:8000/api/V1/${role}/verify-reset-token`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ token }),
-            }
-          );
-          if (response.ok) {
-            setIsTokenValid(true); // Token is valid
-          } else {
-            toast({
-              title: "Invalid Token",
-              description: "The reset link is invalid or has expired.",
-              variant: "destructive",
-            });
-            router.push("/"); // Redirect to homepage or login
-          }
-        } catch (error) {
-          console.error("Token verification error:", error);
+    if (!token) return;
+
+    const verifyToken = async () => {
+      try {
+        const response = await axios.post(
+          "http://localhost:8000/api/V1/verify_token",
+          { Token: token }
+        );
+
+        if (response.status === 200) {
+          setIsTokenValid(true);
+        } else {
+          toast({
+            title: "Invalid Token",
+            description: "The reset link is invalid or has expired.",
+            variant: "destructive",
+          });
+          router.push("/");
         }
-      };
-      verifyToken();
-    }
-  }, [token, role, router, toast]);
+      } catch (error) {
+        console.error("Token verification error:", error);
+      }
+    };
+
+    verifyToken();
+  }, [token, router, toast]);
 
   // Handle new password submission
   const handlePasswordSubmit = async (data: z.infer<typeof passwordSchema>) => {
+    setIsPasswordSent(true);
     try {
-      const response = await axios.post(
-        `http://localhost:8000/api/V1/${role}/resetpassword`,
-        {
-          token, // Pass the token received from the reset link
-          newPassword: data.newpassword,
-        }
-      );
+      const response = await axios.post("http://localhost:8000/api/V1/resetpassword", {
+        Password: data.newpassword, // Match API expected key
+        Email: savedEmail, // Use saved email
+        Token: token, // Use token from URL
+      });
 
       if (response.status === 200) {
         toast({
-          title: "Password Reset Successful",
-          description: "You can now log in with your new password.",
+          title: "Success",
+          description: "Password reset successfully. You can now log in.",
         });
-        router.push(`/${role}`);
+       
+        router.push("/login");
       } else {
         toast({
-          title: "Password Reset Failed",
-          description: "An error occurred. Please try again.",
+          title: "Error",
+          description: "Password reset failed. Please try again.",
           variant: "destructive",
         });
       }
@@ -406,7 +636,10 @@ const ResetPassword = ({ role }: LoginRoleProps) => {
         description: "Error resetting password.",
         variant: "destructive",
       });
-      console.log(error);
+      console.error("Password reset error:", error);
+    }
+    finally{
+      setIsPasswordSent(false);
     }
   };
 
@@ -415,10 +648,13 @@ const ResetPassword = ({ role }: LoginRoleProps) => {
       <CardHeader>
         <CardTitle>Reset Password</CardTitle>
         <CardDescription>
-          {token ? "Enter a new password" : "Enter your email to reset your password"}
+          {token
+            ? "Enter a new password"
+            : "Enter your email to receive a password reset link"}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
+        {/* Email Form (Request Reset Link) */}
         {!token && (
           <Form {...emailForm}>
             <form
@@ -432,23 +668,20 @@ const ResetPassword = ({ role }: LoginRoleProps) => {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="Enter your email"
-                        {...field}
-                      />
+                      <Input type="email" placeholder="Enter your email" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
-                Send Reset Link
+              <Button type="submit" className="w-full" disabled={isEmailSent}>
+                {isEmailSent?"Sending Reset Link":"Send Reset Link"}
               </Button>
             </form>
           </Form>
         )}
 
+        {/* Password Reset Form */}
         {token && isTokenValid && (
           <Form {...passwordForm}>
             <form
@@ -462,18 +695,14 @@ const ResetPassword = ({ role }: LoginRoleProps) => {
                   <FormItem>
                     <FormLabel>New Password</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Enter new password"
-                        {...field}
-                      />
+                      <Input type="password" placeholder="Enter new password" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
-                Reset Password
+              <Button type="submit" className="w-full" disabled={isPasswordSent}>
+                {isPasswordSent?"Resetting Password":"Reset Password"}
               </Button>
             </form>
           </Form>

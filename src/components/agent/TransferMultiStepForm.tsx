@@ -8,25 +8,16 @@ import Confirm from "./Confirm";
 
 const TransferMultiStepForm = () => {
   const [step, setStep] = useState(1);
-  // const [formData, setFormData] = useState({
-  //   carModel: "",
-  //   carYear: "",
-  //   ownerName: "",
-  //   ownerEmail: "",
-  //   paymentMethod: "",
-  //   paymentAmount: "",
-  // });
+  const [bookingInfo, setBookingInfo] = useState(null);
 
   const totalSteps = 3; // Total number of steps
   // Custom step labels
   const stepLabels = ["Search Results", "Transfer Details", "Confirmation"];
-  // Handle form field changes
-  // const handleChange = (e) => {
-  //   setFormData({
-  //     ...formData,
-  //     [e.target.name]: e.target.value,
-  //   });
-  // };
+
+  const handleBookingInfo = (info) => {
+    setBookingInfo(info);
+    setStep(2); // ✅ Move to step 2 after selecting booking
+  };
 
   // Step navigation
   const nextStep = () =>
@@ -42,7 +33,7 @@ const TransferMultiStepForm = () => {
       case 1:
         return (
           <>
-            <SearchResult />
+            <SearchResult onSelect={handleBookingInfo}/>
             {/* <button type="button" onClick={nextStep}>
               Next
             </button> */}
@@ -50,40 +41,11 @@ const TransferMultiStepForm = () => {
         );
       case 2:
         return (
-          <Booking/>
+          <Booking bookingInfo={bookingInfo}/>
         );
       case 3:
         return (
-          <Confirm/>
-          // <div>
-          //   <h2>Step 3: Payment Details</h2>
-          //   <div>
-          //     <label>Payment Method:</label>
-          //     <input
-          //       type="text"
-          //       name="paymentMethod"
-          //       value={formData.paymentMethod}
-          //       onChange={handleChange}
-          //       required
-          //     />
-          //   </div>
-          //   <div>
-          //     <label>Payment Amount:</label>
-          //     <input
-          //       type="number"
-          //       name="paymentAmount"
-          //       value={formData.paymentAmount}
-          //       onChange={handleChange}
-          //       required
-          //     />
-          //   </div>
-          //   <button type="button" onClick={prevStep}>
-          //     Back
-          //   </button>
-          //   <button type="submit" onClick={handleSubmit}>
-          //     Submit
-          //   </button>
-          // </div>
+          <Confirm bookingInfo={bookingInfo}/>
         );
       default:
         return null;

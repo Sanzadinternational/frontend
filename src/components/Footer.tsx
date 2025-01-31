@@ -8,10 +8,10 @@ const Footer = () => {
       className="text-white py-4 px-10 mx-10 my-4 rounded-sm flex flex-col gap-5"
       style={{ backgroundColor: "#2f2483" }}
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 justify-items-center">
+      <div className="grid grid-cols-1 md:grid-cols-3 justify-items-center gap-3">
         <div className="flex flex-col justify-center items-center md:justify-normal md:items-start">
           <h3 className="text-xl font-medium">Address</h3>
-          <p>
+          <p className="text-center md:text-left">
             Sanzad International, H-53 First Floor Sector-63 Noida, Uttar
             Pradesh
           </p>
@@ -33,7 +33,8 @@ const Footer = () => {
             </Link>
           </div>
         </div>
-        <div>
+        <div className=" flex flex-col gap-3 items-center md:items-start">
+          <div>
           <h3 className="text-xl font-medium">Contact</h3>
           <div className="flex gap-1">
             <Phone
@@ -47,17 +48,21 @@ const Footer = () => {
               height={30}
             />
           </div>
-        </div>
-      </div>
-
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
-        <div className="flex gap-1">
+          </div>
+          <div className="flex gap-1">
           <SocialIcon style={{ width: 30, height: 30 }} network="facebook" />
           <SocialIcon style={{ width: 30, height: 30 }} network="instagram" />
           <SocialIcon style={{ width: 30, height: 30 }} network="facebook" />
           <SocialIcon style={{ width: 30, height: 30 }} network="linkedin" />
         </div>
-        <div className="flex justify-center divide-x divide-white">
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 justify-items-center gap-3">
+        <div className="flex w-full justify-center md:justify-normal">
+          <p>© 2024 Sanzad International</p>
+        </div>
+        <div className="flex items-center divide-x divide-white">
           <Link className="px-1 text-sm" href="/privacy-policy">
             Privacy-Policy
           </Link>
@@ -65,8 +70,9 @@ const Footer = () => {
             Terms & Conditions
           </Link>
         </div>
+        
         <div>
-          <p>© 2024 Sanzad International</p>
+          <p>Powered By <Link className="hover:text-blue-200" href="https://gcaffe.org" target="_blank">G Caffe</Link></p>
         </div>
       </div>
     </div>

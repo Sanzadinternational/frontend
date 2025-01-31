@@ -33,7 +33,9 @@ const formSchema = z.object({
   mobile: z.string().min(1, { message: "Mobile Number is required" }),
   agree: z.boolean().default(false).optional(),
 });
-const Booking = () => {
+const Booking = ({bookingInfo}) => {
+
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,6 +48,10 @@ const Booking = () => {
   const handleSubmit = (data: z.infer<typeof formSchema>) => {
     console.log(data);
   };
+  if (!bookingInfo) {
+    return <p>Loading...</p>;
+  }
+
   return (
     <div className="flex flex-col md:flex-row gap-5">
       <Card className="md:w-1/3">
@@ -60,32 +66,55 @@ const Booking = () => {
             <Car width={20} height={20} />
             <Separator className="shrink" />
           </div>
-          <dl className="">
+          {/* <dl className="">
             <div className="flex justify-between">
-              <dt className="text-muted-foreground">Vehicle Type</dt>
-              <dd>Minivan 5 pax</dd>
+              <dt className="text-muted-foreground">Vehicle</dt>
+              <dd>{bookingInfo?.brand ||'N/A'}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Transfer Details</dt>
-              <dd>Delhi to Noida</dd>
+              <dd>{bookingInfo?.pickup} to {bookingInfo?.dropoff}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Service Date</dt>
-              <dd>25 Dec 2024</dd>
+              <dd>{bookingInfo?.date} at {bookingInfo?.time}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Transfer Cost</dt>
-              <dd>Rs 345</dd>
+              <dd>{bookingInfo?.vehicle.currency} {bookingInfo?.vehicle.price.toFixed(2)}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Extra Cost</dt>
-              <dd>Rs 0</dd>
+              <dd>{bookingInfo?.extraCost||"N/A"}</dd>
             </div>
-          </dl>
+          </dl> */}
+          <dl className="">
+  <div className="flex justify-between">
+    <dt className="text-muted-foreground">Vehicle</dt>
+    <dd>{bookingInfo?.vehicle?.brand || 'N/A'}</dd>
+  </div>
+  <div className="flex flex-col">
+    <dt className="text-muted-foreground">Transfer Details</dt>
+    <dd>{bookingInfo?.pickup} to {bookingInfo?.dropoff}</dd>
+  </div>
+  <div className="flex justify-between">
+    <dt className="text-muted-foreground">Service Date</dt>
+    <dd>{bookingInfo?.date} at {bookingInfo?.time}</dd>
+  </div>
+  <div className="flex justify-between">
+    <dt className="text-muted-foreground">Transfer Cost</dt>
+    <dd>{bookingInfo?.vehicle?.currency} {bookingInfo?.vehicle?.price?.toFixed(2)}</dd>
+  </div>
+  <div className="flex justify-between">
+    <dt className="text-muted-foreground">Extra Cost</dt>
+    <dd>{bookingInfo?.extraCost || '0'}</dd>
+  </div>
+</dl>
+
         </CardContent>
         <CardFooter>
-          <div className="w-48 rounded-sm px-2 py-2 bg-secondary">
-            Total Cost: Rs 345
+          <div className="w-2/3 rounded-sm px-2 py-2 bg-secondary">
+            Total Cost: {`${bookingInfo?.vehicle?.currency} ${(Number(bookingInfo?.vehicle?.price) + (Number(bookingInfo?.extraCost) || 0)).toFixed(2)}`}
           </div>
         </CardFooter>
       </Card>
