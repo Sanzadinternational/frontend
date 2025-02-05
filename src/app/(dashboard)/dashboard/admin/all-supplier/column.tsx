@@ -2,6 +2,15 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { MoreHorizontal } from "lucide-react"
 export type User = {
   name: string;
   email: string;
@@ -9,7 +18,10 @@ export type User = {
   status: "Pending" | "Approved" | "Rejected";
 };
 
-export const columns = (handleAction: (email: string, status: number) => void): ColumnDef<User>[] => [
+export const columns = (
+  handleAction: (email: string, status: number) => void,
+  handleView: (email: string) => void
+): ColumnDef<User>[] => [
   {
     accessorKey: "name",
     header: "Name",
@@ -31,18 +43,6 @@ export const columns = (handleAction: (email: string, status: number) => void): 
       if (status === "Pending") {
         return (
           <div className="flex space-x-2">
-            {/* <button
-              onClick={() => handleAction(email, 1)}
-              className="px-4 py-2 bg-green-500 text-white rounded-md"
-            >
-              Approve
-            </button> */}
-            {/* <button
-              onClick={() => handleAction(email, 2)}
-              className="px-4 py-2 bg-red-500 text-white rounded-md"
-            >
-              Reject
-            </button> */}
             <Button onClick={() => handleAction(email, 1)}>Approve</Button>
             <Button variant='destructive' onClick={() => handleAction(email, 2)}>Reject</Button>
           </div>
@@ -50,6 +50,34 @@ export const columns = (handleAction: (email: string, status: number) => void): 
       }
 
       return <span>{status}</span>;
+    },
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const {email} = row.original
+ 
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() => handleView(email)}
+            >
+              View
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem>Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
     },
   },
 ];

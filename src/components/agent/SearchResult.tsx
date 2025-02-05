@@ -245,7 +245,7 @@ import LocationMap from "./LocationMap";
 const SearchResult = ({ onSelect }) => {
   const { bookingData } = useBooking();
   const { formData = {}, responseData = [] } = bookingData; // Add fallback values
-  const { pickup, dropoff, pax, date, time } = formData;
+  const { pickup, dropoff, pax, date, time,returnDate,returnTime,pickupLocation,dropoffLocation } = formData;
   const [displayForm, setDisplayForm] = useState(false);
   const [map, setMap] = useState(false);
   const showLocation = () => {
@@ -261,6 +261,10 @@ const SearchResult = ({ onSelect }) => {
       pax,
       date,
       time,
+      returnDate,
+      returnTime,
+      pickupLocation,
+      dropoffLocation,
       vehicle: {
         brand: vehicle.brand,
         vehicalType: vehicle.vehicalType,
@@ -325,6 +329,12 @@ const SearchResult = ({ onSelect }) => {
                       {date || "N/A"}, {time || "N/A"}
                     </dd>
                   </div>
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Return Date & Time</dt>
+                    <dd>
+                      {returnDate || "N/A"}, {returnTime || "N/A"}
+                    </dd>
+                  </div>
                 </dl>
                 <div className="flex items-center gap-1">
                   <Map width={20} height={20} />
@@ -335,11 +345,11 @@ const SearchResult = ({ onSelect }) => {
                     <dt className="text-muted-foreground">
                       Estimated Trip Time
                     </dt>
-                    <dd>~</dd> {/* Replace with actual data if available */}
+                    <dd>{pickupLocation}</dd> {/* Replace with actual data if available */}
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Distance</dt>
-                    <dd>~</dd> {/* Replace with actual data if available */}
+                    <dd>{dropoffLocation}</dd> {/* Replace with actual data if available */}
                   </div>
                 </dl>
               </CardContent>
@@ -352,7 +362,7 @@ const SearchResult = ({ onSelect }) => {
             {map && (
               <Card className="flex items-center justify-center p-2">
                 <CardContent>
-                  <LocationMap />
+                  <LocationMap pickupLocation={pickupLocation} dropoffLocation={dropoffLocation}/>
                 </CardContent>
               </Card>
             )}

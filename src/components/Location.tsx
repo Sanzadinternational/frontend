@@ -45,13 +45,15 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
       if (inputRef.current && window.google?.maps) {
         setIsGoogleLoaded(true); // Google Maps API is ready
         const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
-          types: ["geocode"],
+          types: ["establishment"], // You can try "address" or "establishment"
         });
 
         autocomplete.addListener("place_changed", () => {
           const place = autocomplete.getPlace();
           if (place.geometry) {
             onPlaceSelected(place);
+          } else {
+            console.warn("No geometry found for the selected place.");
           }
         });
       }
@@ -69,7 +71,13 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
       script.async = true;
       script.defer = true;
-      script.onload = () => waitForGoogleMaps(initializeAutocomplete);
+      script.onload = () => {
+        console.log("Google Maps script loaded successfully.");
+        waitForGoogleMaps(initializeAutocomplete);
+      };
+      script.onerror = () => {
+        console.error("Failed to load Google Maps script.");
+      };
       document.head.appendChild(script);
     };
 
@@ -77,6 +85,7 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
       const checkInterval = setInterval(() => {
         if (window.google?.maps?.places?.Autocomplete) {
           clearInterval(checkInterval);
+          console.log("Google Maps API is ready.");
           callback();
         }
       }, 500);
@@ -84,8 +93,10 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
 
     // If Google Maps API is already loaded, initialize immediately
     if (window.google?.maps?.places?.Autocomplete) {
+      console.log("Google Maps API already loaded.");
       initializeAutocomplete();
     } else {
+      console.log("Loading Google Maps script...");
       loadGoogleMapsScript();
     }
   }, [apiKey, onPlaceSelected]);
@@ -201,8 +212,8 @@ const formSchema = z.object({
   pax: z.string().min(1, { message: "Passenger is required" }),
   date: z.string().min(1, { message: "Date is required" }), // Date for the journey
   time: z.string().min(1, { message: "Time is required" }), // Time for the journey
-  // returnDate: z.string().optional(), // Optional return date
-  // returnTime: z.string().optional(), // Optional return time
+  returnDate: z.string().optional(), // Optional return date
+  returnTime: z.string().optional(), // Optional return time
 });
 type FormData = z.infer<typeof formSchema>;
 export default function Location() {
@@ -232,8 +243,8 @@ const router = useRouter();
       pax: "",
       date: "",
       time: "",
-      // returnDate: "",
-      // returnTime: "",
+      returnDate: "",
+      returnTime: "",
     },
   });
 
@@ -340,7 +351,7 @@ setIsSubmitting(true);
   
     const payload = {
       ...data, 
-        pickupLocation:`${toCoords.lat},${toCoords.lng}`,
+        pickupLocation:`${fromCoords.lat},${fromCoords.lng}`,
         dropoffLocation:`${toCoords.lat},${toCoords.lng}`,
 
       // pickup: {
@@ -381,7 +392,8 @@ setIsSubmitting(true);
         console.log("API Response:", response.data);
          // Store the response data in the state
       setBookingData({
-        formData: data,
+        // formData: data,
+        formData: payload,
         responseData: response.data.data,
       });
       router.push("/transfer");
@@ -405,9 +417,9 @@ setIsSubmitting(true);
     }
   };
 
-  // const toggleReturnFields = () => {
-  //   setShowReturnFields(!showReturnFields); // Toggle return date/time fields
-  // };
+  const toggleReturnFields = () => {
+    setShowReturnFields(!showReturnFields); // Toggle return date/time fields
+  };
 
   return (
     // <div>
@@ -617,13 +629,13 @@ setIsSubmitting(true);
               
 
               {/* Return Button to toggle return fields */}
-              {/* <Button
+              <Button
                 className="mr-1 bg-blue-500 dark:bg-card-foreground"
                 type="button"
                 onClick={toggleReturnFields}
               >
                 {showReturnFields ? "Remove Return" : "Add Return"}
-              </Button> */}
+              </Button>
 
               {/* Conditional Return Date and Time Fields */}
               {showReturnFields && (

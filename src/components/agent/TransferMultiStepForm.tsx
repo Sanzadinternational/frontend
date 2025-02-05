@@ -87,8 +87,8 @@ const TransferMultiStepForm = () => {
                 <div
                   className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                     isCompleted
-                      ? "bg-primary border-primary text-white"
-                      : "border-gray-400 bg-white"
+                      ? "bg-primary border-primary text-white dark:text-black"
+                      : "border-gray-400 bg-white dark:text-black"
                   }`}
                 >
                   {stepNumber}
