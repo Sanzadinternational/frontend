@@ -20,20 +20,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useState, useEffect, useRef } from "react";
-// import {
-//   GoogleMap,
-//   LoadScript,
-//   Marker,
-//   DirectionsRenderer,
-// } from "@react-google-maps/api";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
-// const MapContainerStyle = {
-//   width: "100%",
-//   height: "400px",
-// };
-
 
 
 const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
@@ -113,98 +102,6 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
 };
 
 
-// const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
-//   const inputRef = useRef<HTMLInputElement>(null);
-
-//   useEffect(() => {
-//     const initializeAutocomplete = () => {
-//       if (inputRef.current && window.google?.maps) {
-//         const autocomplete = new window.google.maps.places.Autocomplete(
-//           inputRef.current,
-//           { types: ["geocode"] }
-//         );
-
-//         autocomplete.addListener("place_changed", () => {
-//           const place = autocomplete.getPlace();
-//           if (place.geometry) {
-//             onPlaceSelected(place);
-//           }
-//         });
-//       }
-//     };
-
-//     if (!window.google?.maps) {
-//       const script = document.createElement("script");
-//       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-//       script.async = true;
-//       script.defer = true;
-//       script.onload = () => {
-//         setTimeout(() => {
-//           initializeAutocomplete();
-//         }, 500);
-//       };
-//       document.head.appendChild(script);
-//     } else {
-//       initializeAutocomplete();
-//     }
-//   }, [apiKey,onPlaceSelected]);
-
-//   return (
-//     <input
-    
-//       ref={inputRef}
-//       type="text"
-//       // className="border p-2 w-full"
-//       className="bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-1"
-//       placeholder="Enter a location"
-//     />
-//   );
-// };
-
-
-// const AutocompleteInput = ({ apiKey, onPlaceSelected, ...props }: any) => {
-//   const inputRef = useRef<HTMLInputElement>(null);
-
-//   useEffect(() => {
-//     const initializeAutocomplete = () => {
-//       if (inputRef.current && window.google?.maps) {
-//         const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, { types: ["geocode"] });
-
-//         autocomplete.addListener("place_changed", () => {
-//           const place = autocomplete.getPlace();
-//           if (place.geometry) {
-//             onPlaceSelected(place);
-//           }
-//         });
-//       }
-//     };
-
-//     if (!window.google?.maps) {
-//       const script = document.createElement("script");
-//       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-//       script.async = true;
-//       script.defer = true;
-//       script.onload = () => {
-//         setTimeout(() => {
-//           initializeAutocomplete();
-//         }, 500);
-//       };
-//       document.head.appendChild(script);
-//     } else {
-//       initializeAutocomplete();
-//     }
-//   }, [apiKey]);
-
-//   return (
-//     <input
-//       ref={inputRef}
-//       {...props} // Pass additional props like `className` or `placeholder`
-//       className="bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-1"
-//     />
-//   );
-// };
-
-
 // Define the validation schema with date and time fields
 const formSchema = z.object({
   pickup: z.string().min(1, { message: "Pick Up is Required" }),
@@ -225,11 +122,11 @@ export default function Location() {
     null
   );
   // const [priceEstimate, setPriceEstimate] = useState<any[]>([]);
-  const [authToken, setAuthToken] = useState<string | null>(null);
+  // const [authToken, setAuthToken] = useState<string | null>(null);
   // const [directionsResponse, setDirectionsResponse] = useState<any>(null);
   const [showReturnFields, setShowReturnFields] = useState(false); // State to toggle return date/time fields
-  const apiUsername = "1863";
-  const apiPassword = "1830Voldemort";
+  // const apiUsername = "1863";
+  // const apiPassword = "1830Voldemort";
   const googleMapsApiKey = "AIzaSyAjXkEFU-hA_DSnHYaEjU3_fceVwQra0LI";
 const {toast} = useToast();
 const { setBookingData } = useBooking();
@@ -248,31 +145,6 @@ const router = useRouter();
     },
   });
 
-  const loginAndFetchToken = async () => {
-    try {
-      const response = await axios.post(
-        "https://sandbox.iway.io/transnextgen/v3/auth/login",
-        {
-          user_id: apiUsername,
-          password: apiPassword,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const token = response.data.result.token;
-      setAuthToken(token);
-      return token;
-    } catch (error) {
-      console.error(
-        "Authentication Error:",
-        error.response?.data || error.message
-      );
-      return null;
-    }
-  };
 
   const handleSelectFrom = (place: any) => {
     const location = place.geometry.location;
@@ -283,58 +155,6 @@ const router = useRouter();
     const location = place.geometry.location;
     setToCoords({ lat: location.lat(), lng: location.lng() });
   };
-
-  const handleGetPriceEstimate = async () => {
-    if (fromCoords && toCoords) {
-      const { lat: fromLat, lng: fromLng } = fromCoords;
-      const { lat: toLat, lng: toLng } = toCoords;
-
-      try {
-        let token = authToken;
-        if (!token) {
-          token = await loginAndFetchToken();
-          if (!token) return;
-        }
-
-        const apiUrl = `https://sandbox.iway.io/transnextgen/v3/prices/rent?user_id=${apiUsername}&lang=en&currency=INR&start_place_point=${fromLat},${fromLng}&end_place_point=${toLat},${toLng}&duration=3600`;
-
-        const response = await axios.get(apiUrl, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        setPriceEstimate(response.data.result || []);
-      } catch (error) {
-        console.error(
-          "Error fetching price estimate:",
-          error.response?.data || error.message
-        );
-      }
-    } else {
-      console.warn('Both "From" and "To" coordinates must be selected.');
-    }
-  };
-
-  // const handleGetDirections = () => {
-  //   if (fromCoords && toCoords) {
-  //     const directionsService = new google.maps.DirectionsService();
-  //     directionsService.route(
-  //       {
-  //         origin: fromCoords,
-  //         destination: toCoords,
-  //         travelMode: google.maps.TravelMode.DRIVING,
-  //       },
-  //       (result, status) => {
-  //         if (status === "OK") {
-  //           setDirectionsResponse(result);
-  //         } else {
-  //           console.error(`Directions request failed due to ${status}`);
-  //         }
-  //       }
-  //     );
-  //   }
-  // };
   
   const onSubmit = async(data: FormData) => {
 setIsSubmitting(true);
@@ -402,8 +222,6 @@ setIsSubmitting(true);
           title:'API Error',
           description:'Something went wrong, please try again.'
         })
-        // alert("Something went wrong, please try again.");
-        // console.error("API Error:", response.data);
       }
     } catch (error) {
       toast({
@@ -422,64 +240,6 @@ setIsSubmitting(true);
   };
 
   return (
-    // <div>
-    //   <h1>Google Maps Integration with Price Estimate</h1>
-    //   <div>
-    //     <label>From: </label>
-    //     <AutocompleteInput
-    //       apiKey={googleMapsApiKey}
-    //       onPlaceSelected={handleSelectFrom}
-    //       types={["(regions)"]}
-    //     />
-    //   </div>
-    //   <div>
-    //     <label>To: </label>
-    //     <AutocompleteInput
-    //       apiKey={googleMapsApiKey}
-    //       onPlaceSelected={handleSelectTo}
-    //       types={["(regions)"]}
-    //     />
-    //   </div>
-    //   <div className="flex gap-2 my-2">
-    //     <Button onClick={handleGetPriceEstimate}>Get Price</Button>
-    //     <Button onClick={handleGetDirections}>Get Directions</Button>
-    //   </div>
-    //   {/* <button  onClick={handleGetPriceEstimate}>Get Price Estimate</button>
-    //   <button onClick={handleGetDirections}>Get Directions</button> */}
-
-    //   {priceEstimate.length > 0 ? (
-    //     <div>
-    //       <h2>Available Cars</h2>
-    //       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    //         {priceEstimate.map((car: any, index: number) => (
-    //           <div
-    //             key={index}
-    //             className="border p-4 rounded-lg shadow-lg bg-white"
-    //             style={{ height: "200px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}
-    //           >
-    //             <h3 className="text-xl font-bold">{car.car_class.models[0]}</h3>
-    //             <p className="text-lg">Price: ₹{car.price}</p>
-    //           </div>
-    //         ))}
-    //       </div>
-    //     </div>
-    //   ) : (
-    //     <div>No cars available at the moment.</div>
-    //   )}
-
-    //   <LoadScript googleMapsApiKey={googleMapsApiKey} libraries={["places"]}>
-    //     <GoogleMap
-    //       mapContainerStyle={MapContainerStyle}
-    //       center={fromCoords || { lat: 20.5937, lng: 78.9629 }}
-    //       zoom={8}
-    //     >
-    //       {fromCoords && <Marker position={fromCoords} />}
-    //       {toCoords && <Marker position={toCoords} />}
-    //       {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
-    //     </GoogleMap>
-    //   </LoadScript>
-    // </div>
-
     <div className="w-[70%]">
       <Card className=" bg-blue-100/[.5] dark:bg-blend-darken dark:text-primary-foreground">
         <CardHeader>
@@ -693,17 +453,6 @@ setIsSubmitting(true);
           </Form>
         </CardContent>
       </Card>
-      {/* <LoadScript googleMapsApiKey={googleMapsApiKey} libraries={["places"]}>
-         <GoogleMap
-           mapContainerStyle={MapContainerStyle}
-           center={fromCoords || { lat: 20.5937, lng: 78.9629 }}
-           zoom={8}
-         >
-           {fromCoords && <Marker position={fromCoords} />}
-           {toCoords && <Marker position={toCoords} />}
-           {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
-         </GoogleMap>
-       </LoadScript> */}
     </div>
   );
 }

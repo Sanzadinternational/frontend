@@ -1,7 +1,7 @@
 "use client";
 import { DatePicker } from "../DatePicker";
 import CountryCityAPI from "../api/CountryCityAPI";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { fetchWithAuth } from "@/components/utils/api";
 import { removeToken } from "@/components/utils/auth";
 // import axios from 'axios';
@@ -41,6 +41,139 @@ interface Country {
   // dialCode: string;
   // cities: string[];
 }
+// const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
+//   const inputRef = useRef<HTMLInputElement>(null);
+//   const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
+
+//   useEffect(() => {
+//     const initializeAutocomplete = () => {
+//       if (inputRef.current && window.google?.maps) {
+//         setIsGoogleLoaded(true); // Google Maps API is ready
+//         const autocomplete = new window.google.maps.places.Autocomplete(
+//           inputRef.current,
+//           {
+//             types: ["establishment"], // You can try "address" or "establishment"
+//           }
+//         );
+
+//         autocomplete.addListener("place_changed", () => {
+//           const place = autocomplete.getPlace();
+//           if (place.geometry) {
+//             onPlaceSelected(place);
+//           } else {
+//             console.warn("No geometry found for the selected place.");
+//           }
+//         });
+//       }
+//     };
+
+//     const loadGoogleMapsScript = () => {
+//       if (document.querySelector("#google-maps-script")) {
+//         // If script already exists, wait for it to be ready
+//         waitForGoogleMaps(initializeAutocomplete);
+//         return;
+//       }
+
+//       const script = document.createElement("script");
+//       script.id = "google-maps-script";
+//       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+//       script.async = true;
+//       script.defer = true;
+//       script.onload = () => {
+//         console.log("Google Maps script loaded successfully.");
+//         waitForGoogleMaps(initializeAutocomplete);
+//       };
+//       script.onerror = () => {
+//         console.error("Failed to load Google Maps script.");
+//       };
+//       document.head.appendChild(script);
+//     };
+
+//     const waitForGoogleMaps = (callback: () => void) => {
+//       const checkInterval = setInterval(() => {
+//         if (window.google?.maps?.places?.Autocomplete) {
+//           clearInterval(checkInterval);
+//           console.log("Google Maps API is ready.");
+//           callback();
+//         }
+//       }, 500);
+//     };
+
+//     // If Google Maps API is already loaded, initialize immediately
+//     if (window.google?.maps?.places?.Autocomplete) {
+//       console.log("Google Maps API already loaded.");
+//       initializeAutocomplete();
+//     } else {
+//       console.log("Loading Google Maps script...");
+//       loadGoogleMapsScript();
+//     }
+//   }, [apiKey, onPlaceSelected]);
+
+//   return (
+//     <input
+//       ref={inputRef}
+//       type="text"
+//       className="border-0 border-input rounded-sm ring-1 ring-offset-background focus-visible:ring-0 focus-visible:ring-offset-0"
+//       placeholder={
+//         isGoogleLoaded ? "Enter a location" : "Loading Google Maps..."
+//       }
+//       disabled={!isGoogleLoaded} // Disable input until Google Maps is ready
+//     />
+//   );
+// };
+
+const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
+
+  useEffect(() => {
+    const initializeAutocomplete = () => {
+      if (inputRef.current && window.google?.maps) {
+        setIsGoogleLoaded(true);
+        const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
+          types: ["geocode"], // Allow all geocoded addresses
+        });
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          if (place.geometry) {
+            const location = {
+              address: place.formatted_address,
+              latLng: `${place.geometry.location.lat()},${place.geometry.location.lng()}`, // Format as "lat,lng"
+            };
+            onPlaceSelected(location); // Send formatted Location
+          } else {
+            console.warn("No geometry found for the selected place.");
+          }
+        });
+      }
+    };
+
+    if (window.google?.maps?.places?.Autocomplete) {
+      initializeAutocomplete();
+    } else {
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => initializeAutocomplete();
+      document.head.appendChild(script);
+    }
+  }, [apiKey, onPlaceSelected]);
+
+  return (
+    <input
+      ref={inputRef}
+      type="text"
+      className="border border-gray-300 rounded-sm p-[5px]"
+      placeholder={isGoogleLoaded ? "Enter a location" : "Loading Google Maps..."}
+      disabled={!isGoogleLoaded}
+    />
+  );
+};
+
+
+
 const formSchema = z.object({
   VehicleType: z.string().min(1, {
     message: "Vehicle Type is required",
@@ -74,9 +207,12 @@ const formSchema = z.object({
       Transfer_from: z
         .string()
         .min(1, { message: "Transfer From is required" }),
-      Transfer_to: z.string().min(1, { message: "Transfer To is required" }),
-      Vice_versa: z.boolean().optional(),
+      // Transfer_to: z.string().min(1, { message: "Transfer To is required" }),
+      // Vice_versa: z.boolean().optional(),
       Price: z.string().min(1, { message: "Price is required" }),
+      Extra_Price: z.string().min(1, { message: "Extra Price is required" }),
+      Distance: z.string().min(1, { message: "Distance is required" }),
+      Location: z.string().min(1, { message: "Location is required" }),
       NightTime: z.enum(["yes", "no"]).optional(),
       // Night_Vice_Versa:z.boolean().optional(),
       NightTime_Price: z.string().optional(),
@@ -101,14 +237,19 @@ const formSchema = z.object({
 const VehicleDetails = () => {
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string>("");
-
+  const googleMapsApiKey = "AIzaSyAjXkEFU-hA_DSnHYaEjU3_fceVwQra0LI";
+  const [fromCoords, setFromCoords] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const data = await fetchWithAuth("http://localhost:8000/api/V1/supplier/dashboard");
+        const data = await fetchWithAuth(
+          "http://localhost:8000/api/V1/supplier/dashboard"
+        );
         console.log("User Data:", data); // Debugging log for API response
         setUser(data);
-        
       } catch (err: any) {
         console.error("Error fetching user data:", err); // Debugging log for errors
         setError(err.message);
@@ -118,7 +259,6 @@ const VehicleDetails = () => {
 
     fetchUserData();
   }, []);
-
 
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -137,6 +277,7 @@ const VehicleDetails = () => {
   const [pax, setPax] = useState("");
   const [mediumBag, setMediumBag] = useState("");
   const [smallBag, setSmallBag] = useState("");
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -157,9 +298,12 @@ const VehicleDetails = () => {
       rows: [
         {
           Transfer_from: "",
-          Transfer_to: "",
-          Vice_versa: false,
+          // Transfer_to: "",
+          // Vice_versa: false,
+          Extra_Price: "",
+          Distance: "",
           Price: "",
+          Location:"",
           NightTime: "no",
           // Night_Vice_Versa: false,
           NightTime_Price: "",
@@ -190,7 +334,11 @@ const VehicleDetails = () => {
 
   // Generate numbers from 1 to 100
   const numbers = Array.from({ length: 100 }, (_, i) => i + 1);
-
+  const baseDistance = (start, stop, step) =>
+    Array.from(
+      { length: (stop - start) / step + 1 },
+      (value, index) => start + index * step
+    );
   const extraSpaceOptions = [
     "Roof Rack",
     "Trailer Hitch",
@@ -235,28 +383,42 @@ const VehicleDetails = () => {
         Parking: data.Parking,
         Currency: data.Currency,
         Others: data.Others,
-        SupplierId: user.userId
+        SupplierId: user.userId,
       };
 
       // Prepare data for the extraspace API
-      const extraspaceData = [{
-        uniqueId,
-        Roof_Rack: data.ExtraSpace?.includes("Roof Rack") ? "Selected" : "",
-        Trailer_Hitch: data.ExtraSpace?.includes("Trailer Hitch") ? "Selected" : "",
-        Extended_Cargo_Space: data.ExtraSpace?.includes("Extended Cargo Space") ? "Selected" : "",
-      }];
+      const extraspaceData = [
+        {
+          uniqueId,
+          Roof_Rack: data.ExtraSpace?.includes("Roof Rack") ? "Selected" : "",
+          Trailer_Hitch: data.ExtraSpace?.includes("Trailer Hitch")
+            ? "Selected"
+            : "",
+          Extended_Cargo_Space: data.ExtraSpace?.includes(
+            "Extended Cargo Space"
+          )
+            ? "Selected"
+            : "",
+        },
+      ];
       console.log("Submitting extraspaceData:", extraspaceData);
       // Prepare data for the rows API
       const rowsData = data.rows.map((row) => ({
         uniqueId,
-        ...row,
+      Transfer_from: row.Transfer_from,
+      Location: row.Location, // Send lat,lng as a single string
+      Price: row.Price,
+      Extra_Price: row.Extra_Price,
+      Distance: row.Distance,
+      NightTime: row.NightTime,
+      NightTime_Price: row.NightTime_Price,
       }));
       // Prepare data for the dateRange API
       const dateRange = {
         uniqueId,
         // DateRange: data.DateRange,
-          from: data.DateRange?.from || null,
-          to: data.DateRange?.to || null,
+        from: data.DateRange?.from || null,
+        to: data.DateRange?.to || null,
       };
       console.log("Submitting daterange:", dateRange);
       // Sequential API calls
@@ -285,8 +447,8 @@ const VehicleDetails = () => {
       if (!extraspaceResponse.ok) {
         // throw new Error("Failed to save the extraspace data");
         const error = await extraspaceResponse.json();
-      console.error("Extraspace API Error:", error);
-      throw new Error(error.message || "Failed to save extraspace data");
+        console.error("Extraspace API Error:", error);
+        throw new Error(error.message || "Failed to save extraspace data");
       }
 
       const rowsResponse = await fetch(
@@ -317,10 +479,9 @@ const VehicleDetails = () => {
         description: (error as Error).message,
       });
       console.log(data);
-    }finally{
+    } finally {
       setIsLoading(false);
     }
-
   };
   const handleVehicleTypeChange = (value: string) => {
     setVehicleType(value);
@@ -372,9 +533,11 @@ const VehicleDetails = () => {
   const handleAddRow = () => {
     const newRow = {
       Transfer_from: "",
-      Transfer_to: "",
-      Vice_versa: false,
+      // Transfer_to: "",
+      // Vice_versa: false,
       Price: "",
+      Extra_Price: "",
+      Distnace: "",
       NightTime: "no",
       NightTime_Price: "",
     };
@@ -382,12 +545,30 @@ const VehicleDetails = () => {
     form.setValue("rows", [...form.getValues("rows"), newRow]); // Update the form state
   };
 
+  // const handleAddRow = () => {
+  //   const newRow = {
+  //     Transfer_from: "",
+  //     Transfer_to: "",
+  //     Vice_versa: false,
+  //     Price: "",
+  //     NightTime: "no",
+  //     NightTime_Price: "",
+  //   };
+  //   setRows((prevRows) => [...prevRows, newRow]);
+  //   form.setValue("rows", [...form.getValues("rows"), newRow], { shouldValidate: true });
+  // };
+
   const handleDeleteRow = (index: number) => {
     setRows((prevRows) => prevRows.filter((_, i) => i !== index)); // Update the rows state
     form.setValue(
       "rows",
       form.getValues("rows").filter((_, i) => i !== index) // Update the form state
     );
+  };
+
+  const handleSelectFrom = (place: any) => {
+    const location = place.geometry.location;
+    setFromCoords({ lat: location.lat(), lng: location.lng() });
   };
 
   return (
@@ -403,7 +584,6 @@ const VehicleDetails = () => {
               e.preventDefault(); // Prevent page refresh
               form.handleSubmit(handleSubmit)(); // Trigger react-hook-form's submit handler
             }}
-            
             className="space-y-6"
           >
             <div className="relative flex py-3 items-center">
@@ -922,7 +1102,7 @@ const VehicleDetails = () => {
                         <FormItem>
                           <FormLabel>From</FormLabel>
                           <FormControl>
-                            <Select
+                            {/* <Select
                               onValueChange={field.onChange}
                               value={field.value || ""}
                             >
@@ -938,14 +1118,23 @@ const VehicleDetails = () => {
                                 </SelectItem>
                                 <SelectItem value="Hotel">Hotel</SelectItem>
                               </SelectContent>
-                            </Select>
+                            </Select> */}
+                            <AutocompleteInput
+                              apiKey={googleMapsApiKey}
+                              onPlaceSelected={(location) => {
+                                form.setValue(`rows.${index}.Transfer_from`, location.address, { shouldValidate: true });
+                                form.setValue(`rows.${index}.Location`, location.latLng); // Store "lat,lng"
+                              }}
+                              types={["(regions)"]}
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
 
-                    <FormField
+                    {/* <FormField
                       control={form.control}
                       name={`rows.${index}.Transfer_to`}
                       render={({ field }) => (
@@ -973,9 +1162,39 @@ const VehicleDetails = () => {
                           <FormMessage />
                         </FormItem>
                       )}
+                    /> */}
+                    <FormField
+                      control={form.control}
+                      name={`rows.${index}.Distance`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Base Distance (miles)</FormLabel>
+                          <FormControl>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value || ""}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Base Distance (miles)" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {baseDistance(50, 200, 10).map((distance) => (
+                                  <SelectItem
+                                    value={`${distance}`}
+                                    key={distance}
+                                  >
+                                    {distance}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
 
-                    <FormField
+                    {/* <FormField
                       control={form.control}
                       name={`rows.${index}.Vice_versa`}
                       render={({ field }) => (
@@ -987,7 +1206,7 @@ const VehicleDetails = () => {
                           <FormLabel className="pl-1">Vice-Versa</FormLabel>
                         </FormItem>
                       )}
-                    />
+                    /> */}
 
                     <FormField
                       control={form.control}
@@ -1012,6 +1231,31 @@ const VehicleDetails = () => {
                         </FormItem>
                       )}
                     />
+
+                    <FormField
+                      control={form.control}
+                      name={`rows.${index}.Extra_Price`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Extra Price Per Miles</FormLabel>
+                          <FormControl>
+                            <div className="flex justify-center">
+                              <span className="bg-secondary px-2 py-1 rounded-sm">
+                                {Currency.toUpperCase()}
+                              </span>
+                              <Input
+                                placeholder="Enter Price"
+                                {...field}
+                                value={field.value || ""}
+                                type="number"
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
                     <div>
                       <FormField
                         control={form.control}
@@ -1095,8 +1339,6 @@ const VehicleDetails = () => {
                 Add Row
               </Button>
             </div>
-
-            
 
             <div className="relative flex py-3 items-center">
               <div className="flex-grow border-t border-gray-400"></div>
@@ -1254,7 +1496,11 @@ const VehicleDetails = () => {
                               <span className="bg-secondary px-2 py-1 rounded-sm">
                                 {Currency.toUpperCase()}
                               </span>
-                              <Input placeholder="Vehicle Rent" {...field} type="number"/>
+                              <Input
+                                placeholder="Vehicle Rent"
+                                {...field}
+                                type="number"
+                              />
                             </div>
                           </FormControl>
                           <FormMessage />
@@ -1439,7 +1685,11 @@ const VehicleDetails = () => {
                                     <span className="bg-secondary px-2 py-1 rounded-sm">
                                       {Currency.toUpperCase()}
                                     </span>
-                                    <Input placeholder="Toll Fees" {...field} type="number" />
+                                    <Input
+                                      placeholder="Toll Fees"
+                                      {...field}
+                                      type="number"
+                                    />
                                   </div>
                                 </FormControl>
                                 <FormMessage />
@@ -1495,7 +1745,11 @@ const VehicleDetails = () => {
                                     <span className="bg-secondary px-2 py-1 rounded-sm">
                                       {Currency.toUpperCase()}
                                     </span>
-                                    <Input placeholder="Tip" {...field} type="number"/>
+                                    <Input
+                                      placeholder="Tip"
+                                      {...field}
+                                      type="number"
+                                    />
                                   </div>
                                 </FormControl>
                                 <FormMessage />
@@ -1523,13 +1777,12 @@ const VehicleDetails = () => {
                 </div>
               )}
             </div>
-              {/* <Button type="submit" className="w-full"> */}
+            {/* <Button type="submit" className="w-full"> */}
             {/* {isLoading ? "Submitting..." : "Submit"} */}
             {/* Submit */}
             {/* </Button> */}
             <Button type="submit">
-            {isLoading ? "Adding Vehicle..." : "Add More Vehicle"}
-
+              {isLoading ? "Adding Vehicle..." : "Add More Vehicle"}
             </Button>
           </form>
         </Form>
