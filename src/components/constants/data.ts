@@ -87,6 +87,11 @@ export interface Role{
               title: 'Add New Vehicle',
               url: '/dashboard/supplier/AddVehicle',
               icon: 'car',
+            },
+            {
+              title: 'Add Surcharge',
+              url: '/dashboard/supplier/AddSurcharge',
+              icon: 'car',
             }
           ] // No child items
         },
@@ -194,6 +199,11 @@ export interface Role{
             {
               title:'Available Supplier',
               url:'/dashboard/admin/all-supplier',
+              icon:'add',
+            },
+            {
+              title:'Vehicle Details',
+              url:'/dashboard/admin/vehicle-details',
               icon:'add',
             },
           ] // No child items

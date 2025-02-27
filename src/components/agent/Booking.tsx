@@ -33,7 +33,7 @@ const formSchema = z.object({
   mobile: z.string().min(1, { message: "Mobile Number is required" }),
   agree: z.boolean().default(false).optional(),
 });
-const Booking = ({bookingInfo}) => {
+const Booking = ({bookingInfo,nextStep}) => {
 
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -45,9 +45,55 @@ const Booking = ({bookingInfo}) => {
       agree: true,
     },
   });
-  const handleSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+  const handleSubmit = async (data: z.infer<typeof formSchema>) => {
+    if (!bookingInfo) {
+      console.error("Booking info is missing");
+      return;
+    }
+  
+    // Combine form data and bookingInfo
+    const requestData = {
+      // booking_no: bookingInfo?.booking_no || "N/A",
+      pickup: bookingInfo?.pickup,
+      dropoff: bookingInfo?.dropoff,
+      passenger: bookingInfo?.passenger || data.name,
+      date: bookingInfo?.date,
+      time: bookingInfo?.time,
+      return_date: bookingInfo?.return_date,
+      return_time: bookingInfo?.return_time,
+      estimated_trip_time: bookingInfo?.estimated_trip_time,
+      distance: bookingInfo?.distance,
+      vehicle_name: bookingInfo?.vehicle?.brand,
+      passengers_no: bookingInfo?.passengers_no,
+      medium_bags: bookingInfo?.medium_bags,
+      passenger_name: data.name,
+      passenger_email: data.email,
+      passenger_contact_no: data.mobile,
+    };
+  
+    try {
+      const response = await fetch("http://localhost:8000/api/V1/Booking/Create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to submit booking");
+      }
+  
+      const result = await response.json();
+      console.log("Booking created successfully:", result);
+      alert("Booking created successfully!");
+      nextStep();
+    } catch (error) {
+      console.error("Error submitting booking:", error);
+      alert("Failed to create booking.");
+    }
   };
+  
   if (!bookingInfo) {
     return <p>Loading...</p>;
   }
@@ -103,7 +149,7 @@ const Booking = ({bookingInfo}) => {
   </div>
   <div className="flex justify-between">
     <dt className="text-muted-foreground">Transfer Cost</dt>
-    <dd>{bookingInfo?.vehicle?.currency} {bookingInfo?.vehicle?.price?.toFixed(2)}</dd>
+    <dd>{bookingInfo?.vehicle?.currency} {Number(bookingInfo?.vehicle?.price || 0).toFixed(2)}</dd>
   </div>
   <div className="flex justify-between">
     <dt className="text-muted-foreground">Extra Cost</dt>
@@ -114,7 +160,7 @@ const Booking = ({bookingInfo}) => {
         </CardContent>
         <CardFooter>
           <div className="w-2/3 rounded-sm px-2 py-2 bg-secondary">
-            Total Cost: {`${bookingInfo?.vehicle?.currency} ${(Number(bookingInfo?.vehicle?.price) + (Number(bookingInfo?.extraCost) || 0)).toFixed(2)}`}
+          Total Cost: {`${bookingInfo?.vehicle?.currency} ${(Number(bookingInfo?.vehicle?.price || 0) + (Number(bookingInfo?.extraCost) || 0)).toFixed(2)}`}
           </div>
         </CardFooter>
       </Card>

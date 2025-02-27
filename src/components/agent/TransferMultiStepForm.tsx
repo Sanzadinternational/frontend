@@ -41,7 +41,7 @@ const TransferMultiStepForm = () => {
         );
       case 2:
         return (
-          <Booking bookingInfo={bookingInfo}/>
+          <Booking bookingInfo={bookingInfo} nextStep={nextStep}/>
         );
       case 3:
         return (

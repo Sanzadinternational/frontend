@@ -389,18 +389,12 @@ export type Vehicle = {
 
 export default function VehiclePage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  // const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
-  // const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
 
   const router = useRouter();
-
-  // const handleEditClick = (uniqueId: string) => {
-  //   router.push(`/dashboard/supplier/edit/${uniqueId}`); // Navigate to the edit page with the uniqueId
-  // };
 
   useEffect(() => {
     const fetchUserData = async () => {

@@ -266,15 +266,15 @@ const SearchResult = ({ onSelect }) => {
       pickupLocation,
       dropoffLocation,
       vehicle: {
-        brand: vehicle.brand,
-        vehicalType: vehicle.vehicalType,
-        passengers: vehicle.passengers,
-        mediumBag: vehicle.mediumBag,
-        currency: vehicle.currency,
-        price: vehicle.price,
-        source: vehicle.source,
+        brand: vehicle?.brand,
+        vehicalType: vehicle?.vehicalType,
+        passengers: vehicle?.passengers,
+        mediumBag: vehicle?.mediumBag,
+        currency: vehicle?.currency,
+        price: vehicle?.price,
+        source: vehicle?.source,
       },
-      extraCost: vehicle.extraCost ||'0', // Example extra cost
+      extraCost: vehicle?.extraCost ||'0', // Example extra cost
     };
 
     onSelect(bookingInfo); // ✅ Send data to parent
@@ -301,7 +301,7 @@ const SearchResult = ({ onSelect }) => {
                 <div className="flex justify-between items-center">
                   <CardTitle>Summary</CardTitle>
                   <Button variant="secondary" onClick={showLocation}>
-                    {displayForm ? "Hide" : "Edit Quote"}
+                    {displayForm ? "Hide" : "Modify Search"}
                   </Button>
                 </div>
               </CardHeader>
@@ -345,11 +345,11 @@ const SearchResult = ({ onSelect }) => {
                     <dt className="text-muted-foreground">
                       Estimated Trip Time
                     </dt>
-                    <dd>{pickupLocation}</dd> {/* Replace with actual data if available */}
+                    <dd>N/A</dd> {/* Replace with actual data if available */}
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Distance</dt>
-                    <dd>{dropoffLocation}</dd> {/* Replace with actual data if available */}
+                    <dd>N/A</dd> {/* Replace with actual data if available */}
                   </div>
                 </dl>
               </CardContent>
@@ -421,7 +421,8 @@ const SearchResult = ({ onSelect }) => {
                         <div>
                           <p>One Way</p>
                           <h2 className="text-2xl font-medium">
-                            {vehicle.currency} {vehicle.price.toFixed(2)}
+                            {/* {vehicle.currency} {vehicle.price.toFixed(2)} */}
+                            {vehicle.currency} {Number(vehicle.price).toFixed(2)}
                           </h2>
                         </div>
                         <div>
