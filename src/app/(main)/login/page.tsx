@@ -75,7 +75,7 @@ const Login = () => {
         localStorage.setItem("authToken", response.data.accessToken);
         toast({ title: "Login Successful", description: `Welcome ${response.data.role}!` });
         router.push(`/dashboard/${response.data.role}`);
-        console.log(response.data.role);
+        // console.log(response.data.role);
       }
     } catch (err: any) {
       console.error("Login Error:", err);

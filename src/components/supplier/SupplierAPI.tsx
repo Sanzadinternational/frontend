@@ -251,7 +251,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { fetchWithAuth } from "@/components/utils/api";
 import { removeToken } from "@/components/utils/auth";
-
+import { Skeleton } from "../ui/skeleton";
 const formSchema = z.object({
   Api: z.string().min(1, { message: "API is required" }),
   Api_User: z.string().min(1, { message: "Username is required" }),
@@ -339,7 +339,15 @@ const SupplierAPI = () => {
   };
 
   if (error) return <p>Error: {error}</p>;
-  if (!userData) return <p>Loading...</p>;
+  if (!userData) return(
+    <div className="flex flex-col justify-center items-center">
+      <Skeleton className="h-[300px] w-[250px] rounded-xl" />
+      <div className="space-y-2 m-1">
+        <Skeleton className="h-4 w-[250px]" />
+        <Skeleton className="h-4 w-[200px]" />
+      </div>
+    </div>
+  );
 
   return (
     <Card>

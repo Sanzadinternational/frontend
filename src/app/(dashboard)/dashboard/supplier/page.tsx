@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
 import { fetchWithAuth } from "@/components/utils/api";
 import { removeToken } from "@/components/utils/auth";
-
+import { Skeleton } from "@/components/ui/skeleton";
 const Page = () => {
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string>("");
@@ -35,7 +35,21 @@ const Page = () => {
   }, []);
 
   if (error) return <p>Error: {error}</p>;
-  if (!user) return <p>Loading...</p>;
+  if (!user)
+    return (
+      <div className="flex flex-col m-4">
+        <div className="space-y-2 m-1">
+          <Skeleton className="h-4 w-[200px]" />
+          <Skeleton className="h-4 w-[250px]" />
+        </div>
+        <div className="space-x-4 flex">
+          <Skeleton className="h-[160px] w-[200px] rounded-xl" />
+          <Skeleton className="h-[160px] w-[200px] rounded-xl" />
+          <Skeleton className="h-[160px] w-[200px] rounded-xl" />
+          <Skeleton className="h-[160px] w-[200px] rounded-xl" />
+        </div>
+      </div>
+    );
 
   return (
     <DashboardContainer scrollable>

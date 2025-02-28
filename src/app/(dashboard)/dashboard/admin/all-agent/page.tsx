@@ -95,7 +95,7 @@ import DashboardContainer from "@/components/layout/DashboardContainer";
 import { DataTable } from "./data-table";
 import { User, columns } from "./column";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-
+import { Skeleton } from "@/components/ui/skeleton";
 async function getData(): Promise<User[]> {
   const response = await fetch("http://localhost:8000/api/V1/admin/AllAgentRecords", {
     method: "GET",
@@ -188,7 +188,12 @@ export default function DemoPage() {
     <DashboardContainer>
       <div className="container mx-auto py-10">
         {loading ? (
-          <p>Loading...</p>
+          <div className="space-y-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-8 w-full" />
+        </div>
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : (

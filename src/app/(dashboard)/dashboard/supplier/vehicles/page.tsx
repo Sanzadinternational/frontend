@@ -373,6 +373,7 @@ import { Button } from "@/components/ui/button";
 // import { useRouter } from "next/router";
 import { useRouter } from "next/navigation";
 // Define the Vehicle type
+import { Skeleton } from "@/components/ui/skeleton";
 export type Vehicle = {
   uniqueId: string;
   vehicleType: string;
@@ -454,7 +455,12 @@ export default function VehiclePage() {
   if (loading) {
     return (
       <DashboardContainer scrollable>
-        <div>Loading...</div>
+        <div className="space-y-4">
+           <Skeleton className="h-10 w-full" />
+           <Skeleton className="h-8 w-full" />
+           <Skeleton className="h-8 w-full" />
+           <Skeleton className="h-8 w-full" />
+         </div>
       </DashboardContainer>
     );
   }

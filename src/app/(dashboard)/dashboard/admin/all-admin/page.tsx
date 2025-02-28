@@ -6,6 +6,7 @@ import { User, columns } from "./column"
 import { DataTable } from "./data-table";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton"
 export default function DemoPage() {
   const [data, setData] = useState<User[]>([]); // Store table data
   const [loading, setLoading] = useState(true); // Loading state
@@ -87,7 +88,12 @@ export default function DemoPage() {
     <DashboardContainer>
       <div className="container mx-auto py-10">
         {loading ? (
-          <p>Loading...</p> // Show loading indicator
+           <div className="space-y-4">
+           <Skeleton className="h-10 w-full" />
+           <Skeleton className="h-8 w-full" />
+           <Skeleton className="h-8 w-full" />
+           <Skeleton className="h-8 w-full" />
+         </div> // Show loading indicator
         ) : (
           <DataTable
             columns={[

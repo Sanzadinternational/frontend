@@ -32,7 +32,7 @@ import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import { fetchWithAuth } from "@/components/utils/api";
 import { removeToken } from "@/components/utils/auth";
-
+import { Skeleton } from "@/components/ui/skeleton";
 // Define schema for form validation
 const formSchema = z.object({
   uniqueId: z.string().min(1, { message: "Vehicle selection is required" }),
@@ -109,7 +109,15 @@ const Surcharge = () => {
   }, [user?.userId]);
     
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (
+       <div className="flex flex-col justify-center items-center">
+      <Skeleton className="h-[300px] w-[250px] rounded-xl" />
+      <div className="space-y-2 m-1">
+        <Skeleton className="h-4 w-[250px]" />
+        <Skeleton className="h-4 w-[200px]" />
+      </div>
+    </div>
+  );
   if (error) return <div className="text-red-500">Error: {error}</div>;
 
   // Handle form submission

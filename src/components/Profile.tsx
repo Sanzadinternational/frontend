@@ -202,7 +202,7 @@ import { Card, CardHeader, CardContent, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import Image from "next/image";
 import { Input } from "./ui/input";
-
+import { Skeleton } from "./ui/skeleton";
 interface User {
   Company_name: string;
   Email: string;
@@ -302,7 +302,13 @@ const handleSave = async () => {
     setUpdatedUser((prev) => (prev ? { ...prev, [e.target.name]: e.target.value } : null));
   };
 
-  if (!user) return <div>Loading...</div>;
+  if (!user) return(
+    <div className="space-y-4">
+           <Skeleton className="h-32 w-full" />
+           <Skeleton className="h-32 w-full" />
+           <Skeleton className="h-32 w-full" />
+         </div>
+  );
   if (error) return <div>Error: {error}</div>;
 
   return (
