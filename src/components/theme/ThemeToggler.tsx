@@ -17,7 +17,7 @@ function ThemeToggler() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size={null} className="bg-slate-700 hover:bg-slate-600 mr-5 p-2 border-0">
+        <Button variant="outline" size="sm" className="bg-ingigo-700 hover:bg-blue-200 hover:text-indigo-700 mr-5 p-2 border-none text-blue-400">
           <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           <span className="sr-only">Toggle theme</span>
