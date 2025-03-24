@@ -1,114 +1,3 @@
-// "use client"
-
-// import { zodResolver } from "@hookform/resolvers/zod"
-// import { useForm } from "react-hook-form"
-// import { z } from "zod"
-// import {
-//     Card,
-//     CardContent,
-//     CardDescription,
-//     CardHeader,
-//     CardTitle,
-// } from "@/components/ui/card"
-// import { Button } from "@/components/ui/button"
-// import {
-//     Form,
-//     FormControl,
-//     FormField,
-//     FormItem,
-//     FormLabel,
-//     FormMessage,
-// } from "@/components/ui/form"
-// import { Input } from "@/components/ui/input"
-// import { useToast } from "@/hooks/use-toast"
-
-// const formSchema = z.object({
-//     VehicleType: z.string().min(1, {
-//         message: "Vehicle Type is required",
-//     }),
-// })
-
-// const VehicleType = () => {
-//     const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-//     const { toast } = useToast();
-//     const form = useForm<z.infer<typeof formSchema>>({
-//         resolver: zodResolver(formSchema),
-//         defaultValues: { VehicleType: "" },
-//     });
-
-//     const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-//         try {
-//             const response = await fetch(`${API_BASE_URL}/supplier/CreateVehicleType`, {
-//                 method: "POST",
-//                 headers: {
-//                     "Content-Type": "application/json",
-//                 },
-//                 body: JSON.stringify(data),
-//             });
-
-//             if (!response.ok) {
-//                 toast({
-//                     title: "Vehicle Type",
-//                     description: "Failed to save vehicle type",
-//                     variant: "destructive",
-//                 });
-//                 return; // Prevents further execution
-//             }
-
-//             const result = await response.json();
-//             console.log("Success:", result);
-
-//             toast({
-//                 title: "Vehicle Type",
-//                 description: "Vehicle Type added successfully!",
-//             });
-
-//             form.reset(); // Clear the form after success
-//         } catch (error) {
-//             console.error("Error:", error);
-//             toast({
-//                 title: "Vehicle Type",
-//                 description: "Failed to add Vehicle Type",
-//                 variant: "destructive",
-//             });
-//         }
-//     };
-
-//     return (
-//         <div className="flex my-8">
-//             <Card>
-//                 <CardHeader>
-//                     <CardTitle>Vehicle Type</CardTitle>
-//                     <CardDescription>Add Vehicle Type for Supplier Dashboard</CardDescription>
-//                 </CardHeader>
-//                 <CardContent>
-//                     <Form {...form}>
-//                         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-//                             <FormField
-//                                 control={form.control}
-//                                 name="VehicleType"
-//                                 render={({ field }) => (
-//                                     <FormItem>
-//                                         <FormLabel>Vehicle Type</FormLabel>
-//                                         <FormControl>
-//                                             <Input placeholder="e.g. Sedan, SUV" {...field} />
-//                                         </FormControl>
-//                                         <FormMessage />
-//                                     </FormItem>
-//                                 )}
-//                             />
-//                             <Button type="submit">Add Type</Button>
-//                         </form>
-//                     </Form>
-//                 </CardContent>
-//             </Card>
-//         </div>
-//     );
-// };
-
-// export default VehicleType;
-
-
 
 "use client";
 
@@ -146,21 +35,27 @@ const VehicleType = () => {
   useEffect(() => {
     fetchTypes();
   }, []);
-
   const fetchTypes = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/supplier/GetVehicleTypes`);
-      const data = await response.json();
-      setTypes(data);
+      const response = await fetch(`${API_BASE_URL}/supplier/GetVehicleType`);
+      if (!response.ok) throw new Error("Failed to fetch vehicle types");
+  
+      const result = await response.json();
+      if (!result.success || !Array.isArray(result.data)) {
+        throw new Error("Invalid data format");
+      }
+  
+      setTypes(result.data); // Use result.data instead of result
     } catch (error) {
       console.error("Error fetching vehicle types:", error);
+      setTypes([]); // Prevent issues if fetch fails
     }
   };
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       const url = editingId
-        ? `${API_BASE_URL}/supplier/UpdateVehicleType/${editingId}`
+        ? `${API_BASE_URL}/supplier/UpdateVehicleTypes/${editingId}`
         : `${API_BASE_URL}/supplier/CreateVehicleType`;
 
       const method = editingId ? "PUT" : "POST";

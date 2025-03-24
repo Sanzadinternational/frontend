@@ -1,115 +1,3 @@
-// "use client"
- 
-// import { zodResolver } from "@hookform/resolvers/zod"
-// import { useForm } from "react-hook-form"
-// import { z } from "zod"
-// import {
-//     Card,
-//     CardContent,
-//     CardDescription,
-//     CardHeader,
-//     CardTitle,
-//   } from "@/components/ui/card"
-// import { Button } from "@/components/ui/button"
-// import {
-//   Form,
-//   FormControl,
-//   FormDescription,
-//   FormField,
-//   FormItem,
-//   FormLabel,
-//   FormMessage,
-// } from "@/components/ui/form"
-// import { Input } from "@/components/ui/input"
-//  import { useToast } from "@/hooks/use-toast"
-// const formSchema = z.object({
-//   VehicleModel: z.string().min(1, {
-//     message: "Vehicle Model is required",
-//   }),
-// })
-
-// const VehicleModel = () => {
-//   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-//   const { toast } = useToast();
-//   const form = useForm<z.infer<typeof formSchema>>({
-//             resolver: zodResolver(formSchema),
-//             defaultValues: { VehicleModel: "" },
-//           });
-//          const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-//                  try {
-//                      const response = await fetch(`${API_BASE_URL}/supplier/CreateVehicleModel`, {
-//                          method: "POST",
-//                          headers: {
-//                              "Content-Type": "application/json",
-//                          },
-//                          body: JSON.stringify(data),
-//                      });
-         
-//                      if (!response.ok) {
-//                          toast({
-//                              title: "Vehicle Model",
-//                              description: "Failed to save vehicle Model",
-//                              variant: "destructive",
-//                          });
-//                          return; // Prevents further execution
-//                      }
-         
-//                      const result = await response.json();
-//                      console.log("Success:", result);
-         
-//                      toast({
-//                          title: "Vehicle Model",
-//                          description: "Vehicle Model added successfully!",
-//                      });
-         
-//                      form.reset(); // Clear the form after success
-//                  } catch (error) {
-//                      console.error("Error:", error);
-//                      toast({
-//                          title: "Vehicle Model",
-//                          description: "Failed to add Vehicle Model",
-//                          variant: "destructive",
-//                      });
-//                  }
-//              };
-//         return (
-//             <div className="flex my-8">
-//           <Card>
-//             <CardHeader>
-//               <CardTitle>Vehicle Model</CardTitle>
-//               <CardDescription>Add Vehicle Model for Supplier Dashboard</CardDescription>
-//             </CardHeader>
-//             <CardContent>
-//             <Form {...form}>
-//               <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-//                 <FormField
-//                   control={form.control}
-//                   name="VehicleModel"
-//                   render={({ field }) => (
-//                     <FormItem>
-//                       <FormLabel>Vehicle Model</FormLabel>
-//                       <FormControl>
-//                         <Input placeholder="eg. A4,Q8" {...field} />
-//                       </FormControl>
-//                       <FormDescription>
-//                         This will visible in Supplier Dashboard
-//                       </FormDescription>
-//                       <FormMessage />
-//                     </FormItem>
-//                   )}
-//                 />
-//                 <Button type="submit">Add Model</Button>
-//               </form>
-//             </Form>
-//             </CardContent>
-//             </Card>
-//             </div>
-//           )
-// }
-
-// export default VehicleModel
-
-
 
 "use client";
 
@@ -147,21 +35,37 @@ const VehicleModel = () => {
   useEffect(() => {
     fetchModels();
   }, []);
-
   const fetchModels = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/supplier/GetVehicleModels`);
-      const data = await response.json();
-      setModels(data);
+      const response = await fetch(`${API_BASE_URL}/supplier/GetVehicleModel`);
+      if (!response.ok) throw new Error("Failed to fetch vehicle models");
+  
+      const result = await response.json();
+      if (!result?.data || !Array.isArray(result.data)) {
+        throw new Error("Invalid data format");
+      }
+  
+      setModels(result.data);
     } catch (error) {
       console.error("Error fetching vehicle models:", error);
+      setModels([]);
     }
   };
+  
+  // const fetchModels = async () => {
+  //   try {
+  //     const response = await fetch(`${API_BASE_URL}/supplier/GetVehicleModel`);
+  //     const data = await response.json();
+  //     setModels(data);
+  //   } catch (error) {
+  //     console.error("Error fetching vehicle models:", error);
+  //   }
+  // };
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       const url = editingId
-        ? `${API_BASE_URL}/supplier/UpdateVehicleModel/${editingId}`
+        ? `${API_BASE_URL}/supplier/UpdateVehicleModels/${editingId}`
         : `${API_BASE_URL}/supplier/CreateVehicleModel`;
 
       const method = editingId ? "PUT" : "POST";

@@ -251,7 +251,7 @@ const SearchResult = ({ onSelect, formData, vehicles, loading }) => {
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Distance</dt>
-                    <dd>N/A</dd> {/* Replace with actual data if available */}
+                    <dd>{vehicles.distance}</dd> {/* Replace with actual data if available */}
                   </div>
                 </dl>
               </CardContent>
@@ -331,7 +331,7 @@ const SearchResult = ({ onSelect, formData, vehicles, loading }) => {
                             : "One Way"}
                         </p>
                         <h2 className="text-2xl font-medium">
-                          {vehicle.currency.toUpperCase()}{" "}
+                          {vehicle.currency}{" "}
                           {returnDate && returnTime
                             ? (Number(vehicle.price) * 2).toFixed(2) // Double the price for round trip
                             : Number(vehicle.price).toFixed(2)}

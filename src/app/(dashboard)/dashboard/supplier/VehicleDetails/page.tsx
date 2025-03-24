@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -23,7 +23,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-
+import { fetchWithAuth } from "@/components/utils/api";
+import { removeToken } from "@/components/utils/auth";
 // Validation Schema
 const formSchema = z.object({
     VehicleType: z.string().min(1, { message: "Vehicle Type is required" }),
@@ -41,8 +42,27 @@ const formSchema = z.object({
   
 
 const VehicleDetailsForm = () => {
-//   const { toast } = useToast();
-//   const [isLoading, setIsLoading] = useState(false);
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+const [SupplierId,setSupplierId] = useState();
+
+// ✅ Fetch User & Vehicles in One Efficient Call
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userData = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
+        setSupplierId(userData.userId);
+       
+      } catch (err: any) {
+        console.error("Error fetching data:", err);
+        removeToken();
+      } 
+    };
+
+    fetchData();
+  }, []);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,25 +87,25 @@ const VehicleDetailsForm = () => {
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     console.log("Form Submitted:", data); // Log form values
   
-    // setIsLoading(true);
-    // try {
-    //   const response = await fetch("/api/vehicle-details", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(data),
-    //   });
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/supplier/Createvehicle`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({...data, SupplierId: SupplierId}),
+      });
   
-    //   if (!response.ok) {
-    //     throw new Error("Failed to save vehicle details");
-    //   }
+      if (!response.ok) {
+        throw new Error("Failed to save vehicle details");
+      }
   
-    //   toast({ title: "Success!", description: "Vehicle details saved." });
-    //   form.reset();
-    // } catch (error) {
-    //   toast({ title: "Error", description: (error as Error).message });
-    // } finally {
-    //   setIsLoading(false);
-    // }
+      toast({ title: "Success!", description: "Vehicle details saved." });
+      form.reset();
+    } catch (error) {
+      toast({ title: "Error", description: (error as Error).message });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
 
@@ -369,8 +389,8 @@ const VehicleDetailsForm = () => {
             </div>
             </div>
             <Button type="submit">
-                {/* {isLoading ? "Saving..." : "Save Vehicle Details"} */}
-                Save Vehicle Details
+                {isLoading ? "Saving..." : "Save Vehicle Details"}
+                {/* Save Vehicle Details */}
                 </Button>
           </form>
         </Form>

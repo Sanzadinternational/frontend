@@ -366,7 +366,7 @@ const Surcharge = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userData = await fetchWithAuth(`${API_BASE_URL}/supplier/dashboard`);
+        const userData = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
         const vehicleResponse = await fetch(
           `${API_BASE_URL}/supplier/getCarDetails/${userData.userId}`
         );

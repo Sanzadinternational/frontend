@@ -1,152 +1,3 @@
-// "use client";
-
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import { useForm } from "react-hook-form";
-// import { z } from "zod";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
-// import { Button } from "@/components/ui/button";
-// import {
-//   Form,
-//   FormControl,
-//   FormField,
-//   FormItem,
-//   FormLabel,
-//   FormMessage,
-// } from "@/components/ui/form";
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from "@/components/ui/select";
-
-// import { Input } from "@/components/ui/input";
-// import { useToast } from "@/hooks/use-toast";
-// const formSchema = z.object({
-//   VehicleBrand: z.string().min(1, {
-//     message: "Vehicle Brand is required",
-//   }),
-//   serviceType: z.string().min(1, {
-//     message: "Service Type is required",
-//   }),
-// });
-
-// const VehicleBrand = () => {
-//   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-//   const { toast } = useToast();
-//   const form = useForm<z.infer<typeof formSchema>>({
-//     resolver: zodResolver(formSchema),
-//     defaultValues: { VehicleBrand: "", serviceType: "" },
-//   });
-
-//   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-//           try {
-//               const response = await fetch(`${API_BASE_URL}/supplier/CreateVehicleBrand`, {
-//                   method: "POST",
-//                   headers: {
-//                       "Content-Type": "application/json",
-//                   },
-//                   body: JSON.stringify(data),
-//               });
-  
-//               if (!response.ok) {
-//                   toast({
-//                       title: "Vehicle Brand",
-//                       description: "Failed to save Vehicle Brand",
-//                       variant: "destructive",
-//                   });
-//                   return; // Prevents further execution
-//               }
-  
-//               const result = await response.json();
-//               console.log("Success:", result);
-  
-//               toast({
-//                   title: "Vehicle Brand",
-//                   description: "Vehicle Brand added successfully!",
-//               });
-  
-//               form.reset(); // Clear the form after success
-//           } catch (error) {
-//               console.error("Error:", error);
-//               toast({
-//                   title: "Vehicle Brand",
-//                   description: "Failed to add Vehicle Brand",
-//                   variant: "destructive",
-//               });
-//           }
-//       };
-
-//   return (
-//     <div className="flex my-8">
-//       <Card>
-//         <CardHeader>
-//           <CardTitle>Vehicle Brand</CardTitle>
-//           <CardDescription>
-//             Add Vehicle Brand for Supplier Dashboard
-//           </CardDescription>
-//         </CardHeader>
-//         <CardContent>
-//           <Form {...form}>
-//             <form
-//               onSubmit={form.handleSubmit(handleSubmit)}
-//               className="space-y-4"
-//             >
-//               <FormField
-//                 control={form.control}
-//                 name="VehicleBrand"
-//                 render={({ field }) => (
-//                   <FormItem>
-//                     <FormLabel>Vehicle Brand</FormLabel>
-//                     <FormControl>
-//                       <Input placeholder="eg. Audi, Toyota" {...field} />
-//                     </FormControl>
-//                     <FormMessage />
-//                   </FormItem>
-//                 )}
-//               />
-
-//               <FormField
-//                 control={form.control}
-//                 name="serviceType"
-//                 render={({ field }) => (
-//                   <FormItem>
-//                     <FormLabel>Service Type</FormLabel>
-//                     <FormControl>
-//                       <Select onValueChange={field.onChange} defaultValue={field.value}>
-//                         <SelectTrigger>
-//                           <SelectValue placeholder="Select Service Type" />
-//                         </SelectTrigger>
-//                         <SelectContent>
-//                           <SelectItem value="standard">Standard</SelectItem>
-//                           <SelectItem value="premium">Premium</SelectItem>
-//                         </SelectContent>
-//                       </Select>
-//                     </FormControl>
-//                     <FormMessage />
-//                   </FormItem>
-//                 )}
-//               />
-
-//               <Button type="submit">Add Brand</Button>
-//             </form>
-//           </Form>
-//         </CardContent>
-//       </Card>
-//     </div>
-//   );
-// };
-
-// export default VehicleBrand;
-
-
 
 "use client";
 
@@ -169,7 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   VehicleBrand: z.string().min(1, { message: "Vehicle Brand is required" }),
-  serviceType: z.string().min(1, { message: "Service Type is required" }),
+  ServiceType: z.string().min(1, { message: "Service Type is required" }),
 });
 
 const VehicleBrand = () => {
@@ -180,7 +31,7 @@ const VehicleBrand = () => {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { VehicleBrand: "", serviceType: "" },
+    defaultValues: { VehicleBrand: "", ServiceType: "" },
   });
 
   // Fetch brands on mount
@@ -190,7 +41,8 @@ const VehicleBrand = () => {
 
   const fetchBrands = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/supplier/GetVehicleBrands`);
+      const response = await fetch(`${API_BASE_URL}/supplier/GetVehicleBrand`);
+      
       const data = await response.json();
       setBrands(data);
     } catch (error) {
@@ -201,7 +53,7 @@ const VehicleBrand = () => {
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       const url = editingId
-        ? `${API_BASE_URL}/supplier/UpdateVehicleBrand/${editingId}`
+        ? `${API_BASE_URL}/supplier/UpdateVehicleBrands/${editingId}`
         : `${API_BASE_URL}/supplier/CreateVehicleBrand`;
 
       const method = editingId ? "PUT" : "POST";
@@ -218,7 +70,7 @@ const VehicleBrand = () => {
         title: editingId ? "Updated" : "Added",
         description: `Vehicle Brand ${editingId ? "updated" : "added"} successfully!`,
       });
-
+      
       form.reset();
       setEditingId(null);
       fetchBrands(); // Refresh list
@@ -230,7 +82,7 @@ const VehicleBrand = () => {
   const handleEdit = (brand: any) => {
     setEditingId(brand.id);
     form.setValue("VehicleBrand", brand.VehicleBrand);
-    form.setValue("serviceType", brand.serviceType);
+    form.setValue("ServiceType", brand.ServiceType);
   };
 
   const handleDelete = async (id: string) => {
@@ -273,18 +125,18 @@ const VehicleBrand = () => {
               />
               <FormField
                 control={form.control}
-                name="serviceType"
+                name="ServiceType"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Service Type</FormLabel>
                     <FormControl>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={(value) => field.onChange(value)} value={field.value}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select Service Type" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="standard">Standard</SelectItem>
-                          <SelectItem value="premium">Premium</SelectItem>
+                          <SelectItem value="Standard">Standard</SelectItem>
+                          <SelectItem value="Premium">Premium</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -321,7 +173,7 @@ const VehicleBrand = () => {
               {brands.map((brand) => (
                 <tr key={brand.id} className="border border-gray-200">
                   <td className="p-2">{brand.VehicleBrand}</td>
-                  <td className="p-2">{brand.serviceType}</td>
+                  <td className="p-2">{brand.ServiceType}</td>
                   <td className="p-2 flex gap-2">
                     <Button onClick={() => handleEdit(brand)} variant="outline">
                       Edit

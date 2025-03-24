@@ -83,6 +83,16 @@ export interface Role{
               icon: 'car',
             },
             {
+              title: 'Add Zone',
+              url: '/dashboard/supplier/AddZone',
+              icon: 'car',
+            },
+            {
+              title: 'Vehicle Transfer',
+              url: '/dashboard/supplier/VehicleTransfer',
+              icon: 'car',
+            },
+            {
               title: 'Add New Vehicle',
               url: '/dashboard/supplier/AddVehicle',
               icon: 'car',

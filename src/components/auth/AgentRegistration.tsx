@@ -61,7 +61,9 @@ const formSchema = z.object({
   Office_number: z.string().min(1, { message: "Office No. is required" }),
   Mobile_number: z.string().min(1, { message: "Mobile No. is required" }),
   Currency: z.string().min(1, { message: "Currency is required" }),
-  Gst_Tax_Certificate: z.string(),
+  Gst_Tax_Certificate: z.any().refine((file) => file instanceof File, {
+    message: "Upload document is required",
+  }),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -78,7 +80,7 @@ const AgentRegistration: React.FC = () => {
   const [isOtpVerified, setIsOtpVerified] = useState(false);
   const [isSendingOtp, setIsSendingOtp] = useState(false); // For sending OTP
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false); // For verifying OTP
-  const [isSubmiting,setIsSubmiting] = useState(false);
+  const [isSubmiting, setIsSubmiting] = useState(false);
   const router = useRouter();
 
   const form = useForm<FormData>({
@@ -97,52 +99,51 @@ const AgentRegistration: React.FC = () => {
       Contact_Person: "",
     },
   });
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+
   const { toast } = useToast();
   const handleSendOtp = async () => {
     const email = form.getValues("Email");
     if (email) {
       setIsSendingOtp(true); // Start sending OTP
       try {
-        const response = await fetch(
-          `${API_BASE_URL}/agent/send-otp`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email }),
-          }
-        );
+        const response = await fetch(`${API_BASE_URL}/agent/send-otp`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        });
 
         if (response.ok) {
           setOtpSent(true);
           toast({
-            title:"Sending OTP",
-            description:"OTP sent to email"
-          })
+            title: "Sending OTP",
+            description: "OTP sent to email",
+          });
           console.log("OTP sent to email!");
-        } else if(response.status===406) {
+        } else if (response.status === 406) {
           toast({
-            title:"Error",
-            description:"This Email is already registered.",
-            variant:"destructive"
-          })
+            title: "Error",
+            description: "This Email is already registered.",
+            variant: "destructive",
+          });
           console.log("email already registered.");
-        }
-        else{
+        } else {
           toast({
-            title:"Error",
-            description:"Failed to send OTP.",
-            variant:"destructive"
-          })
+            title: "Error",
+            description: "Failed to send OTP.",
+            variant: "destructive",
+          });
           console.log("Failed to send OTP.");
         }
       } catch (error) {
         toast({
-          title:"Error",
-          description:(error as Error).message,
-          variant:"destructive"
-        })
+          title: "Error",
+          description: (error as Error).message,
+          variant: "destructive",
+        });
         console.error("Error sending OTP:", error);
       } finally {
         setIsSendingOtp(false); // Stop sending OTP
@@ -155,93 +156,132 @@ const AgentRegistration: React.FC = () => {
     const otp = form.getValues("Otp");
     setIsVerifyingOtp(true); // Start verifying OTP
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/agent/verify-otp`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, otp }),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/agent/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      });
 
       if (response.ok) {
         setIsOtpVerified(true);
         toast({
-          title:"OTP Verification",
-          description:"OTP verified successfully!"
-        })
+          title: "OTP Verification",
+          description: "OTP verified successfully!",
+        });
         console.log("OTP verified successfully!");
       } else {
         toast({
-          title:"OTP Verification",
-          description:"Invalid OTP.",
-          variant:"destructive"
-        })
+          title: "OTP Verification",
+          description: "Invalid OTP.",
+          variant: "destructive",
+        });
         console.log("Invalid OTP.");
       }
     } catch (error) {
       toast({
-        title:"Error",
-        description:(error as Error).message,
-      })
+        title: "Error",
+        description: (error as Error).message,
+      });
       console.log("Error verifying OTP:", error);
     } finally {
       setIsVerifyingOtp(false); // Stop verifying OTP
     }
   };
 
-  
   const handleSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmiting(true);
-    // Concatenate dial code with office number and mobile number
+
     const officeNumberWithDialCode = `${selectedDialCode}${data.Office_number}`;
     const mobileNumberWithDialCode = `${selectedDialCode}${data.Mobile_number}`;
 
-    // Prepare the updated data
-    const updatedData = {
-      ...data,
-      Office_number: officeNumberWithDialCode,
-      Mobile_number: mobileNumberWithDialCode,
-    };
+    const formData = new FormData();
+    formData.append("Company_name", data.Company_name);
+    formData.append("Address", data.Address);
+    formData.append("Email", data.Email);
+    formData.append("Password", data.Password);
+    formData.append("Zip_code", data.Zip_code);
+    formData.append("IATA_Code", data.IATA_Code);
+    formData.append("Country", data.Country);
+    formData.append("City", data.City);
+    formData.append("Gst_Vat_Tax_number", data.Gst_Vat_Tax_number);
+    formData.append("Contact_Person", data.Contact_Person);
+    formData.append("Office_number", officeNumberWithDialCode);
+    formData.append("Mobile_number", mobileNumberWithDialCode);
+    formData.append("Currency", data.Currency);
+
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
+    if (!fileInput?.files?.[0]) {
+      toast({
+        title: "Error",
+        description: "Please upload the GST Tax Certificate.",
+      });
+      setIsSubmiting(false);
+      return;
+    }
+    formData.append("Gst_Tax_Certificate", fileInput.files[0]);
+
+    // Debug FormData
+    // console.log("FormData Content:");
+    // for (const [key, value] of formData.entries()) {
+    //   if (value instanceof File) {
+    //     console.log(
+    //       `${key}: File - ${value.name}, Size: ${value.size} bytes, Type: ${value.type}`
+    //     );
+    //   } else {
+    //     console.log(`${key}:`, value);
+    //   }
+    // }
+
     if (isOtpVerified) {
       try {
         const registrationResponse = await fetch(
           `${API_BASE_URL}/agent/registration`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(updatedData),
+            body: formData, // No need for headers, FormData handles it
           }
         );
 
         if (registrationResponse.ok) {
           toast({
             title: "User Registration",
-            description: "Registered Sucessfully...",
+            description: "Registered Successfully!",
           });
           router.push("/login");
         } else {
           const errorData = await registrationResponse.json();
-          console.log("Registration failed:", errorData);
-          console.log(data);
+          toast({
+            title: "Error",
+            description: errorData.message || "Registration failed.",
+          });
         }
       } catch (error) {
-        console.log("Error during registration:", error);
-        console.log(data);
-      }finally{
+        toast({
+          title: "Error",
+          description: "An error occurred during registration.",
+        });
+        console.error("Error during registration:", error);
+      } finally {
         setIsSubmiting(false);
       }
     } else {
-      console.log("Please verify the OTP first.");
+      toast({ title: "Error", description: "Please verify the OTP first." });
     }
   };
 
-  // const handleCountryChange = (value: string) => {
-  //   setSelectedCountry(value);
-  //   form.setValue("Country", value);
-  //   form.setValue("City", "");
-  //   setSelectedCity("");
-  // };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setPreview(URL.createObjectURL(selectedFile));
+      form.setValue("Gst_Tax_Certificate", selectedFile); // Set file in form
+      form.clearErrors("Gst_Tax_Certificate"); // Clear any previous errors
+    }
+  };
+
   const handleCountryChange = (value: string) => {
     const selected = countries.find((country) => country.name === value);
     if (selected) {
@@ -687,7 +727,7 @@ const AgentRegistration: React.FC = () => {
                   </div>
                 </ScrollArea>
 
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="Gst_Tax_Certificate"
                   render={({ field }) => (
@@ -704,10 +744,50 @@ const AgentRegistration: React.FC = () => {
                       <FormMessage />
                     </FormItem>
                   )}
+                /> */}
+                <FormField
+                  control={form.control}
+                  name="Gst_Tax_Certificate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Upload Document (GST Tax Certificate)
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="file"
+                          accept=".pdf,.jpg,.png"
+                          onChange={handleFileChange}
+                        />
+                      </FormControl>
+                      {preview && (
+                        <div className="mt-4">
+                          <p>Preview:</p>
+                          {file?.type.startsWith("image/") ? (
+                            <Image
+                              src={preview}
+                              alt="File Preview"
+                              width={150}
+                              height={150}
+                            />
+                          ) : (
+                            <a
+                              href={preview}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Preview File
+                            </a>
+                          )}
+                        </div>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
 
                 <Button type="submit" className="w-full" disabled={isSubmiting}>
-                {isSubmiting ? "Signing Up..." : "Sign Up"}
+                  {isSubmiting ? "Signing Up..." : "Sign Up"}
                 </Button>
               </>
             )}

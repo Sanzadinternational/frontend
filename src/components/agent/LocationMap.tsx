@@ -55,7 +55,7 @@ import { useMemo } from "react";
 
 // Map container styling
 const MapContainerStyle = {
-  width: "100%",
+  width: "350px",
   height: "300px",
 };
 
