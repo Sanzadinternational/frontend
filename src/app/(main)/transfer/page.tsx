@@ -7,7 +7,9 @@ import { Suspense } from "react";
 const Page = () => {
   return (
     <DashboardContainer scrollable>
+       <Suspense fallback={<div>Loading...</div>}>
       <TransferMultiStepForm />
+          </Suspense>
     </DashboardContainer>
   );
 };
