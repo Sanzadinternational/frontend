@@ -1,3 +1,4 @@
+"use client"
 import ResetPassword from "@/components/auth/ResetPassword"
 
 const page = () => {
