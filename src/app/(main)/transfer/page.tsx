@@ -1,11 +1,14 @@
-import TransferMultiStepForm from "@/components/agent/TransferMultiStepForm"
-import DashboardContainer from "@/components/layout/DashboardContainer"
-const page = () => {
+"use client";
+
+import TransferMultiStepForm from "@/components/agent/TransferMultiStepForm";
+import DashboardContainer from "@/components/layout/DashboardContainer";
+
+const Page = () => {
   return (
     <DashboardContainer scrollable>
-        <TransferMultiStepForm/>
-        </DashboardContainer>
-  )
-}
+      <TransferMultiStepForm />
+    </DashboardContainer>
+  );
+};
 
-export default page
+export default Page;
