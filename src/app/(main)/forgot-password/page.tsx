@@ -1,5 +1,6 @@
 "use client"
-import ResetPassword from "@/components/auth/ResetPassword"
+import ResetPassword from "@/components/auth/ResetPassword";
+import { Suspense } from "react";
 
 const page = () => {
   return (
