@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-// import { useBooking } from "../context/BookingContext"; // Use your context here
 import { Users, Luggage, BadgeInfo, Car, Map } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 import { fetchWithAuth } from "@/components/utils/api";
@@ -26,12 +25,11 @@ import Location from "../Location";
 import LocationMap from "./LocationMap";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
-const SearchResult = ({ onSelect, formData, vehicles, loading }) => {
+import { Skeleton } from "../ui/skeleton";
+const SearchResult = ({ onSelect, formData, vehicles, loading, distance }) => {
   console.log("Received Form Data:", formData);
   console.log("Available Vehicles:", vehicles);
   const [userData, setUserData] = useState<any>(null);
-  // const { bookingData } = useBooking();
-  // const { formData = {}, responseData = [] } = bookingData; // Add fallback values
   const {
     pickup,
     dropoff,
@@ -251,7 +249,7 @@ const SearchResult = ({ onSelect, formData, vehicles, loading }) => {
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Distance</dt>
-                    <dd>{vehicles.distance}</dd> {/* Replace with actual data if available */}
+                    <dd>{distance ? `${distance} Miles` : "N/A"}</dd> {/* Replace with actual data if available */}
                   </div>
                 </dl>
               </CardContent>
@@ -277,7 +275,11 @@ const SearchResult = ({ onSelect, formData, vehicles, loading }) => {
         {/* Vehicles Section */}
         <ScrollArea className="md:w-2/3 whitespace-nowrap rounded-md border">
         <h2 className="text-2xl px-4 pt-2">Available Vehicles</h2>
-        {loading?(<div>Loading...</div>):(
+        {loading?(<div className="flex flex-col p-4 gap-2">
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full" />
+        </div>):(
           <div className="flex flex-col gap-5 p-4 md:h-96">
           {vehicles.length > 0 ? (
             vehicles.map((vehicle, index) => (
@@ -360,14 +362,16 @@ const SearchResult = ({ onSelect, formData, vehicles, loading }) => {
                     variant="outline"
                     className="mr-1"
                     onClick={() => handleEmailQuote(vehicle, false)}
-                    disabled={isLoadingOneWay}
+                    // disabled={isLoadingOneWay}
+                    disabled={isLoadingOneWay || !userData} // Disable if no userData
                   >
                     {isLoadingOneWay ? "Sending..." : "Email Quote"}
                   </Button>
                   <Button
                     variant="outline"
                     onClick={() => handleEmailQuote(vehicle, true)}
-                    disabled={isLoadingRoundTrip}
+                    // disabled={isLoadingRoundTrip}
+                    disabled={isLoadingRoundTrip || !userData} // Disable if no userData
                   >
                     {isLoadingRoundTrip ? "Sending..." : "Round Trip Quote"}
                   </Button>

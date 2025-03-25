@@ -15,7 +15,7 @@ const TransferMultiStepForm = () => {
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(1);
   const [bookingInfo, setBookingInfo] = useState(null);
-
+  const [distance, setDistance] = useState(null);
   // Extract query parameters
   const formData = {
     pickup: searchParams.get("pickup") || "",
@@ -43,6 +43,7 @@ const TransferMultiStepForm = () => {
         );
 
         setVehicles(response.data.data); // Store the vehicle data
+        setDistance(response.data.distance);
       } catch (error) {
         console.error("Error fetching vehicles:", error);
       } finally {
@@ -78,7 +79,7 @@ const TransferMultiStepForm = () => {
       case 1:
         return (
           <>
-            <SearchResult onSelect={handleBookingInfo} formData={formData} vehicles={vehicles} loading={loading}/>
+            <SearchResult onSelect={handleBookingInfo} formData={formData} vehicles={vehicles} loading={loading} distance={distance}/>
             {/* <button type="button" onClick={nextStep}>
               Next
             </button> */}
@@ -140,24 +141,24 @@ const TransferMultiStepForm = () => {
       </div>
       <div className="mt-6">{renderStep()}</div>
       {/* Navigation Buttons */}
-      <div className="mt-6 flex justify-center gap-2">
-        <Button
+      {/* <div className="mt-6 flex justify-center gap-2"> */}
+        {/* <Button
           type="button"
           onClick={prevStep}
           className=""
           disabled={step === 1}
         >
           Back
-        </Button>
-        <Button
+        </Button> */}
+        {/* <Button
           type="button"
           onClick={nextStep}
           className=""
           disabled={step === totalSteps}
         >
           Next
-        </Button>
-      </div>
+        </Button> */}
+      {/* </div> */}
       </>
   );
 };

@@ -61,11 +61,16 @@ const VehicleBrand = () => {
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(
+          {
+            VehicleBrand: data.VehicleBrand,
+            ServiceType: data.ServiceType,
+          }
+        ),
       });
 
       if (!response.ok) throw new Error("Failed to save brand");
-
+      console.log(data);
       toast({
         title: editingId ? "Updated" : "Added",
         description: `Vehicle Brand ${editingId ? "updated" : "added"} successfully!`,
