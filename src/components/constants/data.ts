@@ -77,11 +77,11 @@ export interface Role{
            icon: 'car',
           isActive: true,
           items: [
-            {
-              title: 'Available Vehicles',
-              url: '/dashboard/supplier/vehicles',
-              icon: 'car',
-            },
+            // {
+            //   title: 'Available Vehicles',
+            //   url: '/dashboard/supplier/vehicles',
+            //   icon: 'car',
+            // },
             {
               title: 'Add Zone',
               url: '/dashboard/supplier/AddZone',
@@ -92,26 +92,26 @@ export interface Role{
               url: '/dashboard/supplier/VehicleTransfer',
               icon: 'car',
             },
-            {
-              title: 'Add New Vehicle',
-              url: '/dashboard/supplier/AddVehicle',
-              icon: 'car',
-            },
+            // {
+            //   title: 'Add New Vehicle',
+            //   url: '/dashboard/supplier/AddVehicle',
+            //   icon: 'car',
+            // },
             {
               title: 'Vehicle Details',
               url: '/dashboard/supplier/VehicleDetails',
               icon: 'car',
             },
-            {
-              title: 'Transfer Details',
-              url: '/dashboard/supplier/TransferDetails',
-              icon: 'car',
-            },
-            {
-              title: 'Other Details',
-              url: '/dashboard/supplier/OtherDetails',
-              icon: 'car',
-            },
+            // {
+            //   title: 'Transfer Details',
+            //   url: '/dashboard/supplier/TransferDetails',
+            //   icon: 'car',
+            // },
+            // {
+            //   title: 'Other Details',
+            //   url: '/dashboard/supplier/OtherDetails',
+            //   icon: 'car',
+            // },
             {
               title: 'Add Surcharge',
               url: '/dashboard/supplier/AddSurcharge',
