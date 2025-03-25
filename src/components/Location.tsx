@@ -2,8 +2,6 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useBooking } from "./context/BookingContext";
-
 import { useToast } from "@/hooks/use-toast";
 import {
   Card,
@@ -21,15 +19,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { Plane, Hotel, TrainFront, Bus, Building, MapPin } from "lucide-react";
-// import {
-//   FaPlane, FaHotel, FaUtensils, FaBuilding, FaMapMarkerAlt,
-//   FaTrain, FaBus
-// } from "react-icons/fa";
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const placeTypeIcons: { [key: string]: JSX.Element } = {
   // airport: <FaPlane className="w-6 h-6 text-blue-500" />,
   airport: <Plane className="w-6 h-6 text-blue-500" />,
@@ -206,8 +198,6 @@ export default function Location() {
   const [showReturnFields, setShowReturnFields] = useState(false); // State to toggle return date/time fields
   const googleMapsApiKey = "AIzaSyAjXkEFU-hA_DSnHYaEjU3_fceVwQra0LI";
   const { toast } = useToast();
-  const { setBookingData } = useBooking();
-  const [isSubmiting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -231,68 +221,6 @@ export default function Location() {
     const location = place.geometry.location;
     setToCoords({ lat: location.lat(), lng: location.lng() });
   };
-
-  // const onSubmit = async (data: FormData) => {
-  //   setIsSubmitting(true);
-
-  //   if (!fromCoords || !toCoords) {
-  //     toast({
-  //       title: "Valid Location",
-  //       description:
-  //         "Please select valid locations for both Pickup and Dropoff.",
-  //       variant: "destructive",
-  //     });
-  //     // alert("Please select valid locations for both Pickup and Dropoff.");
-  //     return;
-  //   }
-
-  //   const payload = {
-  //     ...data,
-  //     pickupLocation: `${fromCoords.lat},${fromCoords.lng}`,
-  //     dropoffLocation: `${toCoords.lat},${toCoords.lng}`,
-  //   };
-
-  //   console.log("Payload to Send:", payload);
-  //   try {
-  //     const response = await axios.post(
-  //       `${API_BASE_URL}/data/search`,
-  //       payload,
-  //       {
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-
-  //     if (response.status === 200) {
-  //       toast({
-  //         title: "Searching Vehicle",
-  //         description: "Request submitted successfully",
-  //       });
-  //       // alert("Booking successfully submitted!");
-  //       console.log("API Response:", response.data);
-  //       // Store the response data in the state
-  //       setBookingData({
-  //         // formData: data,
-  //         formData: payload,
-  //         responseData: response.data.data,
-  //       });
-  //       router.push("/transfer");
-  //     } else {
-  //       toast({
-  //         title: "API Error",
-  //         description: "Something went wrong, please try again.",
-  //       });
-  //     }
-  //   } catch (error) {
-  //     toast({
-  //       title: "Error while submitting data",
-  //       description: `API Error:", ${error.response?.data} || ${error.message}`,
-  //     });
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
 
 
   const onSubmit = (data: FormData) => {
@@ -417,7 +345,7 @@ export default function Location() {
                   )}
                 />
 
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
                   {/* Date Field */}
                   <FormField
                     control={form.control}
@@ -478,7 +406,7 @@ export default function Location() {
 
               {/* Conditional Return Date and Time Fields */}
               {showReturnFields && (
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
                   {/* Return Date Field */}
                   <FormField
                     control={form.control}
@@ -528,9 +456,10 @@ export default function Location() {
               <Button
                 className="bg-blue-500 dark:bg-card-foreground"
                 type="submit"
-                disabled={isSubmiting}
+                // disabled={isSubmiting}
               >
-                {isSubmiting ? "Searching..." : "See Results"}
+                {/* {isSubmiting ? "Searching..." : "See Results"} */}
+                See Results
               </Button>
             </form>
           </Form>
