@@ -13,7 +13,7 @@ import Location from "@/components/Location";
 
 const features = [
   {
-    title: "No Extra Charge",
+    title: "No Extra",
     description: `Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repellat provident perferendis voluptatibus.`,
   },
   {
