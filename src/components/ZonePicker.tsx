@@ -42,11 +42,19 @@
 import { useState } from "react";
 import AutocompleteInput from "@/components/AutocompleteInput";
 const googleMapsApiKey = "AIzaSyAjXkEFU-hA_DSnHYaEjU3_fceVwQra0LI";
-type ZonePickerProps = {
+// type ZonePickerProps = {
+//   onChange: (value: string) => void;
+//   setValue: (name: string, value: string) => void;
+// };
+interface ZonePickerProps {
   onChange: (value: string) => void;
-  setValue: (name: string, value: string) => void;
-};
-
+  setValue: (name: string, value: any) => void;
+  initialValue?: string;
+  initialCoords?: {
+    lat: number;
+    lng: number;
+  };
+}
 const ZonePicker = ({ onChange, setValue }: ZonePickerProps) => {
   const [zoneLocation, setZoneLocation] = useState<{
     lat: number;
