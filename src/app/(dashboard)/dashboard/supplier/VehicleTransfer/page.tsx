@@ -75,7 +75,7 @@ const VehicleTransfer = () => {
         setSupplierId(userData.userId);
         
         const vehicleResponse = await fetch(
-          `${API_BASE_URL}/supplier/getVehiclebySupplierId/${userData.userId}`
+          `${API_BASE_URL}/supplier/GetVehicleBrand`
           
         );
       
@@ -225,7 +225,7 @@ const VehicleTransfer = () => {
                                       value={vehicle.id}
                                     >
                                       {vehicle.VehicleBrand} (
-                                      {vehicle.VehicleModel})
+                                      {vehicle.ServiceType})
                                     </SelectItem>
                                   ))
                                 )}
