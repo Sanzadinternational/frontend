@@ -26,7 +26,7 @@ import LocationMap from "./LocationMap";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "../ui/skeleton";
-const SearchResult = ({ onSelect, formData, vehicles, loading, distance }) => {
+const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimatedTime }) => {
   console.log("Received Form Data:", formData);
   console.log("Available Vehicles:", vehicles);
   const [userData, setUserData] = useState<any>(null);
@@ -245,11 +245,11 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance }) => {
                     <dt className="text-muted-foreground">
                       Estimated Trip Time
                     </dt>
-                    <dd>N/A</dd> {/* Replace with actual data if available */}
+                    <dd>{estimatedTime?`${estimatedTime}`:"N/A"}</dd> 
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Distance</dt>
-                    <dd>{distance ? `${distance} Miles` : "N/A"}</dd> {/* Replace with actual data if available */}
+                    <dd>{distance ? `${distance} Miles` : "N/A"}</dd> 
                   </div>
                 </dl>
               </CardContent>

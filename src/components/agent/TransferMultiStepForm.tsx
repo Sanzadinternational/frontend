@@ -16,6 +16,7 @@ const TransferMultiStepForm = () => {
   const [step, setStep] = useState(1);
   const [bookingInfo, setBookingInfo] = useState(null);
   const [distance, setDistance] = useState(null);
+  const [estimatedTime, setEstimatedTime]= useState(null);
   // Extract query parameters
   const formData = {
     pickup: searchParams.get("pickup") || "",
@@ -44,6 +45,7 @@ const TransferMultiStepForm = () => {
 
         setVehicles(response.data.data); // Store the vehicle data
         setDistance(response.data.distance);
+        setEstimatedTime(response.data.estimatedTime);
       } catch (error) {
         console.error("Error fetching vehicles:", error);
       } finally {
@@ -79,7 +81,7 @@ const TransferMultiStepForm = () => {
       case 1:
         return (
           <>
-            <SearchResult onSelect={handleBookingInfo} formData={formData} vehicles={vehicles} loading={loading} distance={distance}/>
+            <SearchResult onSelect={handleBookingInfo} formData={formData} vehicles={vehicles} loading={loading} distance={distance} estimatedTime={estimatedTime}/>
             {/* <button type="button" onClick={nextStep}>
               Next
             </button> */}
