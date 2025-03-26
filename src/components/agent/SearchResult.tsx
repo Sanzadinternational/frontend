@@ -100,12 +100,12 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance }) => {
         <br/>
         <p>To confirm your booking, please reply to this email.</p>
       `,
-      recipient: "gcaffe.ashish@gmail.com", // Replace with actual email recipient
+      recipient: `${userData.Email}`, // Replace with actual email recipient
     };
 
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/api/sendEmail`,
+        `${API_BASE_URL}/agent/QuickEmail`,
         emailData,
         {
           headers: { "Content-Type": "application/json" },
