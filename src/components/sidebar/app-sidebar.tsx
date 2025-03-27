@@ -69,7 +69,6 @@ export default function AppSidebar({
   const [userData, setUserData] = useState<any>(null); // Replace `any` with your data type
   const [error, setError] = useState<string>("");
   const router = useRouter();
-  
   const logout = () => {
     try {
       removeToken();
@@ -150,7 +149,7 @@ export default function AppSidebar({
                                   asChild
                                   isActive={pathname === subItem.url}
                                 >
-                                  <Link href={subItem.url}>
+                                  <Link href={subItem.url} >
                                     <span>{subItem.title}</span>
                                   </Link>
                                 </SidebarMenuSubButton>
@@ -259,8 +258,10 @@ export default function AppSidebar({
                           rolename === "superadmin"
                             ? `/dashboard/admin/profile`
                             : `/dashboard/${rolename}/profile`
+                            
                         }
                         className="flex items-center gap-2"
+                        
                       >
                         <BadgeCheck />
                         Profile
@@ -313,3 +314,7 @@ export default function AppSidebar({
     </SidebarProvider>
   );
 }
+
+
+
+
