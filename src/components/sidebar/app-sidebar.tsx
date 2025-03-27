@@ -52,7 +52,7 @@ import { UserNav } from "../layout/user-nav";
 import { fetchWithAuth } from "@/components/utils/api";
 import { removeToken } from "@/components/utils/auth";
 import { useRouter } from "next/navigation";
-// import { useRole } from "../context/RoleContext";
+
 export const company = {
   name: "Sanzad",
   logo: Car,
@@ -64,12 +64,12 @@ export default function AppSidebar({
 }: {
   children: React.ReactNode;
 }) {
-  // const {role} = useRole();
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const pathname = usePathname();
   const [userData, setUserData] = useState<any>(null); // Replace `any` with your data type
   const [error, setError] = useState<string>("");
   const router = useRouter();
+  
   const logout = () => {
     try {
       removeToken();
@@ -105,8 +105,8 @@ export default function AppSidebar({
   const roleData = sideBarItems.filter((name) => name.role === rolename);
   return (
     <SidebarProvider>
-      <Sidebar collapsible="icon">
-        <SidebarHeader>
+      <Sidebar collapsible="icon" className="bg-white dark:bg-black">
+        <SidebarHeader className="bg-white dark:bg-black">
           <div className="flex gap-2 py-2 text-sidebar-accent-foreground ">
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <company.logo className="size-4" />
@@ -117,7 +117,7 @@ export default function AppSidebar({
             </div>
           </div>
         </SidebarHeader>
-        <SidebarContent className="overflow-x-hidden">
+        <SidebarContent className="overflow-x-hidden bg-white dark:bg-black">
           <SidebarGroup>
             <SidebarGroupLabel>Overview</SidebarGroupLabel>
             <SidebarMenu>
@@ -179,7 +179,7 @@ export default function AppSidebar({
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter>
+        <SidebarFooter className="bg-white dark:bg-black">
           <SidebarMenu>
             <SidebarMenuItem>
               <DropdownMenu>

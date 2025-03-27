@@ -1061,7 +1061,7 @@ const Page = () => {
       const userData = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
       setSupplierId(userData.userId);
 
-      const zoneResponse = await fetchWithAuth(`${API_BASE_URL}/supplier/getZone`);
+      const zoneResponse = await fetchWithAuth(`${API_BASE_URL}/supplier/getZonebySupplierId/${userData.userId}`);
       setZones(zoneResponse);
     } catch (err: any) {
       console.error("Error fetching data:", err);

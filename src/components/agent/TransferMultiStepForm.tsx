@@ -44,7 +44,7 @@ const TransferMultiStepForm = () => {
         );
 
         setVehicles(response.data.data); // Store the vehicle data
-        setDistance(response.data.distance);
+        console.log(response.data.data);        setDistance(response.data.distance);
         setEstimatedTime(response.data.estimatedTime);
       } catch (error) {
         console.error("Error fetching vehicles:", error);
