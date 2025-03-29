@@ -156,18 +156,26 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimate
       pax: formData.pax,
       date: formData.date,
       time: formData.time,
-      returnDate: formData.returnDate,
-      returnTime: formData.returnTime,
+      returnDate: formData?.returnDate,
+      returnTime: formData?.returnTime,
       pickupLocation: formData.pickupLocation,
       dropoffLocation: formData.dropoffLocation,
+      distance:`${distance}`,
+      estimatedTime:`${estimatedTime}`,
+      agentId:`${userData.userId}`,
       vehicle: {
         brand: vehicle.brand,
-        vehicalType: vehicle.vehicalType,
-        passengers: vehicle.passengers,
-        mediumBag: vehicle.mediumBag,
         currency: vehicle.currency,
+        extraPricePerKm:vehicle.extraPricePerKm,
+        mediumBag: vehicle.mediumBag,
+        nightTime:vehicle.nightTime,
+        nightTimePrice:vehicle.nightTimePrice,
+        passengers: vehicle.passengers,
         price: Number(vehicle.price),
-        source: vehicle.source,
+        supplierId:vehicle.supplierId,
+        transferInfo: vehicle.transferInfo,
+        vehicalType: vehicle.vehicalType,
+        vehicleId:vehicle.vehicleId,
       },
       extraCost: vehicle.extraCost || "0",
       tripType:
@@ -320,7 +328,7 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimate
                             Transfer Info
                           </HoverCardTrigger>
                           <HoverCardContent className="w-80 text-wrap">
-                            Provided by {vehicle.source}
+                            Provided by {vehicle.transferInfo||"API Data"}
                           </HoverCardContent>
                         </HoverCard>
                       </div>
