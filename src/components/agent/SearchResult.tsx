@@ -10,7 +10,6 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { useRouter } from "next/navigation";
 import { Separator } from "../ui/separator";
 import {
   Card,
@@ -26,8 +25,14 @@ import LocationMap from "./LocationMap";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "../ui/skeleton";
-const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimatedTime }) => {
-  const router = useRouter();
+const SearchResult = ({
+  onSelect,
+  formData,
+  vehicles,
+  loading,
+  distance,
+  estimatedTime,
+}) => {
   console.log("Received Form Data:", formData);
   console.log("Available Vehicles:", vehicles);
   const [userData, setUserData] = useState<any>(null);
@@ -55,7 +60,6 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimate
       } catch (err: any) {
         console.log("API error fetching data", err);
         removeToken();
-        // window.location.href = "/login"; // Redirect to login if unauthorized
       }
     };
 
@@ -68,90 +72,18 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimate
     setMap(!map);
   };
   const { toast } = useToast();
-  // const handleEmailQuote = async (vehicle, isRoundTrip = false) => {
-  //   if (isRoundTrip) {
-  //     setIsLoadingRoundTrip(true);
-  //   } else {
-  //     setIsLoadingOneWay(true);
-  //   }
-  //   const tripType = isRoundTrip ? "Round Trip" : "One Way";
-  //   const price = isRoundTrip
-  //     ? Number(vehicle.price) * 2
-  //     : Number(vehicle.price);
-
-  //   const emailData = {
-  //     subject: `Quote for ${tripType} Transfer`,
-  //     message: `
-  //       <h2>Transfer Quote</h2>
-  //       <p><strong>Trip Type:</strong> ${tripType}</p>
-  //       <p><strong>Pickup:</strong> ${pickup}</p>
-  //       <p><strong>Dropoff:</strong> ${dropoff}</p>
-  //       <p><strong>Passengers:</strong> ${pax}</p>
-  //       <p><strong>Date & Time:</strong> ${date} ${time}</p>
-  //       ${
-  //         isRoundTrip
-  //           ? `<p><strong>Return Date & Time:</strong> ${returnDate} ${returnTime}</p>`
-  //           : ""
-  //       }
-  //       <p><strong>Vehicle:</strong> ${vehicle.brand} - ${
-  //       vehicle.vehicalType
-  //     }</p>
-  //       <p><strong>Price:</strong> ${vehicle.currency} ${price.toFixed(2)}</p>
-  //       <br/>
-  //       <p>To confirm your booking, please reply to this email.</p>
-  //     `,
-  //     recipient: `${userData.Email}`, // Replace with actual email recipient
-  //   };
-
-  //   try {
-  //     const response = await axios.post(
-  //       `${API_BASE_URL}/agent/QuickEmail`,
-  //       emailData,
-  //       {
-  //         headers: { "Content-Type": "application/json" },
-  //       }
-  //     );
-
-  //     if (response.status === 200) {
-  //       // alert("Email sent successfully!");
-  //       toast({
-  //         title: "Email Quotation",
-  //         description: "Email sent successfully!",
-  //       });
-  //     } else {
-  //       // alert("Failed to send email. Please try again.");
-  //       toast({
-  //         title: "Email Quotation",
-  //         description: "Failed to send email. Please try again.",
-  //         variant: "destructive",
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Email sending error:", error);
-  //     // alert("Error sending email. Please check the console for details.");
-  //     toast({
-  //       title: "Error",
-  //       description: `${error}`,
-  //       variant: "destructive",
-  //     });
-  //   } finally {
-  //     if (isRoundTrip) {
-  //       setIsLoadingRoundTrip(false);
-  //     } else {
-  //       setIsLoadingOneWay(false);
-  //     }
-  //   }
-  // };
   const handleEmailQuote = async (vehicle, isRoundTrip = false) => {
     if (isRoundTrip) {
       setIsLoadingRoundTrip(true);
     } else {
       setIsLoadingOneWay(true);
     }
-  
+
     const tripType = isRoundTrip ? "Round Trip" : "One Way";
-    const price = isRoundTrip ? Number(vehicle.price) * 2 : Number(vehicle.price);
-  
+    const price = isRoundTrip
+      ? Number(vehicle.price) * 2
+      : Number(vehicle.price);
+
     const emailData = {
       subject: `🚗 Transfer Quote for Your ${tripType} Trip`,
       message: `
@@ -192,11 +124,15 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimate
             }
             <tr>
               <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>🚘 Vehicle:</strong></td>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${vehicle.brand} - ${vehicle.vehicalType}</td>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${
+                vehicle.brand
+              } - ${vehicle.vehicalType}</td>
             </tr>
             <tr>
               <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>💰 Price:</strong></td>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold; color: #28a745;">${vehicle.currency} ${price.toFixed(2)}</td>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold; color: #28a745;">${
+                vehicle.currency
+              } ${price.toFixed(2)}</td>
             </tr>
           </table>
   
@@ -220,7 +156,7 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimate
       `,
       recipient: `${userData.Email}`, // Replace with actual email recipient
     };
-  
+
     try {
       const response = await axios.post(
         `${API_BASE_URL}/agent/QuickEmail`,
@@ -229,7 +165,7 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimate
           headers: { "Content-Type": "application/json" },
         }
       );
-  
+
       if (response.status === 200) {
         toast({
           title: "Email Quotation",
@@ -257,17 +193,28 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimate
       }
     }
   };
-  
+
   const handleBookNow = (vehicle) => {
     if (!userData) {
-          // if (window.confirm("You need to log in to book a vehicle. Do you want to log in now?")) {
-          //   const currentUrl = window.location.href;
-          //   window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
-          // }
-          const currentUrl = window.location.href;
-            window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
-          return;
-        }
+      // if (window.confirm("You need to log in to book a vehicle. Do you want to log in now?")) {
+      //   const currentUrl = window.location.href;
+      //   window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
+      // }
+      const currentUrl = window.location.href;
+      window.location.href = `/login?redirect=${encodeURIComponent(
+        currentUrl
+      )}`;
+      return;
+    }
+    // Allow only agents to book
+    if (userData.role !== "agent") {
+      toast({
+        title: "Access Denied",
+        description: "❌ Only agents can book vehicles.",
+        variant: "destructive",
+      });
+      return;
+    }
     const bookingInfo = {
       pickup: formData.pickup,
       dropoff: formData.dropoff,
@@ -277,27 +224,27 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimate
       returnDate: formData?.returnDate,
       returnTime: formData?.returnTime,
       pickup_location: formData.pickupLocation,
-      pickup_lat: parseFloat(formData.pickupLocation.split(',')[0].trim()),
-      pickup_lng:parseFloat(formData.pickupLocation.split(',')[1].trim()),
+      pickup_lat: parseFloat(formData.pickupLocation.split(",")[0].trim()),
+      pickup_lng: parseFloat(formData.pickupLocation.split(",")[1].trim()),
       drop_location: formData.dropoffLocation,
-      drop_lat:parseFloat(formData.dropoffLocation.split(',')[0].trim()),
-      drop_lng:parseFloat(formData.dropoffLocation.split(',')[1].trim()),
-      distance_miles:`${distance}`,
-      estimatedTime:`${estimatedTime}`,
-      agent_id:`${userData.userId}`,
+      drop_lat: parseFloat(formData.dropoffLocation.split(",")[0].trim()),
+      drop_lng: parseFloat(formData.dropoffLocation.split(",")[1].trim()),
+      distance_miles: `${distance}`,
+      estimatedTime: `${estimatedTime}`,
+      agent_id: `${userData.userId}`,
       vehicle: {
         brand: vehicle.brand,
         currency: vehicle.currency,
-        extraPricePerKm:vehicle.extraPricePerKm,
+        extraPricePerKm: vehicle.extraPricePerKm,
         mediumBag: vehicle.mediumBag,
-        nightTime:vehicle.nightTime,
-        nightTimePrice:vehicle.nightTimePrice,
+        nightTime: vehicle.nightTime,
+        nightTimePrice: vehicle.nightTimePrice,
         passengers: vehicle.passengers,
         price: Number(vehicle.price),
-        suplier_id:vehicle.supplierId,
+        suplier_id: vehicle.supplierId,
         transferInfo: vehicle.transferInfo,
         vehicalType: vehicle.vehicalType,
-        vehicle_id:vehicle.vehicleId,
+        vehicle_id: vehicle.vehicleId,
       },
       extraCost: vehicle.extraCost || "0",
       tripType:
@@ -375,11 +322,11 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimate
                     <dt className="text-muted-foreground">
                       Estimated Trip Time
                     </dt>
-                    <dd>{estimatedTime?`${estimatedTime}`:"N/A"}</dd> 
+                    <dd>{estimatedTime ? `${estimatedTime}` : "N/A"}</dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Distance</dt>
-                    <dd>{distance ? `${distance} Miles` : "N/A"}</dd> 
+                    <dd>{distance ? `${distance} Miles` : "N/A"}</dd>
                   </div>
                 </dl>
               </CardContent>
@@ -404,115 +351,126 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimate
 
         {/* Vehicles Section */}
         <ScrollArea className="md:w-2/3 whitespace-nowrap rounded-md border">
-        <h2 className="text-2xl px-4 pt-2">Available Vehicles</h2>
-        {loading?(<div className="flex flex-col p-4 gap-2">
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
-        </div>):(
-          <div className="flex flex-col gap-5 p-4 md:h-96">
-          {vehicles.length > 0 ? (
-            vehicles.map((vehicle, index) => (
-              <Card key={index} className="">
-                <CardHeader>
-                  <CardTitle>{vehicle.brand}</CardTitle>
-                  <CardDescription>{vehicle.vehicalType}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col gap-5 md:flex-row justify-between">
-                    <div className="w-auto md:w-[75%] flex flex-col md:flex-row md:justify-between">
-                      <Image
-                        src={
-                          vehicle.image ||
-                          "/Sanzad-International-Hero-Image.jpg"
-                        } // Replace with vehicle image URL if available
-                        width={250}
-                        height={100}
-                        alt={vehicle.brand}
-                        className="rounded-sm"
-                      />
-                      <div className="flex flex-col md:items-end justify-between">
-                        <dl className="px-2 py-1 text-sm">
-                          <div className="flex md:justify-end gap-1">
-                            <dt>Passengers</dt>
-                            <dd>{vehicle.passengers}</dd>
-                            <Users width={15} height={15} />
+          <h2 className="text-2xl px-4 pt-2">Available Vehicles</h2>
+          {loading ? (
+            <div className="flex flex-col p-4 gap-2">
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+          ) : (
+            <div className="flex flex-col gap-5 p-4 md:h-96">
+              {vehicles.length > 0 ? (
+                vehicles.map((vehicle, index) => (
+                  <Card key={index} className="">
+                    <CardHeader>
+                      <CardTitle>{vehicle.brand}</CardTitle>
+                      <CardDescription>{vehicle.vehicalType}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex flex-col gap-5 md:flex-row justify-between">
+                        <div className="w-auto md:w-[75%] flex flex-col md:flex-row md:justify-between">
+                          <Image
+                            src={
+                              vehicle.image ||
+                              "/Sanzad-International-Hero-Image.jpg"
+                            } // Replace with vehicle image URL if available
+                            width={250}
+                            height={100}
+                            alt={vehicle.brand}
+                            className="rounded-sm"
+                          />
+                          <div className="flex flex-col md:items-end justify-between">
+                            <dl className="px-2 py-1 text-sm">
+                              <div className="flex md:justify-end gap-1">
+                                <dt>Passengers</dt>
+                                <dd>{vehicle.passengers}</dd>
+                                <Users width={15} height={15} />
+                              </div>
+                              <div className="flex md:justify-end gap-1">
+                                <dt>Medium Bags</dt>
+                                <dd>{vehicle.mediumBag}</dd>
+                                <Luggage width={15} height={15} />
+                              </div>
+                            </dl>
+                            <HoverCard>
+                              <HoverCardTrigger className="flex items-center text-blue-500 cursor-pointer">
+                                <BadgeInfo width={15} height={15} />
+                                Transfer Info
+                              </HoverCardTrigger>
+                              <HoverCardContent className="w-80 text-wrap">
+                                {vehicle.transferInfo || "API Data"}
+                              </HoverCardContent>
+                            </HoverCard>
                           </div>
-                          <div className="flex md:justify-end gap-1">
-                            <dt>Medium Bags</dt>
-                            <dd>{vehicle.mediumBag}</dd>
-                            <Luggage width={15} height={15} />
+                        </div>
+                        <div className="w-1/2 md:w-[25%] bg-slate-50 dark:bg-slate-800 rounded-sm px-2 py-1 flex flex-col justify-between">
+                          <div>
+                            <p>
+                              {returnDate && returnTime
+                                ? "Round Trip"
+                                : "One Way"}
+                            </p>
+                            <h2 className="text-2xl font-medium">
+                              {vehicle.currency}{" "}
+                              {returnDate && returnTime
+                                ? (Number(vehicle.price) * 2).toFixed(2) // Double the price for round trip
+                                : Number(vehicle.price).toFixed(2)}
+                            </h2>
                           </div>
-                        </dl>
-                        <HoverCard>
-                          <HoverCardTrigger className="flex items-center text-blue-500 cursor-pointer">
-                            <BadgeInfo width={15} height={15} />
-                            Transfer Info
-                          </HoverCardTrigger>
-                          <HoverCardContent className="w-80 text-wrap">
-                            {vehicle.transferInfo||"API Data"}
-                          </HoverCardContent>
-                        </HoverCard>
-                      </div>
-                    </div>
-                    <div className="w-1/2 md:w-[25%] bg-slate-50 dark:bg-slate-800 rounded-sm px-2 py-1 flex flex-col justify-between">
-                      <div>
-                        <p>
-                          {returnDate && returnTime
-                            ? "Round Trip"
-                            : "One Way"}
-                        </p>
-                        <h2 className="text-2xl font-medium">
-                          {vehicle.currency}{" "}
-                          {returnDate && returnTime
-                            ? (Number(vehicle.price) * 2).toFixed(2) // Double the price for round trip
-                            : Number(vehicle.price).toFixed(2)}
-                        </h2>
-                      </div>
-                      <div>
-                        {/* <Button
+                          <div>
+                            {/* <Button
                           className="w-full"
                           onClick={() => handleBookNow(vehicle)}
                         >
                           Book Now
                         </Button> */}
-                        <Button
+                            {/* <Button
                           className="w-full"
                           onClick={() => handleBookNow(vehicle)}
                           // disabled={!userData} // Disable if no user is logged in
                         >
                           {userData ? "Book Now" : "Login to Book"}
-                        </Button>
+                        </Button> */}
+                            <Button
+                              className="w-full"
+                              onClick={() => handleBookNow(vehicle)}
+                              // disabled={!userData || userData.role !== "agent"} // Disable if not logged in or not an agent
+                            >
+                              {userData && userData.role === "agent"
+                                ? "Book Now"
+                                : "Only Agents Can Book"}
+                            </Button>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button
-                    variant="outline"
-                    className="mr-1"
-                    onClick={() => handleEmailQuote(vehicle, false)}
-                    // disabled={isLoadingOneWay}
-                    disabled={isLoadingOneWay || !userData} // Disable if no userData
-                  >
-                    {isLoadingOneWay ? "Sending..." : "Email Quote"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => handleEmailQuote(vehicle, true)}
-                    // disabled={isLoadingRoundTrip}
-                    disabled={isLoadingRoundTrip || !userData} // Disable if no userData
-                  >
-                    {isLoadingRoundTrip ? "Sending..." : "Round Trip Quote"}
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))
-          ) : (
-            <p>No vehicles available.</p>
+                    </CardContent>
+                    <CardFooter>
+                      <Button
+                        variant="outline"
+                        className="mr-1"
+                        onClick={() => handleEmailQuote(vehicle, false)}
+                        // disabled={isLoadingOneWay}
+                        disabled={isLoadingOneWay || !userData} // Disable if no userData
+                      >
+                        {isLoadingOneWay ? "Sending..." : "Email Quote"}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => handleEmailQuote(vehicle, true)}
+                        // disabled={isLoadingRoundTrip}
+                        disabled={isLoadingRoundTrip || !userData} // Disable if no userData
+                      >
+                        {isLoadingRoundTrip ? "Sending..." : "Round Trip Quote"}
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))
+              ) : (
+                <p>No vehicles available.</p>
+              )}
+            </div>
           )}
-        </div>
-        )}
         </ScrollArea>
       </div>
     </>

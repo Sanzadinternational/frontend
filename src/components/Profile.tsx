@@ -130,20 +130,20 @@ console.log("userData",user);
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-2">
-            <Image
+            {/* <Image
               src={preview || user?.profileImage || "/male-profile-pic.webp"}
               width={100}
               height={100}
               alt="user"
               className="rounded-full"
-            />
-            {/* <Image
+            /> */}
+            <Image
   src={preview || (user?.profileImage?.startsWith("http") ? user.profileImage : `/uploads/${user?.profileImage}`) || "/male-profile-pic.webp"}
   width={100}
   height={100}
   alt="user"
   className="rounded-full"
-/> */}
+/>
             {editing && (
               <>
                 <input type="file" accept="image/*" onChange={handleImageChange} />

@@ -42,7 +42,7 @@ const Login = () => {
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get("redirect");
+  const redirectUrl = searchParams.get("redirect")||"";
 
   // Check if user is already logged in
   useEffect(() => {
@@ -79,8 +79,10 @@ const Login = () => {
         localStorage.setItem("authToken", response.data.accessToken);
         toast({ title: "Login Successful", description: `Welcome ${response.data.role}!` });
         // router.push(`/dashboard/${response.data.role}`);
-        const targetUrl = redirectUrl !== "/dashboard" ? redirectUrl : `/dashboard/${response.data.role}`;
-      router.push(targetUrl);
+      //   const targetUrl = redirectUrl !== "/dashboard" ? redirectUrl : `/dashboard/${response.data.role}`;
+      // router.push(targetUrl);
+      const targetUrl = redirectUrl ? redirectUrl : `/dashboard/${response.data.role}`;
+router.push(targetUrl);
         // console.log(response.data.role);
       }
     } catch (err: any) {
