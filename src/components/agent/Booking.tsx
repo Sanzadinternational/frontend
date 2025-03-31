@@ -463,8 +463,9 @@ const Booking = ({ bookingInfo,setBookingInfo, nextStep }) => {
                     mobile: data.mobile,
                 },
             }));
-    
-            nextStep();
+            if (data.paymentMethod !== "pay_now") {
+                nextStep();
+            }
         } catch (error) {
             console.error("Error submitting booking:", error);
             toast({ title: "Booking Failed", description: "Failed to create booking.", variant: "destructive" });
@@ -512,7 +513,7 @@ const totalPrice = (basePrice + extraCost) * (isReturnTrip ? 2 : 1); // Double p
                 <h2 className="text-2xl px-4 pt-2">Transfer Details</h2>
                 <Card>
                     <CardHeader>
-                        <CardTitle>Passenger Information</CardTitle>
+                        <CardTitle>Passenger Information (Lead Passenger)</CardTitle>
                         <CardDescription>Details are used in Voucher</CardDescription>
                     </CardHeader>
                     <CardContent>

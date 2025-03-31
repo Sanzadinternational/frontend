@@ -12,6 +12,7 @@ import {
   CardContent,
   CardDescription,
 } from "@/components/ui/card";
+import { useSearchParams } from "next/navigation";
 import {
   Form,
   FormControl,
@@ -40,6 +41,8 @@ const Login = () => {
   const [isSubmiting, setIsSubmiting] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect");
 
   // Check if user is already logged in
   useEffect(() => {
@@ -75,7 +78,9 @@ const Login = () => {
       if (response.status === 200) {
         localStorage.setItem("authToken", response.data.accessToken);
         toast({ title: "Login Successful", description: `Welcome ${response.data.role}!` });
-        router.push(`/dashboard/${response.data.role}`);
+        // router.push(`/dashboard/${response.data.role}`);
+        const targetUrl = redirectUrl !== "/dashboard" ? redirectUrl : `/dashboard/${response.data.role}`;
+      router.push(targetUrl);
         // console.log(response.data.role);
       }
     } catch (err: any) {

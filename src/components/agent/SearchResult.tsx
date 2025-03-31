@@ -10,7 +10,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-
+import { useRouter } from "next/navigation";
 import { Separator } from "../ui/separator";
 import {
   Card,
@@ -27,6 +27,7 @@ import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "../ui/skeleton";
 const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimatedTime }) => {
+  const router = useRouter();
   console.log("Received Form Data:", formData);
   console.log("Available Vehicles:", vehicles);
   const [userData, setUserData] = useState<any>(null);
@@ -146,7 +147,8 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimate
   const handleBookNow = (vehicle) => {
     if (!userData) {
           if (window.confirm("You need to log in to book a vehicle. Do you want to log in now?")) {
-            window.location.href = "/login"; // Redirect to login page
+            const currentUrl = window.location.href;
+            window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
           }
           return;
         }
