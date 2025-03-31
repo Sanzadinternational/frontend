@@ -361,7 +361,7 @@ const Booking = ({ bookingInfo, nextStep }) => {
             drop_lng: bookingInfo?.drop_lng,
             distance_miles: bookingInfo?.distance_miles,
             price: bookingInfo?.vehicle?.price,
-            referenceNumber: data.paymentMethod === "already_paid" ? data.referenceNumber : null,
+            reference_number: data.paymentMethod === "already_paid" ? data.referenceNumber : null,
         };
 
         try {
