@@ -327,7 +327,7 @@ const formSchema = z.object({
     referenceNumber: z.string().optional(),
 });
 
-const Booking = ({ bookingInfo, nextStep }) => {
+const Booking = ({ bookingInfo,setBookingInfo, nextStep }) => {
     const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
     const { toast } = useToast();
     const [paymentMethod, setPaymentMethod] = useState("pay_now");
@@ -343,12 +343,56 @@ const Booking = ({ bookingInfo, nextStep }) => {
         },
     });
 
+    // const handleSubmit = async (data) => {
+    //     if (!bookingInfo) {
+    //         console.error("Booking info is missing");
+    //         return;
+    //     }
+
+    //     const bookingData = {
+    //         suplier_id: bookingInfo?.vehicle?.suplier_id,
+    //         vehicle_id: bookingInfo?.vehicle?.vehicle_id,
+    //         agent_id: bookingInfo?.agent_id,
+    //         pickup_location: bookingInfo?.pickup_location,
+    //         drop_location: bookingInfo?.dropoff,
+    //         pickup_lat: bookingInfo?.pickup_lat,
+    //         pickup_lng: bookingInfo?.pickup_lng,
+    //         drop_lat: bookingInfo?.drop_lat,
+    //         drop_lng: bookingInfo?.drop_lng,
+    //         distance_miles: bookingInfo?.distance_miles,
+    //         price: bookingInfo?.vehicle?.price,
+    //         reference_number: data.paymentMethod === "already_paid" ? data.referenceNumber : null,
+    //     };
+
+    //     try {
+    //         const response = await fetch(
+    //             `${API_BASE_URL}/${data.paymentMethod === "pay_now" ? "payment/payment-iniciate" : "payment/referencePayment"}`,
+    //             {
+    //                 method: "POST",
+    //                 headers: { "Content-Type": "application/json" },
+    //                 body: JSON.stringify(bookingData),
+    //             }
+    //         );
+
+    //         if (!response.ok) throw new Error("Failed to submit booking");
+    //         const result = await response.json();
+
+    //         console.log("Booking created successfully:", result);
+    //         toast({ title: "Booking Confirmed", description: "Your booking has been created successfully!" });
+
+    //         if (data.paymentMethod === "already_paid") nextStep();
+    //     } catch (error) {
+    //         console.error("Error submitting booking:", error);
+    //         console.log(data);
+    //         toast({ title: "Booking Failed", description: "Failed to create booking.", variant: "destructive" });
+    //     }
+    // };
     const handleSubmit = async (data) => {
         if (!bookingInfo) {
             console.error("Booking info is missing");
             return;
         }
-
+    
         const bookingData = {
             suplier_id: bookingInfo?.vehicle?.suplier_id,
             vehicle_id: bookingInfo?.vehicle?.vehicle_id,
@@ -363,7 +407,7 @@ const Booking = ({ bookingInfo, nextStep }) => {
             price: bookingInfo?.vehicle?.price,
             reference_number: data.paymentMethod === "already_paid" ? data.referenceNumber : null,
         };
-
+    
         try {
             const response = await fetch(
                 `${API_BASE_URL}/${data.paymentMethod === "pay_now" ? "payment/payment-iniciate" : "payment/referencePayment"}`,
@@ -373,19 +417,27 @@ const Booking = ({ bookingInfo, nextStep }) => {
                     body: JSON.stringify(bookingData),
                 }
             );
-
+    
             if (!response.ok) throw new Error("Failed to submit booking");
             const result = await response.json();
-
+    
             console.log("Booking created successfully:", result);
+    
             toast({ title: "Booking Confirmed", description: "Your booking has been created successfully!" });
-
-            if (data.paymentMethod === "already_paid") nextStep();
+    
+            // ✅ Update bookingInfo with booking_id
+            setBookingInfo((prev) => ({
+                ...prev,
+                booking_id: result.booking_id, // Assuming API returns booking_id
+            }));
+    
+            nextStep();
         } catch (error) {
             console.error("Error submitting booking:", error);
             toast({ title: "Booking Failed", description: "Failed to create booking.", variant: "destructive" });
         }
     };
+    
 
     if (!bookingInfo) return <p>Loading...</p>;
 
