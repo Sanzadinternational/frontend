@@ -60,7 +60,7 @@ const Profile = () => {
     };
     fetchUserData();
   }, []);
-
+console.log("userData",user);
   const removeToken = () => {
     localStorage.removeItem("authToken");
     router.push("/login");
@@ -137,6 +137,13 @@ const Profile = () => {
               alt="user"
               className="rounded-full"
             />
+            {/* <Image
+  src={preview || (user?.profileImage?.startsWith("http") ? user.profileImage : `/uploads/${user?.profileImage}`) || "/male-profile-pic.webp"}
+  width={100}
+  height={100}
+  alt="user"
+  className="rounded-full"
+/> */}
             {editing && (
               <>
                 <input type="file" accept="image/*" onChange={handleImageChange} />

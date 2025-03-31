@@ -68,42 +68,159 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimate
     setMap(!map);
   };
   const { toast } = useToast();
+  // const handleEmailQuote = async (vehicle, isRoundTrip = false) => {
+  //   if (isRoundTrip) {
+  //     setIsLoadingRoundTrip(true);
+  //   } else {
+  //     setIsLoadingOneWay(true);
+  //   }
+  //   const tripType = isRoundTrip ? "Round Trip" : "One Way";
+  //   const price = isRoundTrip
+  //     ? Number(vehicle.price) * 2
+  //     : Number(vehicle.price);
+
+  //   const emailData = {
+  //     subject: `Quote for ${tripType} Transfer`,
+  //     message: `
+  //       <h2>Transfer Quote</h2>
+  //       <p><strong>Trip Type:</strong> ${tripType}</p>
+  //       <p><strong>Pickup:</strong> ${pickup}</p>
+  //       <p><strong>Dropoff:</strong> ${dropoff}</p>
+  //       <p><strong>Passengers:</strong> ${pax}</p>
+  //       <p><strong>Date & Time:</strong> ${date} ${time}</p>
+  //       ${
+  //         isRoundTrip
+  //           ? `<p><strong>Return Date & Time:</strong> ${returnDate} ${returnTime}</p>`
+  //           : ""
+  //       }
+  //       <p><strong>Vehicle:</strong> ${vehicle.brand} - ${
+  //       vehicle.vehicalType
+  //     }</p>
+  //       <p><strong>Price:</strong> ${vehicle.currency} ${price.toFixed(2)}</p>
+  //       <br/>
+  //       <p>To confirm your booking, please reply to this email.</p>
+  //     `,
+  //     recipient: `${userData.Email}`, // Replace with actual email recipient
+  //   };
+
+  //   try {
+  //     const response = await axios.post(
+  //       `${API_BASE_URL}/agent/QuickEmail`,
+  //       emailData,
+  //       {
+  //         headers: { "Content-Type": "application/json" },
+  //       }
+  //     );
+
+  //     if (response.status === 200) {
+  //       // alert("Email sent successfully!");
+  //       toast({
+  //         title: "Email Quotation",
+  //         description: "Email sent successfully!",
+  //       });
+  //     } else {
+  //       // alert("Failed to send email. Please try again.");
+  //       toast({
+  //         title: "Email Quotation",
+  //         description: "Failed to send email. Please try again.",
+  //         variant: "destructive",
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Email sending error:", error);
+  //     // alert("Error sending email. Please check the console for details.");
+  //     toast({
+  //       title: "Error",
+  //       description: `${error}`,
+  //       variant: "destructive",
+  //     });
+  //   } finally {
+  //     if (isRoundTrip) {
+  //       setIsLoadingRoundTrip(false);
+  //     } else {
+  //       setIsLoadingOneWay(false);
+  //     }
+  //   }
+  // };
   const handleEmailQuote = async (vehicle, isRoundTrip = false) => {
     if (isRoundTrip) {
       setIsLoadingRoundTrip(true);
     } else {
       setIsLoadingOneWay(true);
     }
+  
     const tripType = isRoundTrip ? "Round Trip" : "One Way";
-    const price = isRoundTrip
-      ? Number(vehicle.price) * 2
-      : Number(vehicle.price);
-
+    const price = isRoundTrip ? Number(vehicle.price) * 2 : Number(vehicle.price);
+  
     const emailData = {
-      subject: `Quote for ${tripType} Transfer`,
+      subject: `🚗 Transfer Quote for Your ${tripType} Trip`,
       message: `
-        <h2>Transfer Quote</h2>
-        <p><strong>Trip Type:</strong> ${tripType}</p>
-        <p><strong>Pickup:</strong> ${pickup}</p>
-        <p><strong>Dropoff:</strong> ${dropoff}</p>
-        <p><strong>Passengers:</strong> ${pax}</p>
-        <p><strong>Date & Time:</strong> ${date} ${time}</p>
-        ${
-          isRoundTrip
-            ? `<p><strong>Return Date & Time:</strong> ${returnDate} ${returnTime}</p>`
-            : ""
-        }
-        <p><strong>Vehicle:</strong> ${vehicle.brand} - ${
-        vehicle.vehicalType
-      }</p>
-        <p><strong>Price:</strong> ${vehicle.currency} ${price.toFixed(2)}</p>
-        <p><strong>Source:</strong> ${vehicle.source}</p>
-        <br/>
-        <p>To confirm your booking, please reply to this email.</p>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; padding: 20px; background-color: #f9f9f9;">
+          <h2 style="color: #007bff; text-align: center;">🚖 Transfer Quotation</h2>
+          <p style="text-align: center; font-size: 16px; color: #555;">
+            Here is your quotation for the requested ${tripType} transfer.
+          </p>
+  
+          <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+            <tr>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>🚗 Trip Type:</strong></td>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${tripType}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>📍 Pickup Location:</strong></td>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${pickup}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>📍 Dropoff Location:</strong></td>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${dropoff}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>👥 Passengers:</strong></td>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${pax}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>📅 Date & Time:</strong></td>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${date} ${time}</td>
+            </tr>
+            ${
+              isRoundTrip
+                ? `<tr>
+                    <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>🔄 Return Date & Time:</strong></td>
+                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">${returnDate} ${returnTime}</td>
+                  </tr>`
+                : ""
+            }
+            <tr>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>🚘 Vehicle:</strong></td>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${vehicle.brand} - ${vehicle.vehicalType}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>💰 Price:</strong></td>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold; color: #28a745;">${vehicle.currency} ${price.toFixed(2)}</td>
+            </tr>
+          </table>
+  
+          <p style="margin-top: 15px; text-align: center;">
+            <strong>✅ Ready to confirm?</strong><br/>
+            Please reply to this email or contact our support team.
+          </p>
+  
+          <div style="text-align: center; margin-top: 20px;">
+            <a href="mailto:support@sanzadinternational.com" 
+               style="background-color: #007bff; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px;">
+              📩 Confirm Your Booking
+            </a>
+          </div>
+  
+          <p style="text-align: center; font-size: 14px; color: #888; margin-top: 20px;">
+            If you have any questions, feel free to contact us at 
+            <a href="mailto:support@sanzadinternational.com" style="color: #007bff;">support@sanzadinternational.com</a>
+          </p>
+        </div>
       `,
       recipient: `${userData.Email}`, // Replace with actual email recipient
     };
-
+  
     try {
       const response = await axios.post(
         `${API_BASE_URL}/agent/QuickEmail`,
@@ -112,27 +229,24 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimate
           headers: { "Content-Type": "application/json" },
         }
       );
-
+  
       if (response.status === 200) {
-        // alert("Email sent successfully!");
         toast({
           title: "Email Quotation",
-          description: "Email sent successfully!",
+          description: "📩 Email sent successfully!",
         });
       } else {
-        // alert("Failed to send email. Please try again.");
         toast({
           title: "Email Quotation",
-          description: "Failed to send email. Please try again.",
+          description: "⚠️ Failed to send email. Please try again.",
           variant: "destructive",
         });
       }
     } catch (error) {
       console.error("Email sending error:", error);
-      // alert("Error sending email. Please check the console for details.");
       toast({
         title: "Error",
-        description: `${error}`,
+        description: `❌ ${error}`,
         variant: "destructive",
       });
     } finally {
@@ -143,13 +257,15 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimate
       }
     }
   };
-
+  
   const handleBookNow = (vehicle) => {
     if (!userData) {
-          if (window.confirm("You need to log in to book a vehicle. Do you want to log in now?")) {
-            const currentUrl = window.location.href;
+          // if (window.confirm("You need to log in to book a vehicle. Do you want to log in now?")) {
+          //   const currentUrl = window.location.href;
+          //   window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
+          // }
+          const currentUrl = window.location.href;
             window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
-          }
           return;
         }
     const bookingInfo = {
@@ -334,7 +450,7 @@ const SearchResult = ({ onSelect, formData, vehicles, loading, distance,estimate
                             Transfer Info
                           </HoverCardTrigger>
                           <HoverCardContent className="w-80 text-wrap">
-                            Provided by {vehicle.transferInfo||"API Data"}
+                            {vehicle.transferInfo||"API Data"}
                           </HoverCardContent>
                         </HoverCard>
                       </div>
