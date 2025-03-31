@@ -366,7 +366,7 @@ const Booking = ({ bookingInfo, nextStep }) => {
 
         try {
             const response = await fetch(
-                `${API_BASE_URL}/${data.paymentMethod === "pay_now" ? "payment/payment-iniciate" : "Booking/Create"}`,
+                `${API_BASE_URL}/${data.paymentMethod === "pay_now" ? "payment/payment-iniciate" : "payment/referencePayment"}`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
