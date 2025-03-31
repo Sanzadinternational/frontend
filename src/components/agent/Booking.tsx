@@ -420,15 +420,48 @@ const Booking = ({ bookingInfo,setBookingInfo, nextStep }) => {
     
             if (!response.ok) throw new Error("Failed to submit booking");
             const result = await response.json();
-    
+            
+            if (result.url && result.access_code && result.encRequest) {
+                // Create and submit a form dynamically
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = result.url;
+          
+                const accessCodeInput = document.createElement('input');
+                accessCodeInput.type = 'hidden';
+                accessCodeInput.name = 'access_code';
+                accessCodeInput.value = result.access_code;
+          
+                const encRequestInput = document.createElement('input');
+                encRequestInput.type = 'hidden';
+                encRequestInput.name = 'encRequest';
+                encRequestInput.value = result.encRequest;
+          
+                form.appendChild(accessCodeInput);
+                form.appendChild(encRequestInput);
+                document.body.appendChild(form);
+                form.submit(); // Auto-submit the form
+              } else {
+                console.error('Invalid response from the server');
+              }
+          
+
+
+
             console.log("Booking created successfully:", result);
     
             toast({ title: "Booking Confirmed", description: "Your booking has been created successfully!" });
-    
+            console.log("Passenger Info - Name:", data.name, "Email:", data.email, "Mobile:", data.mobile);
+
             // ✅ Update bookingInfo with booking_id
             setBookingInfo((prev) => ({
                 ...prev,
-                booking_id: result.booking_id, // Assuming API returns booking_id
+                orderId: result.orderId, // Ensure order_id is stored
+                passenger: {
+                    name: data.name,
+                    email: data.email,
+                    mobile: data.mobile,
+                },
             }));
     
             nextStep();
@@ -441,7 +474,7 @@ const Booking = ({ bookingInfo,setBookingInfo, nextStep }) => {
 // ✅ Calculate price (double if return date and return time are available)
 const basePrice = Number(bookingInfo?.vehicle?.price || 0);
 const extraCost = Number(bookingInfo?.extraCost || 0);
-const isReturnTrip = bookingInfo?.return_date && bookingInfo?.return_time;
+const isReturnTrip = bookingInfo?.returnDate && bookingInfo?.returnTime;
 const totalPrice = (basePrice + extraCost) * (isReturnTrip ? 2 : 1); // Double price for return trip
     if (!bookingInfo) return <p>Loading...</p>;
 
