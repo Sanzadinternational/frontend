@@ -438,7 +438,11 @@ const Booking = ({ bookingInfo,setBookingInfo, nextStep }) => {
         }
     };
     
-
+// ✅ Calculate price (double if return date and return time are available)
+const basePrice = Number(bookingInfo?.vehicle?.price || 0);
+const extraCost = Number(bookingInfo?.extraCost || 0);
+const isReturnTrip = bookingInfo?.return_date && bookingInfo?.return_time;
+const totalPrice = (basePrice + extraCost) * (isReturnTrip ? 2 : 1); // Double price for return trip
     if (!bookingInfo) return <p>Loading...</p>;
 
     return (
@@ -461,7 +465,12 @@ const Booking = ({ bookingInfo,setBookingInfo, nextStep }) => {
                         </div>
                         <div className="flex justify-between">
                             <dt className="text-muted-foreground">Total Cost</dt>
-                            <dd>{`${bookingInfo?.vehicle?.currency} ${(Number(bookingInfo?.vehicle?.price || 0) + (Number(bookingInfo?.extraCost) || 0)).toFixed(2)}`}</dd>
+                            {/* <dd>
+                                {`${bookingInfo?.vehicle?.currency} 
+                               
+                                ${(Number(bookingInfo?.vehicle?.price || 0) + (Number(bookingInfo?.extraCost) || 0)).toFixed(2)}`}
+                                </dd> */}
+                                <dd>{`${bookingInfo?.vehicle?.currency} ${totalPrice.toFixed(2)}`}</dd>
                         </div>
                     </dl>
                 </CardContent>
