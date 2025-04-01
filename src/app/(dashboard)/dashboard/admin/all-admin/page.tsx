@@ -30,8 +30,10 @@ export default function DemoPage() {
         email: item.Email,
         agentoperation: item.Agent_operation === true ? "Allowed" : "Not-Allowed",
         agentaccount: item.Agent_account === true ? "Allowed" : "Not-Allowed",
+        agentproduct: item.Agent_product === true ? "Allowed" : "Not-Allowed",
         supplieroperation: item.Supplier_operation === true ? "Allowed" : "Not-Allowed",
         supplieraccount: item.Supplier_account === true ? "Allowed" : "Not-Allowed",
+        supplierproduct: item.Supplier_product === true ? "Allowed" : "Not-Allowed",
       }));
 
       setData(formattedData); // Update state with the new data

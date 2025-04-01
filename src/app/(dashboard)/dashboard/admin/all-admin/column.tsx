@@ -6,8 +6,10 @@ export type User = {
   email: string;
   agentoperation: "Allowed" | "Not-Allowed";
   agentaccount: "Allowed" | "Not-Allowed";
+  agentproduct: "Allowed" | "Not-Allowed";
   supplieroperation: "Allowed" | "Not-Allowed";
   supplieraccount: "Allowed" | "Not-Allowed";
+  supplierproduct: "Allowed" | "Not-Allowed";
 };
 
 export const columns: ColumnDef<User>[] = [
@@ -28,11 +30,19 @@ export const columns: ColumnDef<User>[] = [
     header: "Agent-Account",
   },
   {
+    accessorKey: "agentproduct",
+    header: "Agent-Product",
+  },
+  {
     accessorKey: "supplieroperation",
     header: "Supplier-Operation",
   },
   {
     accessorKey: "supplieraccount",
     header: "Supplier-Account",
+  },
+  {
+    accessorKey: "supplierproduct",
+    header: "Supplier-Product",
   },
 ];

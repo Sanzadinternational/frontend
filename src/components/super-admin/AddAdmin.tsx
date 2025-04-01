@@ -33,8 +33,10 @@ const formSchema = z.object({
   Company_name: z.string().min(1, { message: "User Name is required" }),
   Agent_account: z.boolean().optional(),
   Agent_operation: z.boolean().optional(),
+  Agent_product: z.boolean().optional(),
   Supplier_account: z.boolean().optional(),
   Supplier_operation: z.boolean().optional(),
+  Supplier_product: z.boolean().optional(),
 });
 
 const AddAdmin = () => {
@@ -51,14 +53,17 @@ const AddAdmin = () => {
       Password: "",
       Agent_account: false,
       Agent_operation: false,
+      Agent_product: false,
       Supplier_account: false,
       Supplier_operation: false,
+      Supplier_product: false,
     },
   });
 
   const { toast } = useToast();
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
+    console.log("Admin data",data);
     setIsSubmitting(true);
     try {
       const response = await axios.post(
@@ -184,6 +189,24 @@ const AddAdmin = () => {
                         </FormItem>
                       )}
                     />
+                    <FormField
+                      control={form.control}
+                      name="Agent_product"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center space-x-2">
+                            <FormLabel>Agent Product</FormLabel>
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value || false}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 )}
               </div>
@@ -222,6 +245,24 @@ const AddAdmin = () => {
                         <FormItem>
                           <div className="flex items-center space-x-2">
                             <FormLabel>Supplier Operation</FormLabel>
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value || false}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="Supplier_product"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center space-x-2">
+                            <FormLabel>Supplier Product</FormLabel>
                             <FormControl>
                               <Checkbox
                                 checked={field.value || false}

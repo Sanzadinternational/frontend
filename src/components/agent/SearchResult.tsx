@@ -439,7 +439,7 @@ const SearchResult = ({
                             >
                               {userData && userData.role === "agent"
                                 ? "Book Now"
-                                : "Only Agents Can Book"}
+                                : "Agent Login to Book"}
                             </Button>
                           </div>
                         </div>

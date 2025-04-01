@@ -2471,7 +2471,7 @@ const {toast} = useToast();
           fetch(`${API_BASE_URL}/supplier/getZonebySupplierId/${userData.userId}`, {
             headers: { Authorization: `Bearer ${token}` }
           }),
-          fetch(`${API_BASE_URL}/supplier/gettransferbyid/${userData.userId}`, {
+          fetch(`${API_BASE_URL}/supplier/getTransferBySupplierId/${userData.userId}`, {
             headers: { Authorization: `Bearer ${token}` }
           })
         ]);
@@ -2584,8 +2584,8 @@ const {toast} = useToast();
 
       const userData = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
       const url = data.id 
-        ? `${API_BASE_URL}/supplier/transfers/${data.id}`
-        : `${API_BASE_URL}/supplier/transfers`;
+        ? `${API_BASE_URL}/supplier/updateTransfer/${data.id}`
+        : `${API_BASE_URL}/supplier/new_transfer`;
       
       const method = data.id ? "PUT" : "POST";
       
@@ -2599,7 +2599,7 @@ const {toast} = useToast();
 
       // Refresh transfers after successful save
       const transfersResponse = await fetchWithAuth(
-        `${API_BASE_URL}/supplier/gettransferbyid/${userData.userId}`
+        `${API_BASE_URL}/supplier/getTransferBySupplierId/${userData.userId}`
       );
       setTransfers(transfersResponse);
       
@@ -2622,14 +2622,14 @@ const {toast} = useToast();
 
   const handleDelete = async (id: string) => {
     try {
-      await fetchWithAuth(`${API_BASE_URL}/supplier/transfers/${id}`, {
+      await fetchWithAuth(`${API_BASE_URL}/supplier/deleteTransfer/${id}`, {
         method: "DELETE",
       });
 
       // Refresh transfers after successful delete
       const userData = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
       const transfersResponse = await fetchWithAuth(
-        `${API_BASE_URL}/supplier/gettransferbyid/${userData.userId}`
+        `${API_BASE_URL}/supplier/getTransferBySupplierId/${userData.userId}`
       );
       setTransfers(transfersResponse);
 
