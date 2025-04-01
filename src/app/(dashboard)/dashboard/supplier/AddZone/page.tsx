@@ -794,8 +794,8 @@ const Page = () => {
                     <TableHead>Zone Name</TableHead>
                     <TableHead>Address</TableHead>
                     <TableHead>Radius</TableHead>
-                    <TableHead>Coordinates</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    
+                    <TableHead className="text-left">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -806,15 +806,7 @@ const Page = () => {
                       <TableCell>
                         <Badge variant="outline">{zone.radius_miles} miles</Badge>
                       </TableCell>
-                      <TableCell>
-                        {zone.latitude && zone.longitude ? (
-                          <span className="text-sm text-muted-foreground">
-                            {parseFloat(zone.latitude).toFixed(4)}, {parseFloat(zone.longitude).toFixed(4)}
-                          </span>
-                        ) : (
-                          "N/A"
-                        )}
-                      </TableCell>
+                      
                       <TableCell className="text-right">
                         <div className="flex justify-end space-x-2">
                           <Button
