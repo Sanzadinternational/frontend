@@ -71,20 +71,21 @@ export const sideBarItems: Role[] = [
         isActive: true,
         items: [
           {
+            title: 'Add Vehicle',
+            url: '/dashboard/supplier/VehicleDetails',
+            icon: 'car'
+          },
+          {
             title: 'Add Zone',
             url: '/dashboard/supplier/AddZone',
             icon: 'car'
           },
           {
-            title: 'Vehicle Transfer',
+            title: 'Add Transfer',
             url: '/dashboard/supplier/VehicleTransfer',
             icon: 'car'
           },
-          {
-            title: 'Vehicle Details',
-            url: '/dashboard/supplier/VehicleDetails',
-            icon: 'car'
-          },
+         
           {
             title: 'Add Surcharge',
             url: '/dashboard/supplier/AddSurcharge',

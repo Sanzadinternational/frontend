@@ -1983,24 +1983,37 @@ import { Pencil, Trash2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import DashboardContainer from "@/components/layout/DashboardContainer";
 import { removeToken } from "@/components/utils/auth";
+// const transferSchema = z.object({
+//   rows: z.array(
+//     z.object({
+//       id: z.string().optional(),
+//       vehicle_id: z.string().min(1, { message: "Please select a vehicle" }),
+//       Currency: z.string().min(1, { message: "Currency is required" }),
+//       Transfer_info: z.string().optional(),
+//       zone_id: z.string().min(1, { message: "Transfer Zone is required" }),
+//       price: z.string().min(1, { message: "Price is required" }),
+//       extra_price_per_mile: z
+//         .string()
+//         .min(1, { message: "Extra Price is required" }),
+//       NightTime: z.enum(["yes", "no"]).optional(),
+//       NightTime_Price: z.string().optional(),
+//     })
+//   ),
+// });
 const transferSchema = z.object({
   rows: z.array(
     z.object({
-      id: z.string().optional(),
-      vehicle_id: z.string().min(1, { message: "Please select a vehicle" }),
+      uniqueId: z.string().optional(), // Matches backend
+      SelectZone: z.string().min(1, { message: "Zone is required" }), // Changed from zone_id
+      Price: z.string().min(1, { message: "Price is required" }), // Changed from price
+      Extra_Price: z.string().min(1, { message: "Extra Price is required" }), // Changed from extra_price_per_mile
       Currency: z.string().min(1, { message: "Currency is required" }),
-      Transfer_info: z.string().optional(),
-      zone_id: z.string().min(1, { message: "Transfer Zone is required" }),
-      price: z.string().min(1, { message: "Price is required" }),
-      extra_price_per_mile: z
-        .string()
-        .min(1, { message: "Extra Price is required" }),
+      TransferInfo: z.string().optional(), // Changed from Transfer_info
       NightTime: z.enum(["yes", "no"]).optional(),
-      NightTime_Price: z.string().optional(),
+      NightTime_Price: z.string().optional() // Keep as string to match input
     })
   ),
 });
-
 type Vehicle = {
   id: string;
   VehicleBrand: string;
@@ -2044,20 +2057,32 @@ const VehicleTransfer = () => {
 
   const form = useForm<z.infer<typeof transferSchema>>({
     resolver: zodResolver(transferSchema),
+    // defaultValues: {
+    //   rows: [
+    //     {
+    //       id: "",
+    //       vehicle_id: "",
+    //       Currency: "Rs",
+    //       Transfer_info: "",
+    //       zone_id: "",
+    //       price: "",
+    //       extra_price_per_mile: "",
+    //       NightTime: "no",
+    //       NightTime_Price: "",
+    //     },
+    //   ],
+    // },
     defaultValues: {
-      rows: [
-        {
-          id: "",
-          vehicle_id: "",
-          Currency: "Rs",
-          Transfer_info: "",
-          zone_id: "",
-          price: "",
-          extra_price_per_mile: "",
-          NightTime: "no",
-          NightTime_Price: "",
-        },
-      ],
+      rows: [{
+        uniqueId: "",
+        SelectZone: "",
+        Price: "",
+        Extra_Price: "",
+        Currency: "Rs",
+        TransferInfo: "",
+        NightTime: "no",
+        NightTime_Price: ""
+      }]
     },
   });
 
@@ -2108,34 +2133,6 @@ const VehicleTransfer = () => {
     fetchData();
   }, []);
 
-  // const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
-  //   const token = localStorage.getItem("authToken");
-  //   if (!token) {
-  //     router.push("/login");
-  //     throw new Error("No authentication token found");
-  //   }
-
-  //   const response = await fetch(url, {
-  //     ...options,
-  //     headers: {
-  //       ...options.headers,
-  //       Authorization: `Bearer ${token}`,
-  //       "Content-Type": "application/json",
-  //     },
-  //   });
-
-  //   if (response.status === 401) {
-  //     removeToken();
-  //     router.push("/login");
-  //     throw new Error("Session expired. Please login again.");
-  //   }
-
-  //   if (!response.ok) {
-  //     throw new Error(`HTTP error! status: ${response.status}`);
-  //   }
-
-  //   return response.json();
-  // };
   const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
     const token = localStorage.getItem("authToken");
     if (!token) {
@@ -2153,20 +2150,50 @@ const VehicleTransfer = () => {
     });
   
     if (!response.ok) {
-      // Try to get error details from response
-      let errorDetails = "";
+      let errorMessage = response.statusText;
       try {
-        const errorData = await response.json();
-        errorDetails = errorData.message || JSON.stringify(errorData);
+        const errorData = await response.text();
+        errorMessage = errorData || errorMessage;
       } catch (e) {
-        errorDetails = await response.text();
+        console.warn("Couldn't parse error response", e);
       }
-      
-      throw new Error(`HTTP ${response.status}: ${errorDetails || response.statusText}`);
+      throw new Error(`HTTP ${response.status}: ${errorMessage}`);
     }
   
-    return response.json();
+    // Handle empty responses
+    const contentLength = response.headers.get('content-length');
+    if (contentLength === '0' || response.status === 204) {
+      return null;
+    }
+  
+    try {
+      return await response.json();
+    } catch (e) {
+      console.error("Failed to parse JSON response:", e);
+      throw new Error("Invalid JSON response from server");
+    }
   };
+  // const handleAddRow = () => {
+  //   const currentRows = form.getValues("rows");
+  //   form.setValue(
+  //     "rows",
+  //     [
+  //       ...currentRows,
+  //       {
+  //         id: "",
+  //         vehicle_id: "",
+  //         Currency: "Rs",
+  //         Transfer_info: "",
+  //         zone_id: "",
+  //         price: "",
+  //         extra_price_per_mile: "",
+  //         NightTime: "no",
+  //         NightTime_Price: "",
+  //       },
+  //     ],
+  //     { shouldValidate: false }
+  //   ); // Add shouldValidate: false to prevent immediate validation
+  // };
   const handleAddRow = () => {
     const currentRows = form.getValues("rows");
     form.setValue(
@@ -2174,34 +2201,80 @@ const VehicleTransfer = () => {
       [
         ...currentRows,
         {
-          id: "",
-          vehicle_id: "",
+          uniqueId: "",
+          SelectZone: "",
+          Price: "",
+          Extra_Price: "",
           Currency: "Rs",
-          Transfer_info: "",
-          zone_id: "",
-          price: "",
-          extra_price_per_mile: "",
+          TransferInfo: "",
           NightTime: "no",
-          NightTime_Price: "",
-        },
+          NightTime_Price: ""
+        }
       ],
-      { shouldValidate: false }
-    ); // Add shouldValidate: false to prevent immediate validation
+      { shouldDirty: true, shouldTouch: true, shouldValidate: false }
+    );
   };
+  // const handleDeleteRow = (index: number) => {
+  //   const rows = form.getValues("rows");
 
+  //   // Check if the row exists
+  //   if (!rows[index]) {
+  //     toast({
+  //       title: "Error",
+  //       description: "Row not found",
+  //       variant: "destructive",
+  //     });
+  //     return;
+  //   }
+
+  //   if (rows.length <= 1) {
+  //     toast({
+  //       title: "Error",
+  //       description: "You must have at least one row",
+  //       variant: "destructive",
+  //     });
+  //     return;
+  //   }
+
+  //   const rowToDelete = rows[index];
+
+  //   // Optional: Confirm deletion
+  //   if (confirm("Are you sure you want to delete this row?")) {
+  //     if (rowToDelete.id) {
+  //       // If the row has an ID, delete from database
+  //       handleDelete(rowToDelete.id, index);
+  //     } else {
+  //       // If no ID, just remove from form
+  //       const updatedRows = rows.filter((_, i) => i !== index);
+  //       form.setValue("rows", updatedRows);
+  //     }
+  //   }
+  // };
+  // const handleEditTransfer = (transfer: Transfer) => {
+  //   // First reset the form to clear any existing rows
+  //   form.reset({
+  //     rows: [
+  //       {
+  //         id: transfer.id,
+  //         vehicle_id: transfer.vehicle_id,
+  //         Currency: transfer.Currency,
+  //         Transfer_info: transfer.Transfer_info || "",
+  //         zone_id: transfer.zone_id,
+  //         price: transfer.price,
+  //         extra_price_per_mile: transfer.extra_price_per_mile,
+  //         NightTime: transfer.NightTime,
+  //         NightTime_Price: transfer.NightTime_Price || "",
+  //       },
+  //     ],
+  //   });
+
+  //   // Scroll to the form section for better UX
+  //   document
+  //     .getElementById("transfer-form")
+  //     ?.scrollIntoView({ behavior: "smooth" });
+  // };
   const handleDeleteRow = (index: number) => {
     const rows = form.getValues("rows");
-
-    // Check if the row exists
-    if (!rows[index]) {
-      toast({
-        title: "Error",
-        description: "Row not found",
-        variant: "destructive",
-      });
-      return;
-    }
-
     if (rows.length <= 1) {
       toast({
         title: "Error",
@@ -2210,43 +2283,29 @@ const VehicleTransfer = () => {
       });
       return;
     }
-
+  
     const rowToDelete = rows[index];
-
-    // Optional: Confirm deletion
-    if (confirm("Are you sure you want to delete this row?")) {
-      if (rowToDelete.id) {
-        // If the row has an ID, delete from database
-        handleDelete(rowToDelete.id, index);
-      } else {
-        // If no ID, just remove from form
-        const updatedRows = rows.filter((_, i) => i !== index);
-        form.setValue("rows", updatedRows);
-      }
+    if (rowToDelete.uniqueId) {
+      handleDelete(rowToDelete.uniqueId, index);
+    } else {
+      form.setValue("rows", rows.filter((_, i) => i !== index));
     }
   };
   const handleEditTransfer = (transfer: Transfer) => {
-    // First reset the form to clear any existing rows
     form.reset({
-      rows: [
-        {
-          id: transfer.id,
-          vehicle_id: transfer.vehicle_id,
-          Currency: transfer.Currency,
-          Transfer_info: transfer.Transfer_info || "",
-          zone_id: transfer.zone_id,
-          price: transfer.price,
-          extra_price_per_mile: transfer.extra_price_per_mile,
-          NightTime: transfer.NightTime,
-          NightTime_Price: transfer.NightTime_Price || "",
-        },
-      ],
+      rows: [{
+        // uniqueId: transfer.id,
+        uniqueId: transfer.vehicle_id,
+        SelectZone: transfer.zone_id,
+        Price: transfer.price,
+        Extra_Price: transfer.extra_price_per_mile,
+        Currency: transfer.Currency,
+        TransferInfo: transfer.Transfer_info || "",
+        NightTime: transfer.NightTime,
+        NightTime_Price: transfer.NightTime_Price || ""
+      }]
     });
-
-    // Scroll to the form section for better UX
-    document
-      .getElementById("transfer-form")
-      ?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById('transfer-form')?.scrollIntoView({ behavior: 'smooth' });
   };
   const handleDelete = async (id: string, index: number) => {
     try {
@@ -2288,213 +2347,80 @@ const VehicleTransfer = () => {
     }
   };
 
-  // const handleSubmit = async (data: z.infer<typeof transferSchema>) => {
-  //   setIsSubmitting(true);
-  //   try {
-  //     // Fetch user data
-  //     const userData = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
-  //     if (!userData || !userData.userId) throw new Error("User data not found");
-
-  //     // Process each row (create or update)
-  //     const promises = data.rows.map((row) => {
-  //       const url = row.id
-  //         ? `${API_BASE_URL}/supplier/updateTransfer/${row.id}`
-  //         : `${API_BASE_URL}/supplier/new_transfer`;
-
-  //       const method = row.id ? "PUT" : "POST";
-
-  //       return fetchWithAuth(url, {
-  //         method,
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify({
-  //           ...row,
-  //           supplier_id: userData.userId,
-  //         }),
-  //       });
-  //     });
-
-  //     await Promise.all(promises);
-
-  //     // Refresh transfers after successful save
-  //     const transfersResponse = await fetchWithAuth(
-  //       `${API_BASE_URL}/supplier/getTransferBySupplierId/${userData.userId}`
-  //     );
-  //     if (!transfersResponse)
-  //       throw new Error("Failed to fetch updated transfers");
-
-  //     setTransfers(transfersResponse);
-
-  //     toast({
-  //       title: "Success",
-  //       description: "Transfers saved successfully",
-  //     });
-
-  //     // Reset form with an empty row
-  //     const defaultRow = {
-  //       id: "",
-  //       vehicle_id: "",
-  //       Currency: "Rs",
-  //       Transfer_info: "",
-  //       zone_id: "",
-  //       price: "",
-  //       extra_price_per_mile: "",
-  //       NightTime: "no",
-  //       NightTime_Price: "",
-  //     };
-
-  //     form.reset({ rows: [defaultRow] });
-  //   } catch (err: any) {
-  //     console.error("Error saving transfers:", err);
-  //     toast({
-  //       title: "Error",
-  //       description: err.message || "Failed to save transfers",
-  //       variant: "destructive",
-  //     });
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
-  // const handleSubmit = async (data: z.infer<typeof transferSchema>) => {
-  //   setIsSubmitting(true);
-  //   try {
-  //     console.log("Form submission data:", JSON.stringify(data, null, 2));
-  //     const userData = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
-      
-  //     // Process each row
-  //     const results = await Promise.all(
-  //       data.rows.map(async (row) => {
-  //         const endpoint = row.id 
-  //           ? `${API_BASE_URL}/supplier/updateTransfer/${row.id}`
-  //           : `${API_BASE_URL}/supplier/new_transfer`;
-          
-  //         const method = row.id ? 'PUT' : 'POST';
-          
-  //         const response = await fetchWithAuth(endpoint, {
-  //           method,
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //           body: JSON.stringify({
-  //             ...row,
-  //             supplier_id: userData.userId,
-  //           }),
-  //         });
-          
-  //         return response;
-  //       })
-  //     );
-  
-  //     // Refresh the transfers list
-  //     const updatedTransfers = await fetchWithAuth(
-  //       `${API_BASE_URL}/supplier/getTransferBySupplierId/${userData.userId}`
-  //     );
-  //     setTransfers(updatedTransfers);
-  
-  //     toast({
-  //       title: "Success",
-  //       description: "Transfers saved successfully",
-  //     });
-  
-  //     // Reset form but keep one empty row
-  //     form.reset({
-  //       rows: [{
-  //         id: "",
-  //         vehicle_id: "",
-  //         Currency: "Rs",
-  //         Transfer_info: "",
-  //         zone_id: "",
-  //         price: "",
-  //         extra_price_per_mile: "",
-  //         NightTime: "no",
-  //         NightTime_Price: "",
-  //       }]
-  //     });
-  
-  //   } catch (err: any) {
-  //     console.error("Error saving transfers:", err);
-  //     toast({
-  //       title: "Error",
-  //       description: err.message || "Failed to save transfers",
-  //       variant: "destructive",
-  //     });
-      
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
+ 
   const handleSubmit = async (data: z.infer<typeof transferSchema>) => {
     setIsSubmitting(true);
     
     try {
       const userData = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
-      console.log("Current user ID:", userData.userId); // Verify user ID exists
+      
+      const payload = {
+        rows: data.rows.map(row => ({
+          uniqueId: row.uniqueId || "",
+          SelectZone: row.SelectZone,
+          Price: row.Price,
+          Extra_Price: row.Extra_Price,
+          Currency: row.Currency,
+          TransferInfo: row.TransferInfo || "",
+          NightTime: row.NightTime || "no",
+          NightTime_Price: row.NightTime === "yes" ? row.NightTime_Price : "",
+          supplier_id: userData.userId 
+        }))
+      };
   
-      const results = await Promise.all(
-        data.rows.map(async (row) => {
-          // const payload = {
-          //   vehicle_id: row.vehicle_id,
-          //   zone_id: row.zone_id,
-          //   Currency: row.Currency,
-          //   Transfer_info: row.Transfer_info,
-          //   price: parseFloat(row.price), // Convert string to number if needed
-          //   extra_price_per_mile: parseFloat(row.extra_price_per_mile),
-          //   NightTime: row.NightTime,
-          //   NightTime_Price: row.NightTime ? parseFloat(row.NightTime_Price || "0") : 0,
-          //   supplier_id: userData.userId
-          // };
-          const payload = {
-            vehicle: row.vehicle_id,  // Some APIs expect different field names
-            zone: row.zone_id,
-            currency: row.Currency,
-            transfer_info: row.Transfer_info,
-            base_price: parseFloat(row.price),
-            extra_price_per_mile: parseFloat(row.extra_price_per_mile),
-            night_time_surcharge: row.NightTime === "yes" ? parseFloat(row.NightTime_Price || "0") : 0,
-            supplier: userData.userId
-          };
+      console.log("Sending payload:", payload);
   
-          console.log("Final payload:", payload); // Debug the final payload
+      const response = await fetch(`${API_BASE_URL}/supplier/new_transfer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem("authToken")}`
+        },
+        body: JSON.stringify(payload),
+      });
   
-          const endpoint = `${API_BASE_URL}/supplier/new_transfer`;
-          const response = await fetchWithAuth(endpoint, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
-          });
+      // Handle non-JSON responses
+      const responseText = await response.text();
+      let result;
+      try {
+        result = responseText ? JSON.parse(responseText) : null;
+      } catch (e) {
+        console.warn("Response wasn't JSON:", responseText);
+        throw new Error(`Server returned: ${responseText}`);
+      }
   
-          if (!response.ok) {
-            throw new Error(`Failed to save transfer: ${response.statusText}`);
-          }
+      if (!response.ok) {
+        throw new Error(result?.message || `HTTP ${response.status}`);
+      }
   
-          return response.json();
-        })
+      console.log("Success response:", result);
+  
+      // Refresh data
+      const updatedTransfers = await fetchWithAuth(
+        `${API_BASE_URL}/supplier/getTransferBySupplierId/${userData.userId}`
       );
+      setTransfers(updatedTransfers);
   
-      console.log("API responses:", results);
       toast({ title: "Success", description: "Transfers saved successfully" });
   
-      // Reset form with one empty row
       form.reset({
         rows: [{
-          id: "",
-          vehicle_id: "",
+          uniqueId: "",
+          SelectZone: "",
+          Price: "",
+          Extra_Price: "",
           Currency: "Rs",
-          Transfer_info: "",
-          zone_id: "",
-          price: "",
-          extra_price_per_mile: "",
+          TransferInfo: "",
           NightTime: "no",
-          NightTime_Price: "",
+          NightTime_Price: ""
         }]
       });
   
     } catch (err: any) {
-      console.error("Full error details:", {
+      console.error("Submission failed:", {
+        error: err,
         message: err.message,
-        stack: err.stack,
-        response: err.response?.data,
+        stack: err.stack
       });
       toast({
         title: "Error",
@@ -2505,7 +2431,6 @@ const VehicleTransfer = () => {
       setIsSubmitting(false);
     }
   };
-
   if (loading) {
     return (
       <DashboardContainer>
@@ -2543,7 +2468,7 @@ const VehicleTransfer = () => {
               id="transfer-form"
             >
               <div className="space-y-4">
-                {form.getValues("rows").map((row, index) => {
+                {form.watch("rows").map((row, index) => {
                   const nightTime = form.watch(`rows.${index}.NightTime`);
                   return (
                     <div
@@ -2553,7 +2478,7 @@ const VehicleTransfer = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
                           control={form.control}
-                          name={`rows.${index}.vehicle_id`}
+                          name={`rows.${index}.uniqueId`}
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Select Vehicle</FormLabel>
@@ -2592,7 +2517,7 @@ const VehicleTransfer = () => {
 
                         <FormField
                           control={form.control}
-                          name={`rows.${index}.zone_id`}
+                          name={`rows.${index}.SelectZone`}
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Select Zone</FormLabel>
@@ -2649,7 +2574,7 @@ const VehicleTransfer = () => {
 
                         <FormField
                           control={form.control}
-                          name={`rows.${index}.Transfer_info`}
+                          name={`rows.${index}.TransferInfo`}
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Transfer Info</FormLabel>
@@ -2667,7 +2592,7 @@ const VehicleTransfer = () => {
 
                         <FormField
                           control={form.control}
-                          name={`rows.${index}.price`}
+                          name={`rows.${index}.Price`}
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Price</FormLabel>
@@ -2693,7 +2618,7 @@ const VehicleTransfer = () => {
 
                         <FormField
                           control={form.control}
-                          name={`rows.${index}.extra_price_per_mile`}
+                          name={`rows.${index}.Extra_Price`}
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Extra Price Per Mile</FormLabel>
@@ -2859,15 +2784,6 @@ const VehicleTransfer = () => {
                             ? `Yes (${transfer.Currency} ${transfer.NightTime_Price}/hr)`
                             : "No"}
                         </TableCell>
-                        {/* <TableCell>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleEditTransfer(transfer)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                        </TableCell> */}
                         <TableCell>
                           <div className="flex gap-2">
                             <Button
