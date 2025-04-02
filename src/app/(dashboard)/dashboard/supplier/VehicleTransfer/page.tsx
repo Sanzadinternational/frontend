@@ -1983,34 +1983,19 @@ import { Pencil, Trash2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import DashboardContainer from "@/components/layout/DashboardContainer";
 import { removeToken } from "@/components/utils/auth";
-// const transferSchema = z.object({
-//   rows: z.array(
-//     z.object({
-//       id: z.string().optional(),
-//       vehicle_id: z.string().min(1, { message: "Please select a vehicle" }),
-//       Currency: z.string().min(1, { message: "Currency is required" }),
-//       Transfer_info: z.string().optional(),
-//       zone_id: z.string().min(1, { message: "Transfer Zone is required" }),
-//       price: z.string().min(1, { message: "Price is required" }),
-//       extra_price_per_mile: z
-//         .string()
-//         .min(1, { message: "Extra Price is required" }),
-//       NightTime: z.enum(["yes", "no"]).optional(),
-//       NightTime_Price: z.string().optional(),
-//     })
-//   ),
-// });
+
 const transferSchema = z.object({
   rows: z.array(
     z.object({
-      uniqueId: z.string().optional(), // Matches backend
-      SelectZone: z.string().min(1, { message: "Zone is required" }), // Changed from zone_id
-      Price: z.string().min(1, { message: "Price is required" }), // Changed from price
-      Extra_Price: z.string().min(1, { message: "Extra Price is required" }), // Changed from extra_price_per_mile
+      uniqueId: z.string().min(1, { message: "Vehicle is required" }), // Vehicle ID
+      SelectZone: z.string().min(1, { message: "Zone is required" }),
+      Price: z.string().min(1, { message: "Price is required" }),
+      Extra_Price: z.string().min(1, { message: "Extra Price is required" }),
       Currency: z.string().min(1, { message: "Currency is required" }),
-      TransferInfo: z.string().optional(), // Changed from Transfer_info
+      TransferInfo: z.string().optional(),
       NightTime: z.enum(["yes", "no"]).optional(),
-      NightTime_Price: z.string().optional() // Keep as string to match input
+      NightTime_Price: z.string().optional(),
+      transferId: z.string().optional(),
     })
   ),
 });
@@ -2047,42 +2032,34 @@ const VehicleTransfer = () => {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
   const { toast } = useToast();
-
+  const [isEditing, setIsEditing] = useState(false);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [zones, setZones] = useState<Zone[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [editingRows, setEditingRows] = useState<
+    { index: number; transferId: string | null }[]
+  >([]);
+  const [editingTransferId, setEditingTransferId] = useState<string | null>(
+    null
+  );
   const form = useForm<z.infer<typeof transferSchema>>({
     resolver: zodResolver(transferSchema),
-    // defaultValues: {
-    //   rows: [
-    //     {
-    //       id: "",
-    //       vehicle_id: "",
-    //       Currency: "Rs",
-    //       Transfer_info: "",
-    //       zone_id: "",
-    //       price: "",
-    //       extra_price_per_mile: "",
-    //       NightTime: "no",
-    //       NightTime_Price: "",
-    //     },
-    //   ],
-    // },
     defaultValues: {
-      rows: [{
-        uniqueId: "",
-        SelectZone: "",
-        Price: "",
-        Extra_Price: "",
-        Currency: "Rs",
-        TransferInfo: "",
-        NightTime: "no",
-        NightTime_Price: ""
-      }]
+      rows: [
+        {
+          uniqueId: "",
+          SelectZone: "",
+          Price: "",
+          Extra_Price: "",
+          Currency: "Rs",
+          TransferInfo: "",
+          NightTime: "no",
+          NightTime_Price: "",
+        },
+      ],
     },
   });
 
@@ -2139,7 +2116,7 @@ const VehicleTransfer = () => {
       router.push("/login");
       throw new Error("No authentication token found");
     }
-  
+
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -2148,7 +2125,7 @@ const VehicleTransfer = () => {
         "Content-Type": "application/json",
       },
     });
-  
+
     if (!response.ok) {
       let errorMessage = response.statusText;
       try {
@@ -2159,13 +2136,13 @@ const VehicleTransfer = () => {
       }
       throw new Error(`HTTP ${response.status}: ${errorMessage}`);
     }
-  
+
     // Handle empty responses
-    const contentLength = response.headers.get('content-length');
-    if (contentLength === '0' || response.status === 204) {
+    const contentLength = response.headers.get("content-length");
+    if (contentLength === "0" || response.status === 204) {
       return null;
     }
-  
+
     try {
       return await response.json();
     } catch (e) {
@@ -2173,27 +2150,6 @@ const VehicleTransfer = () => {
       throw new Error("Invalid JSON response from server");
     }
   };
-  // const handleAddRow = () => {
-  //   const currentRows = form.getValues("rows");
-  //   form.setValue(
-  //     "rows",
-  //     [
-  //       ...currentRows,
-  //       {
-  //         id: "",
-  //         vehicle_id: "",
-  //         Currency: "Rs",
-  //         Transfer_info: "",
-  //         zone_id: "",
-  //         price: "",
-  //         extra_price_per_mile: "",
-  //         NightTime: "no",
-  //         NightTime_Price: "",
-  //       },
-  //     ],
-  //     { shouldValidate: false }
-  //   ); // Add shouldValidate: false to prevent immediate validation
-  // };
   const handleAddRow = () => {
     const currentRows = form.getValues("rows");
     form.setValue(
@@ -2208,71 +2164,13 @@ const VehicleTransfer = () => {
           Currency: "Rs",
           TransferInfo: "",
           NightTime: "no",
-          NightTime_Price: ""
-        }
+          NightTime_Price: "",
+        },
       ],
       { shouldDirty: true, shouldTouch: true, shouldValidate: false }
     );
   };
-  // const handleDeleteRow = (index: number) => {
-  //   const rows = form.getValues("rows");
 
-  //   // Check if the row exists
-  //   if (!rows[index]) {
-  //     toast({
-  //       title: "Error",
-  //       description: "Row not found",
-  //       variant: "destructive",
-  //     });
-  //     return;
-  //   }
-
-  //   if (rows.length <= 1) {
-  //     toast({
-  //       title: "Error",
-  //       description: "You must have at least one row",
-  //       variant: "destructive",
-  //     });
-  //     return;
-  //   }
-
-  //   const rowToDelete = rows[index];
-
-  //   // Optional: Confirm deletion
-  //   if (confirm("Are you sure you want to delete this row?")) {
-  //     if (rowToDelete.id) {
-  //       // If the row has an ID, delete from database
-  //       handleDelete(rowToDelete.id, index);
-  //     } else {
-  //       // If no ID, just remove from form
-  //       const updatedRows = rows.filter((_, i) => i !== index);
-  //       form.setValue("rows", updatedRows);
-  //     }
-  //   }
-  // };
-  // const handleEditTransfer = (transfer: Transfer) => {
-  //   // First reset the form to clear any existing rows
-  //   form.reset({
-  //     rows: [
-  //       {
-  //         id: transfer.id,
-  //         vehicle_id: transfer.vehicle_id,
-  //         Currency: transfer.Currency,
-  //         Transfer_info: transfer.Transfer_info || "",
-  //         zone_id: transfer.zone_id,
-  //         price: transfer.price,
-  //         extra_price_per_mile: transfer.extra_price_per_mile,
-  //         NightTime: transfer.NightTime,
-  //         NightTime_Price: transfer.NightTime_Price || "",
-  //       },
-  //     ],
-  //   });
-
-  //   // Scroll to the form section for better UX
-  //   document
-  //     .getElementById("transfer-form")
-  //     ?.scrollIntoView({ behavior: "smooth" });
-  // };
   const handleDeleteRow = (index: number) => {
     const rows = form.getValues("rows");
     if (rows.length <= 1) {
@@ -2283,28 +2181,113 @@ const VehicleTransfer = () => {
       });
       return;
     }
-  
+
     const rowToDelete = rows[index];
     if (rowToDelete.uniqueId) {
       handleDelete(rowToDelete.uniqueId, index);
     } else {
-      form.setValue("rows", rows.filter((_, i) => i !== index));
+      form.setValue(
+        "rows",
+        rows.filter((_, i) => i !== index)
+      );
     }
   };
+
+  // const handleEditTransfer = (transfer: Transfer, rowIndex: number) => {
+  //   // Get current form values
+  //   const currentRows = form.getValues("rows");
+
+  //   // Clear all existing rows and add just the transfer we're editing
+  //   form.setValue("rows", [{
+  //     uniqueId: transfer.vehicle_id,
+  //     SelectZone: transfer.zone_id,
+  //     Price: transfer.price,
+  //     Extra_Price: transfer.extra_price_per_mile,
+  //     Currency: transfer.Currency,
+  //     TransferInfo: transfer.Transfer_info || "",
+  //     NightTime: transfer.NightTime,
+  //     NightTime_Price: transfer.NightTime_Price || "",
+  //     transferId: transfer.id
+  //   }]);
+
+  //   // Set editing state
+  //   setIsEditing(true);
+  //   setEditingTransferId(transfer.id);
+
+  //   // Scroll to form
+  //   document.getElementById('transfer-form')?.scrollIntoView({ behavior: 'smooth' });
+  // };
+  // const handleEditTransfer = (transfer: Transfer, rowIndex: number) => {
+  //   // Set editing state
+  //   setIsEditing(true);
+  //   setEditingTransferId(transfer.id);
+
+  //   // Get current form values
+  //   const currentRows = form.getValues("rows");
+
+  //   // If there's only one empty row, replace it
+  //   if (currentRows.length === 1 && !currentRows[0].uniqueId) {
+  //     form.setValue("rows", [
+  //       {
+  //         uniqueId: transfer.vehicle_id,
+  //         SelectZone: transfer.zone_id,
+  //         Price: transfer.price,
+  //         Extra_Price: transfer.extra_price_per_mile,
+  //         Currency: transfer.Currency,
+  //         TransferInfo: transfer.Transfer_info || "",
+  //         NightTime: transfer.NightTime,
+  //         NightTime_Price: transfer.NightTime_Price || "",
+  //         transferId: transfer.id,
+  //       },
+  //     ]);
+  //   } else {
+  //     // Otherwise add as new row
+  //     form.setValue("rows", [
+  //       ...currentRows,
+  //       {
+  //         uniqueId: transfer.vehicle_id,
+  //         SelectZone: transfer.zone_id,
+  //         Price: transfer.price,
+  //         Extra_Price: transfer.extra_price_per_mile,
+  //         Currency: transfer.Currency,
+  //         TransferInfo: transfer.Transfer_info || "",
+  //         NightTime: transfer.NightTime,
+  //         NightTime_Price: transfer.NightTime_Price || "",
+  //         transferId: transfer.id,
+  //       },
+  //     ]);
+  //   }
+
+  //   // Scroll to form
+  //   document
+  //     .getElementById("transfer-form")
+  //     ?.scrollIntoView({ behavior: "smooth" });
+  // };
   const handleEditTransfer = (transfer: Transfer) => {
-    form.reset({
-      rows: [{
-        // uniqueId: transfer.id,
-        uniqueId: transfer.vehicle_id,
-        SelectZone: transfer.zone_id,
-        Price: transfer.price,
-        Extra_Price: transfer.extra_price_per_mile,
-        Currency: transfer.Currency,
-        TransferInfo: transfer.Transfer_info || "",
-        NightTime: transfer.NightTime,
-        NightTime_Price: transfer.NightTime_Price || ""
-      }]
-    });
+    // Set editing state
+    setEditingTransferId(transfer.id);
+    setIsEditing(true);
+  
+    // Get current form values
+    const currentRows = form.getValues("rows");
+    
+    // Replace the first row with the transfer data
+    const updatedRows = [...currentRows];
+    updatedRows[0] = {
+      uniqueId: transfer.vehicle_id,
+      SelectZone: transfer.zone_id,
+      Price: transfer.price,
+      Extra_Price: transfer.extra_price_per_mile,
+      Currency: transfer.Currency,
+      TransferInfo: transfer.Transfer_info || "",
+      NightTime: transfer.NightTime,
+      NightTime_Price: transfer.NightTime_Price || "",
+      transferId: transfer.id
+    };
+    
+    form.setValue("rows", updatedRows);
+    
+    // Scroll to form
     document.getElementById('transfer-form')?.scrollIntoView({ behavior: 'smooth' });
   };
   const handleDelete = async (id: string, index: number) => {
@@ -2347,16 +2330,16 @@ const VehicleTransfer = () => {
     }
   };
 
- 
   const handleSubmit = async (data: z.infer<typeof transferSchema>) => {
     setIsSubmitting(true);
-    
+
     try {
       const userData = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
-      
-      const payload = {
-        rows: data.rows.map(row => ({
-          uniqueId: row.uniqueId || "",
+      const promises = [];
+
+      for (const row of data.rows) {
+        const transferData = {
+          uniqueId: row.uniqueId,
           SelectZone: row.SelectZone,
           Price: row.Price,
           Extra_Price: row.Extra_Price,
@@ -2364,64 +2347,63 @@ const VehicleTransfer = () => {
           TransferInfo: row.TransferInfo || "",
           NightTime: row.NightTime || "no",
           NightTime_Price: row.NightTime === "yes" ? row.NightTime_Price : "",
-          supplier_id: userData.userId 
-        }))
-      };
-  
-      console.log("Sending payload:", payload);
-  
-      const response = await fetch(`${API_BASE_URL}/supplier/new_transfer`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem("authToken")}`
-        },
-        body: JSON.stringify(payload),
-      });
-  
-      // Handle non-JSON responses
-      const responseText = await response.text();
-      let result;
-      try {
-        result = responseText ? JSON.parse(responseText) : null;
-      } catch (e) {
-        console.warn("Response wasn't JSON:", responseText);
-        throw new Error(`Server returned: ${responseText}`);
+          supplier_id: userData.userId,
+        };
+
+        if (row.transferId) {
+          // Update existing transfer
+          promises.push(
+            fetchWithAuth(
+              `${API_BASE_URL}/supplier/updateTransfer/${row.transferId}`,
+              {
+                method: "PUT",
+                body: JSON.stringify(transferData),
+              }
+            )
+          );
+        } else {
+          // Create new transfer
+          promises.push(
+            fetchWithAuth(`${API_BASE_URL}/supplier/new_transfer`, {
+              method: "POST",
+              body: JSON.stringify({ rows: [transferData] }),
+            })
+          );
+        }
       }
-  
-      if (!response.ok) {
-        throw new Error(result?.message || `HTTP ${response.status}`);
-      }
-  
-      console.log("Success response:", result);
-  
+
+      // Wait for all requests to complete
+      await Promise.all(promises);
+
       // Refresh data
       const updatedTransfers = await fetchWithAuth(
         `${API_BASE_URL}/supplier/getTransferBySupplierId/${userData.userId}`
       );
       setTransfers(updatedTransfers);
-  
-      toast({ title: "Success", description: "Transfers saved successfully" });
-  
+
+      toast({
+        title: "Success",
+        description: "Transfers saved successfully",
+      });
+
+      // Reset form
+      setEditingRows([]);
       form.reset({
-        rows: [{
-          uniqueId: "",
-          SelectZone: "",
-          Price: "",
-          Extra_Price: "",
-          Currency: "Rs",
-          TransferInfo: "",
-          NightTime: "no",
-          NightTime_Price: ""
-        }]
+        rows: [
+          {
+            uniqueId: "",
+            SelectZone: "",
+            Price: "",
+            Extra_Price: "",
+            Currency: "Rs",
+            TransferInfo: "",
+            NightTime: "no",
+            NightTime_Price: "",
+          },
+        ],
       });
-  
     } catch (err: any) {
-      console.error("Submission failed:", {
-        error: err,
-        message: err.message,
-        stack: err.stack
-      });
+      console.error("Submission failed:", err);
       toast({
         title: "Error",
         description: err.message || "Failed to save transfers",
@@ -2731,7 +2713,11 @@ const VehicleTransfer = () => {
                   <Plus className="h-4 w-4 mr-2" /> Add Another Row
                 </Button>
                 <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "Saving..." : "Save All Transfers"}
+                  {isSubmitting
+                    ? "Saving..."
+                    : isEditing
+                    ? "Update Transfer"
+                    : "Create Transfer"}
                 </Button>
               </div>
             </form>
@@ -2753,7 +2739,7 @@ const VehicleTransfer = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {transfers.map((transfer) => {
+                  {transfers.map((transfer, index) => {
                     const vehicle = vehicles.find(
                       (v) => v.id === transfer.vehicle_id
                     );
@@ -2786,6 +2772,13 @@ const VehicleTransfer = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex gap-2">
+                            {/* <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleEditTransfer(transfer)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button> */}
                             <Button
                               variant="ghost"
                               size="icon"
@@ -2796,7 +2789,7 @@ const VehicleTransfer = () => {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => handleDelete(transfer.id)}
+                              onClick={() => handleDelete(transfer.id, index)}
                               className="text-red-500 hover:text-red-700"
                             >
                               <Trash2 className="h-4 w-4" />
