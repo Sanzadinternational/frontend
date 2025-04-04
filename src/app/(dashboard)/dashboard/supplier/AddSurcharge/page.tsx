@@ -53,7 +53,7 @@ interface Surcharge {
   From: string;
   To: string | null;
   SurgeChargePrice: string;
-  uniqueId: string | null;
+  vehicle_id: string | null;
   supplier_id: string;
 }
 
@@ -93,7 +93,46 @@ const Surcharge = () => {
     },
     mode: "onChange",
   });
+  const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.push("/login");
+      throw new Error("No authentication token found");
+    }
 
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      let errorMessage = response.statusText;
+      try {
+        const errorData = await response.text();
+        errorMessage = errorData || errorMessage;
+      } catch (e) {
+        console.warn("Couldn't parse error response", e);
+      }
+      throw new Error(`HTTP ${response.status}: ${errorMessage}`);
+    }
+
+    // Handle empty responses
+    const contentLength = response.headers.get("content-length");
+    if (contentLength === "0" || response.status === 204) {
+      return null;
+    }
+
+    try {
+      return await response.json();
+    } catch (e) {
+      console.error("Failed to parse JSON response:", e);
+      throw new Error("Invalid JSON response from server");
+    }
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -163,7 +202,9 @@ const Surcharge = () => {
       const payload = {
         VehicleName: selectedVehicle.VehicleBrand,
         From: format(data.DateRange.from, "yyyy-MM-dd"),
+        // From: data.DateRange?.from || null,
         To: data.DateRange.to ? format(data.DateRange.to, "yyyy-MM-dd") : null,
+        // To: data.DateRange?.to || null,
         SurgeChargePrice: data.SurgeChargePrice,
         uniqueId: data.uniqueId,
         supplier_id: supplierId,
@@ -184,7 +225,7 @@ const Surcharge = () => {
           editingId ? "updated" : "added"
         } successfully!`,
       });
-      console.log("formdata:",payload);
+      console.log("formdata:", payload);
       setShowForm(false);
       setEditingId(null);
       form.reset();
@@ -208,8 +249,12 @@ const Surcharge = () => {
 
   const handleEdit = (surcharge: Surcharge) => {
     setEditingId(surcharge.id);
+
+    // Convert ID to string if needed
+    const vehicleId = surcharge.vehicle_id ? String(surcharge.vehicle_id) : "";
+
     form.reset({
-      uniqueId: surcharge.uniqueId || "",
+      uniqueId: vehicleId,
       SurgeChargePrice: surcharge.SurgeChargePrice,
       DateRange: {
         from: new Date(surcharge.From),
@@ -284,8 +329,12 @@ const Surcharge = () => {
             <Button
               onClick={() => {
                 setEditingId(null);
+                form.reset({
+                  uniqueId: "",
+                  SurgeChargePrice: "",
+                  DateRange: { from: null, to: null },
+                });
                 setShowForm(true);
-                form.reset();
               }}
             >
               <Plus className="mr-2 h-4 w-4" /> Add Surcharge
@@ -308,6 +357,7 @@ const Surcharge = () => {
                           <FormLabel>Select Vehicle</FormLabel>
                           <Select
                             value={field.value}
+                            defaultValue={field.value}
                             onValueChange={(value) => {
                               field.onChange(value);
                               form.trigger("uniqueId");
@@ -321,10 +371,7 @@ const Surcharge = () => {
                             </FormControl>
                             <SelectContent>
                               {vehicles.map((vehicle) => (
-                                <SelectItem
-                                  key={vehicle.id}
-                                  value={vehicle.id}
-                                >
+                                <SelectItem key={vehicle.id} value={vehicle.id}>
                                   {vehicle.VehicleBrand} ({vehicle.ServiceType})
                                 </SelectItem>
                               ))}
@@ -426,7 +473,7 @@ const Surcharge = () => {
                 <TableBody>
                   {surcharges.map((surcharge) => {
                     const vehicle = vehicles.find(
-                      (v) => v.uniqueId === surcharge.uniqueId
+                      (v) => v.uniqueId === surcharge.vehicle_id
                     );
                     const fromDate = new Date(surcharge.From);
                     const toDate = surcharge.To ? new Date(surcharge.To) : null;
