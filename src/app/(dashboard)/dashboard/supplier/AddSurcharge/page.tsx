@@ -42,7 +42,7 @@ import { format } from "date-fns";
 import DashboardContainer from "@/components/layout/DashboardContainer";
 interface Vehicle {
   id: string;
-  vehicle_id: string;
+  uniqueId: string;
   VehicleBrand: string;
   ServiceType: string;
 }
@@ -53,12 +53,12 @@ interface Surcharge {
   From: string;
   To: string | null;
   SurgeChargePrice: string;
-  vehicle_id: string | null;
+  uniqueId: string | null;
   supplier_id: string;
 }
 
 const formSchema = z.object({
-  vehicle_id: z.string().min(1, { message: "Please select a vehicle" }),
+  uniqueId: z.string().min(1, { message: "Please select a vehicle" }),
   DateRange: z.object({
     from: z.date({ required_error: "Start date is required" }),
     to: z.date().nullable(),
@@ -87,7 +87,7 @@ const Surcharge = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      vehicle_id: "",
+      uniqueId: "",
       SurgeChargePrice: "",
       DateRange: { from: null, to: null },
     },
@@ -116,7 +116,7 @@ const Surcharge = () => {
           Array.isArray(vehiclesData)
             ? vehiclesData.map((v) => ({
                 id: v.id?.toString(),
-                vehicle_id: v.id?.toString(),
+                uniqueId: v.id?.toString(),
                 VehicleBrand: v.VehicleBrand || "Unknown Brand",
                 ServiceType: v.ServiceType || "Unknown Service",
               }))
@@ -156,7 +156,7 @@ const Surcharge = () => {
     setIsSubmitting(true);
     try {
       const selectedVehicle = vehicles.find(
-        (v) => v.vehicle_id === data.vehicle_id
+        (v) => v.uniqueId === data.uniqueId
       );
       if (!selectedVehicle) throw new Error("Invalid vehicle selection");
 
@@ -165,7 +165,7 @@ const Surcharge = () => {
         From: format(data.DateRange.from, "yyyy-MM-dd"),
         To: data.DateRange.to ? format(data.DateRange.to, "yyyy-MM-dd") : null,
         SurgeChargePrice: data.SurgeChargePrice,
-        vehicle_id: data.vehicle_id,
+        uniqueId: data.uniqueId,
         supplier_id: supplierId,
       };
 
@@ -184,7 +184,7 @@ const Surcharge = () => {
           editingId ? "updated" : "added"
         } successfully!`,
       });
-      console.log("formdata:");
+      console.log("formdata:",payload);
       setShowForm(false);
       setEditingId(null);
       form.reset();
@@ -209,7 +209,7 @@ const Surcharge = () => {
   const handleEdit = (surcharge: Surcharge) => {
     setEditingId(surcharge.id);
     form.reset({
-      vehicle_id: surcharge.vehicle_id || "",
+      uniqueId: surcharge.uniqueId || "",
       SurgeChargePrice: surcharge.SurgeChargePrice,
       DateRange: {
         from: new Date(surcharge.From),
@@ -302,7 +302,7 @@ const Surcharge = () => {
                   >
                     <FormField
                       control={form.control}
-                      name="vehicle_id"
+                      name="uniqueId"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Select Vehicle</FormLabel>
@@ -310,7 +310,7 @@ const Surcharge = () => {
                             value={field.value}
                             onValueChange={(value) => {
                               field.onChange(value);
-                              form.trigger("vehicle_id");
+                              form.trigger("uniqueId");
                             }}
                             disabled={isSubmitting}
                           >
@@ -322,8 +322,8 @@ const Surcharge = () => {
                             <SelectContent>
                               {vehicles.map((vehicle) => (
                                 <SelectItem
-                                  key={vehicle.vehicle_id}
-                                  value={vehicle.vehicle_id}
+                                  key={vehicle.id}
+                                  value={vehicle.id}
                                 >
                                   {vehicle.VehicleBrand} ({vehicle.ServiceType})
                                 </SelectItem>
@@ -426,7 +426,7 @@ const Surcharge = () => {
                 <TableBody>
                   {surcharges.map((surcharge) => {
                     const vehicle = vehicles.find(
-                      (v) => v.vehicle_id === surcharge.vehicle_id
+                      (v) => v.uniqueId === surcharge.uniqueId
                     );
                     const fromDate = new Date(surcharge.From);
                     const toDate = surcharge.To ? new Date(surcharge.To) : null;
