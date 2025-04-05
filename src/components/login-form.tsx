@@ -106,7 +106,7 @@ const LoginFormContent = () => {
           name="Email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Email <span className="text-red-500">*</span></FormLabel>
               <FormControl>
                 <Input placeholder="Enter your email" {...field} />
               </FormControl>
@@ -120,7 +120,7 @@ const LoginFormContent = () => {
           render={({ field }) => (
             <FormItem>
               <div className="flex justify-between">
-                <FormLabel>Password</FormLabel>
+                <FormLabel>Password <span className="text-red-500">*</span></FormLabel>
                 <Link href="/forgot-password" className="text-xs text-blue-500 underline">
                   Forgot Password?
                 </Link>

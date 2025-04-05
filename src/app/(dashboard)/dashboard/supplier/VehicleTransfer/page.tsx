@@ -482,7 +482,7 @@ const VehicleTransfer = () => {
                           name={`rows.${index}.uniqueId`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Select Vehicle</FormLabel>
+                              <FormLabel>Select Vehicle <span className="text-red-500">*</span></FormLabel>
                               <FormControl>
                                 <Select
                                   onValueChange={field.onChange}
@@ -521,7 +521,7 @@ const VehicleTransfer = () => {
                           name={`rows.${index}.SelectZone`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Select Zone</FormLabel>
+                              <FormLabel>Select Zone <span className="text-red-500">*</span></FormLabel>
                               <FormControl>
                                 <Select
                                   onValueChange={field.onChange}
@@ -549,7 +549,7 @@ const VehicleTransfer = () => {
                           name={`rows.${index}.Currency`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Currency</FormLabel>
+                              <FormLabel>Currency <span className="text-red-500">*</span></FormLabel>
                               <FormControl>
                                 <Select
                                   {...field}
@@ -596,7 +596,7 @@ const VehicleTransfer = () => {
                           name={`rows.${index}.Price`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Price</FormLabel>
+                              <FormLabel>Price <span className="text-red-500">*</span></FormLabel>
                               <FormControl>
                                 <div className="flex">
                                   <span className="bg-secondary px-2 py-1 rounded-l-sm flex items-center">
@@ -622,7 +622,7 @@ const VehicleTransfer = () => {
                           name={`rows.${index}.Extra_Price`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Extra Price Per Mile</FormLabel>
+                              <FormLabel>Extra Price Per Mile <span className="text-red-500">*</span></FormLabel>
                               <FormControl>
                                 <div className="flex">
                                   <span className="bg-secondary px-2 py-1 rounded-l-sm flex items-center">

@@ -181,7 +181,7 @@ const emailFromURL = searchParams.get("Email");
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Email <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <Input type="email" placeholder="Enter your email" {...field} />
                     </FormControl>
@@ -208,7 +208,7 @@ const emailFromURL = searchParams.get("Email");
                 name="newpassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>New Password</FormLabel>
+                    <FormLabel>New Password <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <Input type="password" placeholder="Enter new password" {...field} />
                     </FormControl>

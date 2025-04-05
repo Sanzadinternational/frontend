@@ -683,7 +683,7 @@ const Page = () => {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Zone Name</FormLabel>
+                          <FormLabel>Zone Name <span className="text-red-500">*</span></FormLabel>
                           <FormControl>
                             <Input placeholder="Enter zone name" {...field} />
                           </FormControl>
@@ -697,7 +697,7 @@ const Page = () => {
                       name="address"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Zone Address</FormLabel>
+                          <FormLabel>Zone Address <span className="text-red-500">*</span></FormLabel>
                           <FormControl>
                             <ZonePicker
                               onChange={field.onChange}
@@ -719,7 +719,7 @@ const Page = () => {
                       name="radius_miles"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Radius (miles)</FormLabel>
+                          <FormLabel>Radius (miles) <span className="text-red-500">*</span></FormLabel>
                           <FormControl>
                             <Input
                               type="number"

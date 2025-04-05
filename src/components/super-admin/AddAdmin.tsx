@@ -105,7 +105,7 @@ const AddAdmin = () => {
               name="Company_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Admin Name</FormLabel>
+                  <FormLabel>Admin Name <span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input placeholder="Enter Admin Name" {...field} />
                   </FormControl>
@@ -118,7 +118,7 @@ const AddAdmin = () => {
               name="Email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Email <span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input placeholder="Enter Email" {...field} />
                   </FormControl>
@@ -131,7 +131,7 @@ const AddAdmin = () => {
               name="Password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Password <span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="Enter Password" {...field} />
                   </FormControl>

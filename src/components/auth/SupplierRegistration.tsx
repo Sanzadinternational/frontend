@@ -399,7 +399,7 @@ const SupplierRegistration: React.FC = () => {
                   <FormLabel
                   // className="uppercase text-xs font-bold text-zinc-500 dark:text-white"
                   >
-                    Company Name
+                    Company Name <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -417,7 +417,7 @@ const SupplierRegistration: React.FC = () => {
               name="Owner"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Owner Name</FormLabel>
+                  <FormLabel>Owner Name <span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input
                       type="text"
@@ -435,7 +435,7 @@ const SupplierRegistration: React.FC = () => {
               name="Address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel>Address <span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Enter Your Address"
@@ -453,7 +453,7 @@ const SupplierRegistration: React.FC = () => {
               name="Country"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Country</FormLabel>
+                  <FormLabel>Country <span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Select
                       {...field}
@@ -484,7 +484,7 @@ const SupplierRegistration: React.FC = () => {
               name="City"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>City</FormLabel>
+                  <FormLabel>City <span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     {/* <Select
                       {...field}
@@ -520,7 +520,7 @@ const SupplierRegistration: React.FC = () => {
               name="Zip_code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Zip Code</FormLabel>
+                  <FormLabel>Zip Code <span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input
                       type="text"
@@ -539,7 +539,7 @@ const SupplierRegistration: React.FC = () => {
               name="Office_number"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Office Number</FormLabel>
+                  <FormLabel>Office Number <span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <div className="flex items-center">
                       {selectedFlag && (
@@ -579,7 +579,7 @@ const SupplierRegistration: React.FC = () => {
               name="Email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Email <span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <div className="flex w-full max-w-sm items-center space-x-2">
                       <Input
@@ -618,7 +618,7 @@ const SupplierRegistration: React.FC = () => {
                 name="Otp"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>OTP</FormLabel>
+                    <FormLabel>OTP <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <div className="flex items-center space-x-2">
                         <Input
@@ -659,7 +659,7 @@ const SupplierRegistration: React.FC = () => {
                   name="Password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Create Password</FormLabel>
+                      <FormLabel>Create Password <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input
                           // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
@@ -696,7 +696,7 @@ const SupplierRegistration: React.FC = () => {
                   name="Mobile_number"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Mobile Number</FormLabel>
+                      <FormLabel>Mobile Number <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <div className="flex items-center space-x-2">
                           {selectedFlag && (
@@ -770,7 +770,7 @@ const SupplierRegistration: React.FC = () => {
                   name="Currency"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Currency</FormLabel>
+                      <FormLabel>Currency <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Select
                           {...field}
@@ -832,7 +832,7 @@ const SupplierRegistration: React.FC = () => {
                                   render={({ field }) => (
                                     <FormItem>
                                       <FormLabel>
-                                        Upload Document (GST Tax Certificate)
+                                        Upload Document (GST Tax Certificate) <span className="text-red-500">*</span>
                                       </FormLabel>
                                       <FormControl>
                                         <Input

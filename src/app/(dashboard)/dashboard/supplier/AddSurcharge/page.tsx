@@ -354,7 +354,7 @@ const Surcharge = () => {
                       name="uniqueId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Select Vehicle</FormLabel>
+                          <FormLabel>Select Vehicle <span className="text-red-500">*</span></FormLabel>
                           <Select
                             value={field.value}
                             defaultValue={field.value}
@@ -387,7 +387,7 @@ const Surcharge = () => {
                       name="DateRange"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Select Date Range</FormLabel>
+                          <FormLabel>Select Date Range <span className="text-red-500">*</span></FormLabel>
                           <FormControl>
                             <DatePicker
                               value={field.value} // Ensure selected value is controlled
@@ -407,7 +407,7 @@ const Surcharge = () => {
                       name="SurgeChargePrice"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Surcharge Amount</FormLabel>
+                          <FormLabel>Surcharge Amount <span className="text-red-500">*</span></FormLabel>
                           <FormControl>
                             <Input
                               placeholder="Enter surcharge amount"
