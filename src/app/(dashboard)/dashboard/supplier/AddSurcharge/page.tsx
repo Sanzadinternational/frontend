@@ -453,7 +453,7 @@ const Surcharge = () => {
               </div>
             ) : null}
 
-            {surcharges.length === 0 ? (
+            {/* {surcharges.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500">No surcharges available</p>
                 <Button onClick={() => setShowForm(true)} className="mt-4">
@@ -523,7 +523,145 @@ const Surcharge = () => {
                   })}
                 </TableBody>
               </Table>
-            )}
+            )} */}
+
+{surcharges.length === 0 ? (
+  <div className="text-center py-8">
+    <p className="text-gray-500">No surcharges available</p>
+    <Button onClick={() => setShowForm(true)} className="mt-4">
+      <Plus className="mr-2 h-4 w-4" /> Add Your First Surcharge
+    </Button>
+  </div>
+) : (
+  <>
+    {/* Desktop Table (hidden on mobile) */}
+    <div className="hidden md:block">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Vehicle</TableHead>
+            <TableHead>Date Range</TableHead>
+            <TableHead>Surcharge</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {surcharges.map((surcharge) => {
+            const vehicle = vehicles.find(
+              (v) => v.uniqueId === surcharge.vehicle_id
+            );
+            const fromDate = new Date(surcharge.From);
+            const toDate = surcharge.To ? new Date(surcharge.To) : null;
+
+            return (
+              <TableRow key={surcharge.id}>
+                <TableCell className="font-medium">
+                  {vehicle?.VehicleBrand ||
+                    surcharge.VehicleName ||
+                    "Unknown Vehicle"}
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-col">
+                    <span>{format(fromDate, "MMM dd, yyyy")}</span>
+                    {toDate && (
+                      <span className="text-sm text-muted-foreground">
+                        to {format(toDate, "MMM dd, yyyy")}
+                      </span>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline">
+                    ${surcharge.SurgeChargePrice}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(surcharge)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDelete(surcharge.id)}
+                    >
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
+
+    {/* Mobile Cards (hidden on desktop) */}
+    <div className="md:hidden space-y-4">
+      {surcharges.map((surcharge) => {
+        const vehicle = vehicles.find(
+          (v) => v.uniqueId === surcharge.vehicle_id
+        );
+        const fromDate = new Date(surcharge.From);
+        const toDate = surcharge.To ? new Date(surcharge.To) : null;
+
+        return (
+          <Card key={surcharge.id}>
+            <CardHeader className="flex flex-row justify-between items-start p-4">
+              <div>
+                <CardTitle className="text-lg">
+                  {vehicle?.VehicleBrand ||
+                    surcharge.VehicleName ||
+                    "Unknown Vehicle"}
+                </CardTitle>
+                <div className="mt-2">
+                  <Badge variant="outline">
+                    ${surcharge.SurgeChargePrice}
+                  </Badge>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleEdit(surcharge)}
+                  className="h-8 w-8"
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleDelete(surcharge.id)}
+                  className="h-8 w-8 text-red-500 hover:text-red-700"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-gray-500">Date Range</div>
+                <div className="text-sm">
+                  {format(fromDate, "MMM dd, yyyy")}
+                  {toDate && (
+                    <span className="text-muted-foreground">
+                      {" "}to {format(toDate, "MMM dd, yyyy")}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  </>
+)}
           </CardContent>
         </Card>
       </div>

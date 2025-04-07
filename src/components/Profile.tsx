@@ -19,7 +19,7 @@ interface User {
   City: string;
   Address: string;
   Zip_code: string;
-  profileImage?: string;
+  // profileImage?: string;
   Role: string;
 }
 
@@ -43,8 +43,8 @@ const Profile = () => {
   const [error, setError] = useState<string>("");
   const [editing, setEditing] = useState(false);
   const [updatedUser, setUpdatedUser] = useState<User | null>(null);
-  const [image, setImage] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  // const [image, setImage] = useState<File | null>(null);
+  // const [preview, setPreview] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -80,9 +80,9 @@ console.log("userData",user);
         formData.append(key, (updatedUser as any)[key]);
       });
 
-      if (image) {
-        formData.append("profileImage", image);
-      }
+      // if (image) {
+      //   formData.append("profileImage", image);
+      // }
 
       const response = await fetch(`${API_BASE_URL}/view/UpdateProfile/${user?.userId}`, {
         method: "PUT",
@@ -95,9 +95,10 @@ console.log("userData",user);
       if (!response.ok) throw new Error(`Failed to update profile: ${response.status}`);
 
       const data = await response.json();
-      setUser((prev) => ({ ...prev, ...updatedUser, profileImage: data.profileImage })); 
+      // setUser((prev) => ({ ...prev, ...updatedUser, profileImage: data.profileImage })); 
+      setUser((prev) => ({ ...prev, ...updatedUser })); 
       setEditing(false);
-      setPreview(null);
+      // setPreview(null);
       window.location.reload();
     } catch (err: any) {
       console.error("Error updating profile:", err.message);
@@ -109,13 +110,13 @@ console.log("userData",user);
     setUpdatedUser((prev) => prev ? { ...prev, [e.target.name]: e.target.value } : null);
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImage(file);
-      setPreview(URL.createObjectURL(file));
-    }
-  };
+  // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     setImage(file);
+  //     setPreview(URL.createObjectURL(file));
+  //   }
+  // };
 
   if (!user) return <Skeleton className="h-32 w-full" />;
   if (error) return <div>Error: {error}</div>;
@@ -132,7 +133,8 @@ console.log("userData",user);
         <CardContent>
           <div className="flex items-center gap-2">
             <Image
-              src={preview || user?.profileImage || "/male-profile-pic.webp"}
+              // src={preview || user?.profileImage || "/male-profile-pic.webp"}
+              src={"/male-profile-pic.webp"}
               width={100}
               height={100}
               alt="user"
@@ -145,11 +147,11 @@ console.log("userData",user);
   alt="user"
   className="rounded-full"
 /> */}
-            {editing && (
+            {/* {editing && (
               <>
                 <input type="file" accept="image/*" onChange={handleImageChange} />
               </>
-            )}
+            )} */}
             <dl>
               <h1 className="text-xl font-extrabold">{user?.Company_name || "N/A"}</h1>
               <p>{user?.Email || "N/A"}</p>

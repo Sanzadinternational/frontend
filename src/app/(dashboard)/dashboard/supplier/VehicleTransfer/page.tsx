@@ -37,7 +37,7 @@ import { Pencil, Trash2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import DashboardContainer from "@/components/layout/DashboardContainer";
 import { removeToken } from "@/components/utils/auth";
-
+import { Badge } from "@/components/ui/badge";
 const transferSchema = z.object({
   rows: z.array(
     z.object({
@@ -869,7 +869,7 @@ const VehicleTransfer = () => {
             </form>
           </Form>
 
-          {transfers.length > 0 && (
+          {/* {transfers.length > 0 && (
             <div className="mt-8">
               <h3 className="text-lg font-medium mb-4">Existing Transfers</h3>
               <Table>
@@ -918,13 +918,7 @@ const VehicleTransfer = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex gap-2">
-                            {/* <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleEditTransfer(transfer)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button> */}
+                           
                             <Button
                               variant="ghost"
                               size="icon"
@@ -948,7 +942,160 @@ const VehicleTransfer = () => {
                 </TableBody>
               </Table>
             </div>
-          )}
+          )} */}
+
+{transfers.length > 0 && (
+  <div className="mt-8">
+    <h3 className="text-lg font-medium mb-4">Existing Transfers</h3>
+    
+    {/* Desktop Table (hidden on mobile) */}
+    <div className="hidden md:block">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Vehicle</TableHead>
+            <TableHead>Zone</TableHead>
+            <TableHead>Transfer Info</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Extra Price/Mile</TableHead>
+            <TableHead>Night Time</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {transfers.map((transfer, index) => {
+            const vehicle = vehicles.find(
+              (v) => v.id === transfer.vehicle_id
+            );
+            const zone = zones.find((z) => z.id === transfer.zone_id);
+
+            return (
+              <TableRow key={transfer.id}>
+                <TableCell>
+                  {vehicle
+                    ? `${vehicle.VehicleBrand} (${vehicle.VehicleModel})`
+                    : transfer.VehicleBrand
+                    ? `${transfer.VehicleBrand} (${transfer.VehicleModel})`
+                    : "Unknown Vehicle"}
+                </TableCell>
+                <TableCell>
+                  {transfer.Zone_name ||
+                    (zone ? zone.name : "Unknown Zone")}
+                </TableCell>
+                <TableCell>{transfer.Transfer_info || "-"}</TableCell>
+                <TableCell>
+                  {transfer.Currency} {transfer.price}
+                </TableCell>
+                <TableCell>
+                  {transfer.Currency} {transfer.extra_price_per_mile}
+                </TableCell>
+                <TableCell>
+                  {transfer.NightTime === "yes"
+                    ? `Yes (${transfer.Currency} ${transfer.NightTime_Price}/hr)`
+                    : "No"}
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEditTransfer(transfer)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDelete(transfer.id, index)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
+
+    {/* Mobile Cards (hidden on desktop) */}
+    <div className="md:hidden space-y-4">
+      {transfers.map((transfer, index) => {
+        const vehicle = vehicles.find(
+          (v) => v.id === transfer.vehicle_id
+        );
+        const zone = zones.find((z) => z.id === transfer.zone_id);
+
+        return (
+          <Card key={transfer.id}>
+            <CardHeader className="flex flex-row justify-between items-start p-4">
+              <div>
+                <CardTitle className="text-lg">
+                  {vehicle
+                    ? `${vehicle.VehicleBrand} (${vehicle.VehicleModel})`
+                    : transfer.VehicleBrand
+                    ? `${transfer.VehicleBrand} (${transfer.VehicleModel})`
+                    : "Unknown Vehicle"}
+                </CardTitle>
+                <div className="mt-2">
+                  <Badge variant="outline">
+                    {transfer.Zone_name || (zone ? zone.name : "Unknown Zone")}
+                  </Badge>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleEditTransfer(transfer)}
+                  className="h-8 w-8"
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleDelete(transfer.id, index)}
+                  className="h-8 w-8 text-red-500 hover:text-red-700"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 pt-0 grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-gray-500">Transfer Info</div>
+                <div className="text-sm">{transfer.Transfer_info || "-"}</div>
+              </div>
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-gray-500">Price</div>
+                <div className="text-sm">
+                  {transfer.Currency} {transfer.price}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-gray-500">Extra Price/Mile</div>
+                <div className="text-sm">
+                  {transfer.Currency} {transfer.extra_price_per_mile}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-gray-500">Night Time</div>
+                <div className="text-sm">
+                  {transfer.NightTime === "yes"
+                    ? `Yes (${transfer.Currency} ${transfer.NightTime_Price}/hr)`
+                    : "No"}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  </div>
+)}
         </CardContent>
       </Card>
     </DashboardContainer>

@@ -16,6 +16,25 @@ input[type=number]::-webkit-outer-spin-button {
 }
 /* hiden input[number] arrow */
 
+/* resposive Table CSS */
+@media (max-width: 768px) {
+  .table-container {
+    display: none;
+  }
+  .mobile-container {
+    display: block;
+  }
+}
+
+@media (min-width: 769px) {
+  .table-container {
+    display: block;
+  }
+  .mobile-container {
+    display: none;
+  }
+}
+/* resposive Table CSS */
 @layer utilities {
   .text-balance {
     text-wrap: balance;

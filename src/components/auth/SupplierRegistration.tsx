@@ -2,8 +2,8 @@
 
 import * as z from "zod";
 import Image from "next/image";
-import { useState} from "react";
-
+import { useState } from "react";
+import { ChooseCurrency } from "../constants/currency";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -44,6 +44,7 @@ interface Country {
   // cities: string[];
 }
 const tags = ["GST", "Adhar", "PAN", "Passport"];
+const chooseCurrency = ChooseCurrency;
 const formSchema = z.object({
   Company_name: z.string().min(1, { message: "Company Name is Required" }),
   Address: z.string().min(1, { message: "Address is Required" }),
@@ -64,8 +65,8 @@ const formSchema = z.object({
   Mobile_number: z.string().min(1, { message: "Mobile No. is required" }),
   Currency: z.string().min(1, { message: "Currency is required" }),
   Gst_Tax_Certificate: z.any().refine((file) => file instanceof File, {
-      message: "Upload document is required",
-    }),
+    message: "Upload document is required",
+  }),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -82,7 +83,7 @@ const SupplierRegistration: React.FC = () => {
   const [isOtpVerified, setIsOtpVerified] = useState(false);
   const [isSendingOtp, setIsSendingOtp] = useState(false); // For sending OTP
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false); // For verifying OTP
-  const [isSumbiting,setIsSubmiting] = useState(false);
+  const [isSumbiting, setIsSubmiting] = useState(false);
   const router = useRouter();
 
   const form = useForm<FormData>({
@@ -110,39 +111,36 @@ const SupplierRegistration: React.FC = () => {
     if (email) {
       setIsSendingOtp(true); // Start sending OTP
       try {
-        const response = await fetch(
-          `${API_BASE_URL}/supplier/send-otp`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email }),
-          }
-        );
+        const response = await fetch(`${API_BASE_URL}/supplier/send-otp`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        });
 
         if (response.ok) {
           setOtpSent(true);
           toast({
-            title:"Sending OTP",
-            description:"OTP sent to email"
-          })
+            title: "Sending OTP",
+            description: "OTP sent to email",
+          });
           console.log("OTP sent to email!");
         } else {
           toast({
-            title:"Error",
-            description:"Failed to send OTP.",
-            variant:"destructive"
-          })
+            title: "Error",
+            description: "Failed to send OTP.",
+            variant: "destructive",
+          });
           console.log("Failed to send OTP.");
           console.log(response);
         }
       } catch (error) {
         toast({
-          title:"Error",
-          description:(error as Error).message,
-          variant:"destructive"
-        })
+          title: "Error",
+          description: (error as Error).message,
+          variant: "destructive",
+        });
         console.error("Error sending OTP:", error);
       } finally {
         setIsSendingOtp(false); // Stop sending OTP
@@ -155,44 +153,40 @@ const SupplierRegistration: React.FC = () => {
     const otp = form.getValues("Otp");
     setIsVerifyingOtp(true); // Start verifying OTP
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/supplier/verify-otp`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, otp }),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/supplier/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      });
 
       if (response.ok) {
         setIsOtpVerified(true);
         toast({
-          title:"OTP Verification",
-          description:"OTP verified successfully!"
-        })
+          title: "OTP Verification",
+          description: "OTP verified successfully!",
+        });
         console.log("OTP verified successfully!");
       } else {
         setIsOtpVerified(false);
         toast({
-          title:"OTP Verification",
-          description:"Invalid OTP.",
-          variant:"destructive"
-        })
+          title: "OTP Verification",
+          description: "Invalid OTP.",
+          variant: "destructive",
+        });
         console.log("Invalid OTP.");
       }
     } catch (error) {
       toast({
-        title:"Error",
-        description:(error as Error).message,
-      })
+        title: "Error",
+        description: (error as Error).message,
+      });
       console.log("Error verifying OTP:", error);
     } finally {
       setIsVerifyingOtp(false); // Stop verifying OTP
     }
   };
 
-
- const handleSubmit: SubmitHandler<FormData> = async (data) => {
+  const handleSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmiting(true);
 
     const officeNumberWithDialCode = `${selectedDialCode}${data.Office_number}`;
@@ -366,11 +360,6 @@ const SupplierRegistration: React.FC = () => {
   // const cities =
   //   countries.find((country) => country.name === selectedCountry)?.cities || [];
 
- 
-
-
-
-
   const handleCurrencyChange = (value: string) => {
     setSelectedCurrency(value);
     form.setValue("Currency", value);
@@ -417,7 +406,9 @@ const SupplierRegistration: React.FC = () => {
               name="Owner"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Owner Name <span className="text-red-500">*</span></FormLabel>
+                  <FormLabel>
+                    Owner Name <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="text"
@@ -435,7 +426,9 @@ const SupplierRegistration: React.FC = () => {
               name="Address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address <span className="text-red-500">*</span></FormLabel>
+                  <FormLabel>
+                    Address <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Enter Your Address"
@@ -453,7 +446,9 @@ const SupplierRegistration: React.FC = () => {
               name="Country"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Country <span className="text-red-500">*</span></FormLabel>
+                  <FormLabel>
+                    Country <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Select
                       {...field}
@@ -484,7 +479,9 @@ const SupplierRegistration: React.FC = () => {
               name="City"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>City <span className="text-red-500">*</span></FormLabel>
+                  <FormLabel>
+                    City <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     {/* <Select
                       {...field}
@@ -503,7 +500,7 @@ const SupplierRegistration: React.FC = () => {
                         ))}
                       </SelectContent>
                     </Select> */}
-                     <Input
+                    <Input
                       type="text"
                       // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                       placeholder="Enter Your City"
@@ -520,7 +517,9 @@ const SupplierRegistration: React.FC = () => {
               name="Zip_code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Zip Code <span className="text-red-500">*</span></FormLabel>
+                  <FormLabel>
+                    Zip Code <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="text"
@@ -539,7 +538,9 @@ const SupplierRegistration: React.FC = () => {
               name="Office_number"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Office Number <span className="text-red-500">*</span></FormLabel>
+                  <FormLabel>
+                    Office Number <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <div className="flex items-center">
                       {selectedFlag && (
@@ -579,7 +580,9 @@ const SupplierRegistration: React.FC = () => {
               name="Email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email <span className="text-red-500">*</span></FormLabel>
+                  <FormLabel>
+                    Email <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <div className="flex w-full max-w-sm items-center space-x-2">
                       <Input
@@ -618,7 +621,9 @@ const SupplierRegistration: React.FC = () => {
                 name="Otp"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>OTP <span className="text-red-500">*</span></FormLabel>
+                    <FormLabel>
+                      OTP <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <div className="flex items-center space-x-2">
                         <Input
@@ -659,7 +664,9 @@ const SupplierRegistration: React.FC = () => {
                   name="Password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Create Password <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>
+                        Create Password <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
@@ -696,7 +703,9 @@ const SupplierRegistration: React.FC = () => {
                   name="Mobile_number"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Mobile Number <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>
+                        Mobile Number <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <div className="flex items-center space-x-2">
                           {selectedFlag && (
@@ -770,7 +779,9 @@ const SupplierRegistration: React.FC = () => {
                   name="Currency"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Currency <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>
+                        Currency <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Select
                           {...field}
@@ -781,9 +792,17 @@ const SupplierRegistration: React.FC = () => {
                             <SelectValue placeholder="Select Currency" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Rs">Rs</SelectItem>
+                            {/* <SelectItem value="Rs">Rs</SelectItem>
                             <SelectItem value="usd">USD</SelectItem>
-                            <SelectItem value="ed">ED</SelectItem>
+                            <SelectItem value="ed">ED</SelectItem> */}
+                            {chooseCurrency?.map((cur) => (
+                              <SelectItem
+                                key={cur.value}
+                                value={`${cur.value}`}
+                              >
+                                {cur.name}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -827,47 +846,48 @@ const SupplierRegistration: React.FC = () => {
                   )}
                 /> */}
                 <FormField
-                                  control={form.control}
-                                  name="Gst_Tax_Certificate"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>
-                                        Upload Document (GST Tax Certificate) <span className="text-red-500">*</span>
-                                      </FormLabel>
-                                      <FormControl>
-                                        <Input
-                                          type="file"
-                                          accept=".pdf,.jpg,.png"
-                                          onChange={handleFileChange}
-                                        />
-                                      </FormControl>
-                                      {preview && (
-                                        <div className="mt-4">
-                                          <p>Preview:</p>
-                                          {file?.type.startsWith("image/") ? (
-                                            <Image
-                                              src={preview}
-                                              alt="File Preview"
-                                              width={150}
-                                              height={150}
-                                            />
-                                          ) : (
-                                            <a
-                                              href={preview}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                            >
-                                              Preview File
-                                            </a>
-                                          )}
-                                        </div>
-                                      )}
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
+                  control={form.control}
+                  name="Gst_Tax_Certificate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Upload Document (GST Tax Certificate){" "}
+                        <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="file"
+                          accept=".pdf,.jpg,.png"
+                          onChange={handleFileChange}
+                        />
+                      </FormControl>
+                      {preview && (
+                        <div className="mt-4">
+                          <p>Preview:</p>
+                          {file?.type.startsWith("image/") ? (
+                            <Image
+                              src={preview}
+                              alt="File Preview"
+                              width={150}
+                              height={150}
+                            />
+                          ) : (
+                            <a
+                              href={preview}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Preview File
+                            </a>
+                          )}
+                        </div>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <Button type="submit" className="w-full" disabled={isSumbiting}>
-                {isSumbiting ? "Signing Up..." : "Sign Up"}
+                  {isSumbiting ? "Signing Up..." : "Sign Up"}
                 </Button>
               </>
             )}

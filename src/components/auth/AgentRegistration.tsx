@@ -35,7 +35,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import CountryCityAPI from "../api/CountryCityAPI";
 import { useToast } from "@/hooks/use-toast";
-
+import { ChooseCurrency } from "../constants/currency";
 interface Country {
   name: string;
   flag: string;
@@ -43,6 +43,7 @@ interface Country {
   // cities: string[];
 }
 const tags = ["GST", "Adhar", "PAN", "Passport"];
+const chooseCurrency = ChooseCurrency;
 const formSchema = z.object({
   Company_name: z.string().min(1, { message: "Company Name is Required" }),
   Address: z.string().min(1, { message: "Address is Required" }),
@@ -52,7 +53,7 @@ const formSchema = z.object({
     .email({ message: "Please enter valid email" }),
   Password: z.string().min(1, { message: "Password is Required" }),
   Zip_code: z.string().min(1, { message: "Zipcode is Required" }),
-  IATA_Code: z.string(),
+  IATA_Code: z.string().optional(),
   Country: z.string().min(1, { message: "Country is required" }),
   City: z.string().min(1, { message: "City is required" }),
   Gst_Vat_Tax_number: z.string().min(1, { message: "Tax Number is required" }),
@@ -252,6 +253,7 @@ const AgentRegistration: React.FC = () => {
           router.push("/login");
         } else {
           const errorData = await registrationResponse.json();
+          console.log(data);
           toast({
             title: "Error",
             description: errorData.message || "Registration failed.",
@@ -263,6 +265,7 @@ const AgentRegistration: React.FC = () => {
           description: "An error occurred during registration.",
         });
         console.error("Error during registration:", error);
+        console.log(data);
       } finally {
         setIsSubmiting(false);
       }
@@ -700,9 +703,14 @@ const AgentRegistration: React.FC = () => {
                             <SelectValue placeholder="Select Currency" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Rs">Rs</SelectItem>
+                            {
+                              chooseCurrency?.map((cur)=>(
+                                <SelectItem key={cur.value} value={`${cur.value}`}>{cur.name}</SelectItem>
+                              ))
+                            }
+                            {/* <SelectItem value="Rs">Rs</SelectItem>
                             <SelectItem value="usd">USD</SelectItem>
-                            <SelectItem value="ed">ED</SelectItem>
+                            <SelectItem value="ed">ED</SelectItem> */}
                           </SelectContent>
                         </Select>
                       </FormControl>

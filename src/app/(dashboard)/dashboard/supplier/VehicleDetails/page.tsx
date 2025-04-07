@@ -674,7 +674,7 @@ const VehicleDetailsForm = () => {
               </DialogContent>
             </Dialog>
           </CardHeader>
-          <CardContent>
+          {/* <CardContent>
             {vehicleDetails.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500">No vehicles available</p>
@@ -763,7 +763,172 @@ const VehicleDetailsForm = () => {
                 </TableBody>
               </Table>
             )}
-          </CardContent>
+          </CardContent> */}
+
+<CardContent>
+  {vehicleDetails.length === 0 ? (
+    <div className="text-center py-8">
+      <p className="text-gray-500">No vehicles available</p>
+      <Button 
+        onClick={() => setIsDialogOpen(true)}
+        className="mt-4"
+      >
+        <Plus className="mr-2 h-4 w-4" /> Add Your First Vehicle
+      </Button>
+    </div>
+  ) : (
+    <>
+      {/* Desktop Table (hidden on mobile) */}
+      <div className="table-container hidden md:block">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Vehicle</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Service</TableHead>
+              <TableHead>Capacity</TableHead>
+              <TableHead>Luggage</TableHead>
+              <TableHead>Extras</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {vehicleDetails.map((vehicle) => (
+              <TableRow key={vehicle.id}>
+                <TableCell className="font-medium">
+                  <div>{vehicle.VehicleBrand}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {vehicle.VehicleModel}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline">{vehicle.VehicleType}</Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge>{vehicle.ServiceType}</Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-col gap-1">
+                    <span>Seats: {vehicle.Seats}</span>
+                    <span>Doors: {vehicle.Doors}</span>
+                    <span>Passengers: {vehicle.Passengers}</span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-col gap-1">
+                    <span>Medium: {vehicle.MediumBag}</span>
+                    <span>Small: {vehicle.SmallBag}</span>
+                    {vehicle.Cargo && <span>Cargo: {vehicle.Cargo}L</span>}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  {vehicle.ExtraSpace?.length > 0 ? (
+                    <div className="flex flex-wrap gap-1">
+                      {vehicle.ExtraSpace.map((extra, index) => (
+                        <Badge key={index} variant="secondary">
+                          {extra}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-gray-400">None</span>
+                  )}
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(vehicle)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDelete(vehicle.id)}
+                    >
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Mobile Cards (hidden on desktop) */}
+      <div className="mobile-container md:hidden space-y-4">
+        {vehicleDetails.map((vehicle) => (
+          <Card key={vehicle.id}>
+            <CardHeader className="flex flex-row justify-between items-start p-4">
+              <div>
+                <CardTitle className="text-lg">
+                  {vehicle.VehicleBrand} {vehicle.VehicleModel}
+                </CardTitle>
+                <div className="flex gap-2 mt-2">
+                  <Badge variant="outline">{vehicle.VehicleType}</Badge>
+                  <Badge>{vehicle.ServiceType}</Badge>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleEdit(vehicle)}
+                  className="h-8 w-8"
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleDelete(vehicle.id)}
+                  className="h-8 w-8"
+                >
+                  <Trash2 className="h-4 w-4 text-red-500" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 pt-0 grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-gray-500">Capacity</div>
+                <div>
+                  <div>Seats: {vehicle.Seats}</div>
+                  <div>Doors: {vehicle.Doors}</div>
+                  <div>Passengers: {vehicle.Passengers}</div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-gray-500">Luggage</div>
+                <div>
+                  <div>Medium: {vehicle.MediumBag}</div>
+                  <div>Small: {vehicle.SmallBag}</div>
+                  {vehicle.Cargo && <div>Cargo: {vehicle.Cargo}L</div>}
+                </div>
+              </div>
+              <div className="col-span-2 space-y-2">
+                <div className="text-sm font-medium text-gray-500">Extras</div>
+                {vehicle.ExtraSpace?.length > 0 ? (
+                  <div className="flex flex-wrap gap-1">
+                    {vehicle.ExtraSpace.map((extra, index) => (
+                      <Badge key={index} variant="secondary">
+                        {extra}
+                      </Badge>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-gray-400">None</span>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </>
+  )}
+</CardContent>
         </Card>
       </div>
     </DashboardContainer>
