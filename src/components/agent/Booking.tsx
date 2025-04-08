@@ -509,10 +509,12 @@ const totalPrice = (basePrice + extraCost) * (isReturnTrip ? 2 : 1); // Double p
                     </dl>
                 </CardContent>
             </Card>
-            <ScrollArea className="md:w-2/3 rounded-md border">
-                <h2 className="text-2xl px-4 pt-2">Transfer Details</h2>
+            <ScrollArea className="md:w-2/3 rounded-xl border">
+                {/* <h2 className="text-2xl px-4 pt-2">Transfer Details</h2> */}
                 <Card>
                     <CardHeader>
+                {/* <h2 className="text-2xl px-4 pt-2">Transfer Details</h2> */}
+                        <CardTitle className="text-2xl">Transfer Details</CardTitle>
                         <CardTitle>Passenger Information (Lead Passenger)</CardTitle>
                         <CardDescription>Details are used in Voucher</CardDescription>
                     </CardHeader>

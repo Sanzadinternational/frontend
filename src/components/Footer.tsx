@@ -66,7 +66,7 @@ const Footer = () => {
           <Link className="px-1 text-sm" href="/privacy-policy">
             Privacy-Policy
           </Link>
-          <Link className="px-1 text-sm" href="/terms">
+          <Link className="px-1 text-sm" href="/terms-&-conditions">
             Terms & Conditions
           </Link>
         </div>

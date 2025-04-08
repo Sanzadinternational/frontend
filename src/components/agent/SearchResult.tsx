@@ -373,8 +373,8 @@ const SearchResult = ({
                           <Image
                             src={
                               vehicle.image ||
-                              "/Sanzad-International-Hero-Image.jpg"
-                            } // Replace with vehicle image URL if available
+                              "/Car-Mockup_Sanzad-International.webp"
+                            } 
                             width={250}
                             height={100}
                             alt={vehicle.brand}
