@@ -17,7 +17,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-
+import { Pencil,Trash2 } from "lucide-react";
 const formSchema = z.object({
   VehicleBrand: z.string().min(1, { message: "Vehicle Brand is required" }),
   ServiceType: z.string().min(1, { message: "Service Type is required" }),
@@ -181,10 +181,10 @@ const VehicleBrand = () => {
                   <td className="p-2">{brand.ServiceType}</td>
                   <td className="p-2 flex gap-2">
                     <Button onClick={() => handleEdit(brand)} variant="outline">
-                      Edit
+                    <Pencil className="h-4 w-4" />
                     </Button>
                     <Button onClick={() => handleDelete(brand.id)} variant="destructive">
-                      Delete
+                    <Trash2 className="h-4 w-4" />
                     </Button>
                   </td>
                 </tr>

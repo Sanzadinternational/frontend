@@ -183,7 +183,7 @@ export const sideBarItems: Role[] = [
           },
           {
             title: 'Supplier Products',
-            url: '/dashboard/admin/supplier-products',
+            url: '/dashboard/admin/vehicle-details',
             icon: 'entry',
             show: 'Supplier_product' // Will check userData.Supplier_product
           }

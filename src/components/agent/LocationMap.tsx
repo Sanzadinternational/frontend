@@ -50,12 +50,120 @@
 
 
 
+// "use client";
+// import { GoogleMap, useLoadScript, Marker, Polyline } from "@react-google-maps/api";
+// import { useMemo, useCallback, useRef } from "react";
+
+// const MapContainerStyle = {
+//   width: "300px",
+//   height: "300px",
+// };
+
+// const parseCoords = (location) => {
+//   if (!location) return null;
+//   const [lat, lng] = location.split(",").map(Number);
+//   return { lat, lng };
+// };
+
+// const googleMapsApiKey = "AIzaSyAjXkEFU-hA_DSnHYaEjU3_fceVwQra0LI";
+
+// const LocationMap = ({ pickupLocation, dropoffLocation }) => {
+//   const { isLoaded, loadError } = useLoadScript({
+//     googleMapsApiKey,
+//   });
+
+//   const mapRef = useRef();
+//   const onMapLoad = useCallback((map) => {
+//     mapRef.current = map;
+//   }, []);
+
+//   // Parse coordinates
+//   const fromCoords = useMemo(() => parseCoords(pickupLocation), [pickupLocation]);
+//   const toCoords = useMemo(() => parseCoords(dropoffLocation), [dropoffLocation]);
+
+//   // Create path for polyline
+//   const path = useMemo(() => {
+//     if (!fromCoords || !toCoords) return [];
+//     return [fromCoords, toCoords];
+//   }, [fromCoords, toCoords]);
+
+//   // Fit bounds to show both markers
+//   const onBoundsChanged = useCallback(() => {
+//     if (mapRef.current && fromCoords && toCoords) {
+//       const bounds = new window.google.maps.LatLngBounds();
+//       bounds.extend(fromCoords);
+//       bounds.extend(toCoords);
+//       mapRef.current.fitBounds(bounds);
+      
+//       // Add some padding if needed
+//       const padding = 50; // pixels
+//       mapRef.current.panToBounds(bounds, padding);
+//     }
+//   }, [fromCoords, toCoords]);
+
+//   if (!isLoaded) return <p className="text-center text-blue-500">Loading Map...</p>;
+//   if (loadError) return <p className="text-center text-red-500">Error loading map.</p>;
+
+//   return (
+//     <div className="">
+//       <GoogleMap 
+//         mapContainerStyle={MapContainerStyle} 
+//         zoom={14}
+//         onLoad={onMapLoad}
+//         onBoundsChanged={onBoundsChanged}
+//         options={{
+//           zoomControl: true,
+//           streetViewControl: false,
+//           mapTypeControl: false,
+//           fullscreenControl: false,
+//         }}
+//       >
+//         {fromCoords && (
+//           <Marker 
+//             position={fromCoords} 
+//             label="Pickup"
+//             icon={{
+//               url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png"
+//             }}
+//           />
+//         )}
+        
+//         {toCoords && (
+//           <Marker 
+//             position={toCoords} 
+//             label="Dropoff"
+//             icon={{
+//               url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+//             }}
+//           />
+//         )}
+
+//         {path.length > 0 && (
+//           <Polyline
+//             path={path}
+//             options={{
+//               strokeColor: "#4285F4",
+//               strokeOpacity: 0.8,
+//               strokeWeight: 4,
+//               geodesic: true
+//             }}
+//           />
+//         )}
+//       </GoogleMap>
+//     </div>
+//   );
+// };
+
+// export default LocationMap;
+
+
+
 "use client";
 import { GoogleMap, useLoadScript, Marker, Polyline } from "@react-google-maps/api";
-import { useMemo, useCallback, useRef } from "react";
+import { useMemo, useCallback, useRef, useEffect } from "react";
 
 const MapContainerStyle = {
-  width: "350px",
+  width: "300px",
   height: "300px",
 };
 
@@ -87,17 +195,16 @@ const LocationMap = ({ pickupLocation, dropoffLocation }) => {
     return [fromCoords, toCoords];
   }, [fromCoords, toCoords]);
 
-  // Fit bounds to show both markers
-  const onBoundsChanged = useCallback(() => {
+  // Fit bounds when coordinates change
+  useEffect(() => {
     if (mapRef.current && fromCoords && toCoords) {
       const bounds = new window.google.maps.LatLngBounds();
       bounds.extend(fromCoords);
       bounds.extend(toCoords);
-      mapRef.current.fitBounds(bounds);
       
-      // Add some padding if needed
-      const padding = 50; // pixels
-      mapRef.current.panToBounds(bounds, padding);
+      // Add some padding
+      const padding = 40; // pixels
+      mapRef.current.fitBounds(bounds, padding);
     }
   }, [fromCoords, toCoords]);
 
@@ -107,15 +214,15 @@ const LocationMap = ({ pickupLocation, dropoffLocation }) => {
   return (
     <div className="w-full">
       <GoogleMap 
-        mapContainerStyle={MapContainerStyle} 
-        zoom={14}
+        mapContainerStyle={MapContainerStyle}
         onLoad={onMapLoad}
-        onBoundsChanged={onBoundsChanged}
         options={{
           zoomControl: true,
           streetViewControl: false,
           mapTypeControl: false,
           fullscreenControl: false,
+          gestureHandling: "greedy", // Allows zooming with fingers on touch devices
+          disableDoubleClickZoom: false, // Enables double-click zoom
         }}
       >
         {fromCoords && (

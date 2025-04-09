@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-
+import { Pencil,Trash2 } from "lucide-react";
 const formSchema = z.object({
   VehicleType: z.string().min(1, { message: "Vehicle Type is required" }),
 });
@@ -148,10 +148,10 @@ const VehicleType = () => {
                   <td className="p-2">{type.VehicleType}</td>
                   <td className="p-2 flex gap-2">
                     <Button onClick={() => handleEdit(type)} variant="outline">
-                      Edit
+                      <Pencil className="h-4 w-4" />
                     </Button>
                     <Button onClick={() => handleDelete(type.id)} variant="destructive">
-                      Delete
+                    <Trash2 className="h-4 w-4" />
                     </Button>
                   </td>
                 </tr>

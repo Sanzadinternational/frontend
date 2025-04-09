@@ -182,8 +182,8 @@ export default function AdminManagementPage() {
   }, []);
 
   const handleDelete = async (email: string) => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete ${email}?`);
-    if (!confirmDelete) return;
+    // const confirmDelete = window.confirm(`Are you sure you want to delete ${email}?`);
+    // if (!confirmDelete) return;
 
     try {
       const response = await fetch(`${API_BASE_URL}/admin/DestroyAdmin/${email}`, {

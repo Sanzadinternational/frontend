@@ -63,7 +63,7 @@ const Header = () => {
         </Link>
         <Link
           className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
-          href="#"
+          href="/contact"
         >
           Contact
         </Link>
