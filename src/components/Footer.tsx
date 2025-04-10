@@ -19,16 +19,16 @@ const Footer = () => {
         <div>
           <h3 className="text-xl font-medium">Quick Links</h3>
           <div className="flex flex-col items-center gap-1">
-            <Link className="hover:text-blue-400" href="/">
+            <Link className="hover:text-blue-200" href="/">
               Home
             </Link>
-            <Link className="hover:text-blue-400" href="/agent">
+            <Link className="hover:text-blue-200" href="/agent">
               Agent
             </Link>
-            <Link className="hover:text-blue-400" href="/supplier">
+            <Link className="hover:text-blue-200" href="/supplier">
               Supplier
             </Link>
-            <Link className="hover:text-blue-400" href="/login">
+            <Link className="hover:text-blue-200" href="/login">
               Login
             </Link>
           </div>
@@ -38,12 +38,12 @@ const Footer = () => {
           <h3 className="text-xl font-medium">Contact</h3>
           <div className="flex gap-1">
             <Phone
-              className="rounded-full p-1 hover:bg-blue-200 hover:text-indigo-700"
+              className="hover:rounded-full p-1 hover:bg-blue-200 hover:text-indigo-700"
               width={30}
               height={30}
             />
             <Mail
-              className=" rounded-full p-1 hover:bg-blue-200 hover:text-indigo-700"
+              className=" hover:rounded-full p-1 hover:bg-blue-200 hover:text-indigo-700"
               width={30}
               height={30}
             />
@@ -52,7 +52,7 @@ const Footer = () => {
           <div className="flex gap-1">
           <SocialIcon style={{ width: 30, height: 30 }} network="facebook" />
           <SocialIcon style={{ width: 30, height: 30 }} network="instagram" />
-          <SocialIcon style={{ width: 30, height: 30 }} network="facebook" />
+          <SocialIcon style={{ width: 30, height: 30 }} network="youtube" />
           <SocialIcon style={{ width: 30, height: 30 }} network="linkedin" />
         </div>
         </div>
@@ -63,10 +63,10 @@ const Footer = () => {
           <p>© 2025 Sanzad International</p>
         </div>
         <div className="flex items-center divide-x divide-white">
-          <Link className="px-1 text-sm" href="/privacy-policy">
+          <Link className="px-1 text-sm hover:text-blue-200" href="/privacy-policy">
             Privacy-Policy
           </Link>
-          <Link className="px-1 text-sm" href="/terms-&-conditions">
+          <Link className="px-1 text-sm hover:text-blue-200" href="/terms-&-conditions">
             Terms & Conditions
           </Link>
         </div>

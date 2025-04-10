@@ -1,8 +1,8 @@
-"use client"
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import ThemeToggler from "./theme/ThemeToggler";
-import { Flag, IndianRupee,Menu } from "lucide-react";
+import { Flag, IndianRupee, Menu } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,7 +23,7 @@ const Header = () => {
   const logout = () => {
     try {
       removeToken();
-      window.location.href = '/';
+      window.location.href = "/";
     } catch (error) {
       console.error("Failed to navigate:", error);
     }
@@ -46,19 +46,29 @@ const Header = () => {
 
   if (error) {
     // return <p className="text-red-500 text-center">Error: {error}</p>;
+    console.log("Error:", { error });
   }
   return (
-    <div className="text-white py-2 px-5 mx-10 my-4 flex justify-between rounded-sm items-center" style={{backgroundColor:'rgba(47, 36, 131,1)'}}>
+    <div
+      className="text-white py-2 px-5 mx-10 my-4 flex justify-between rounded-sm items-center"
+      style={{ backgroundColor: "rgba(47, 36, 131,1)" }}
+    >
       <div>
         <Link href="/">
           <Image src="/sanzad-logo.png" alt="Logo" width={80} height={80} />
         </Link>
       </div>
       <div className="hidden md:flex justify-between items-center gap-4">
-        <Link className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1" href="/">
+        <Link
+          className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
+          href="/"
+        >
           Home
         </Link>
-        <Link className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1" href="#">
+        <Link
+          className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
+          href="/#about"
+        >
           About
         </Link>
         <Link
@@ -67,15 +77,56 @@ const Header = () => {
         >
           Contact
         </Link>
-        <Link className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1" href="#">
+        <Link
+          className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
+          href="#"
+        >
           Features
         </Link>
       </div>
+
       <div className="flex items-center justify-between">
+        <div className="mr-2 flex items-center">
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="focus:outline-none">
+                <div>
+                  <span className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1 cursor-pointer hidden md:block">
+                    {user?.Company_name || "NA"}
+                  </span>
+                  <span className="bg-blue-200 text-indigo-700 rounded-md px-2 py-1 cursor-pointer md:hidden">
+                    {user?.Company_name?.slice(0, 2)?.toUpperCase() || "NA"}
+                  </span>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link
+              href="/login"
+              className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
+            >
+              Login
+            </Link>
+          )}
+        </div>
+        {/* <div className="hidden md:grid grid-cols-2 divide-x divide-white border border-slate-100 mr-2 p-1 rounded-sm">
+          <div>
+            <Flag width={20} height={20} />
+          </div>
+          <div>
+            <IndianRupee width={20} height={20} />
+          </div>
+        </div> */}
+        <div className="">
+          <ThemeToggler />
+        </div>
         <div className="mr-2 flex items-center md:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger className="focus:outline-none">
-              <Menu/>
+              <Menu />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuLabel>Menu</DropdownMenuLabel>
@@ -91,38 +142,6 @@ const Header = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-        <div className="mr-2 flex items-center">
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger className="focus:outline-none">
-                <div>
-                  <span className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1 cursor-pointer hidden md:block">{user?.Company_name ||
-                            "NA"}</span>
-                            <span className="bg-blue-200 text-indigo-700 rounded-md px-2 py-1 cursor-pointer md:hidden">{user?.Company_name?.slice(0, 2)?.toUpperCase() ||
-                            "NA"}</span>
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem  onClick={logout}>Logout</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Link href="/login" className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1">
-              Login
-            </Link>
-          )}
-        </div>
-        <div className="hidden md:grid grid-cols-2 divide-x divide-white border border-slate-100 mr-2 p-1 rounded-sm">
-          <div>
-            <Flag width={20} height={20} />
-          </div>
-          <div>
-            <IndianRupee width={20} height={20} />
-          </div>
-        </div>
-        <div className="hidden md:block">
-        <ThemeToggler />
         </div>
       </div>
     </div>

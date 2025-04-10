@@ -8,27 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-// import TransferMultiStepForm from "@/components/agent/TransferMultiStepForm";
 import Location from "@/components/Location";
-
-const features = [
-  {
-    title: "No Extra",
-    description: `Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repellat provident perferendis voluptatibus.`,
-  },
-  {
-    title: "Free Cancelation",
-    description: `Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repellat provident perferendis voluptatibus.`,
-  },
-  {
-    title: "Free Rides",
-    description: `Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repellat provident perferendis voluptatibus.`,
-  },
-  {
-    title: "Safe Rides",
-    description: `Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repellat provident perferendis voluptatibus.`,
-  },
-];
+import Link from "next/link";
+import { features } from "@/components/constants/features";
 export default function Home() {
   return (
     <>
@@ -39,7 +21,9 @@ export default function Home() {
             Transfer Rides In All Countries
           </p>
           <Button className="my-2 bg-blue-500 dark:bg-card-foreground">
+            <Link href='/contact'>
             Contact
+            </Link>
           </Button>
         </div>
         <div className="flex justify-center">
@@ -54,10 +38,7 @@ export default function Home() {
       <div className="flex justify-center mt-[-80px]">
         <Location />
       </div>
-      {/* <div className="mx-10 mt-20">
-      <TransferMultiStepForm/>
-      </div> */}
-      <div className="flex flex-col md:grid grid-cols-2 gap-5 mt-20 mb-20 px-10">
+      <div id="about" className="flex flex-col md:grid grid-cols-2 gap-5 mt-20 mb-20 px-10">
         <Card>
           <CardHeader>
             <CardTitle>About</CardTitle>
