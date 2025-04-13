@@ -296,6 +296,11 @@ export const sideBarItems: Role[] = [
             icon: 'add'
           },
           {
+            title: 'Add Margin',
+            url: '/dashboard/admin/add-margin',
+            icon: 'add'
+          },
+          {
             title: 'Vehicle Details',
             url: '/dashboard/admin/vehicle-details',
             icon: 'add'

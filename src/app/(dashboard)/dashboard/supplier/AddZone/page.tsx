@@ -337,64 +337,6 @@ const Page = () => {
               </DialogContent>
             </Dialog>
           </CardHeader>
-          {/* <CardContent>
-            {zones.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-gray-500">No zones found</p>
-                <Button 
-                  onClick={() => {
-                    setEditingId(null);
-                    setIsDialogOpen(true);
-                  }}
-                  className="mt-4"
-                >
-                  <Plus className="mr-2 h-4 w-4" /> Create First Zone
-                </Button>
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Zone Name</TableHead>
-                    <TableHead>Address</TableHead>
-                    <TableHead>Radius</TableHead>
-                    
-                    <TableHead className="text-left">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {zones.map((zone) => (
-                    <TableRow key={zone.id}>
-                      <TableCell className="font-medium">{zone.name}</TableCell>
-                      <TableCell>{zone.address || "N/A"}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{zone.radius_miles} miles</Badge>
-                      </TableCell>
-                      
-                      <TableCell className="text-right">
-                        <div className="flex justify-end space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleEdit(zone)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDelete(zone.id)}
-                          >
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent> */}
 
 <CardContent>
   {zones.length === 0 ? (

@@ -135,10 +135,10 @@ const Header = () => {
                 <Link href="/">Home</Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link href="#">About</Link>
+                <Link href="/#about">About</Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link href="#">Contact</Link>
+                <Link href="/contact">Contact</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
