@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Phone, Mail } from "lucide-react";
 import { SocialIcon } from "react-social-icons";
-
 const Footer = () => {
   return (
     <div
