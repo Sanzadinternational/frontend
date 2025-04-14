@@ -35,7 +35,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Pencil, Trash2, Loader2 } from "lucide-react";
-
+import { Badge } from "@/components/ui/badge";
 interface Supplier {
   id: number;
   Company_name: string;
@@ -224,6 +224,161 @@ const AddMargin = () => {
   };
 
   return (
+    // <DashboardContainer scrollable>
+    //   <div className="space-y-6">
+    //     <Card>
+    //       <CardHeader>
+    //         <CardTitle>{editingId ? "Edit Margin" : "Add Margin"}</CardTitle>
+    //       </CardHeader>
+    //       <CardContent>
+    //         <Form {...form}>
+    //           <form
+    //             onSubmit={form.handleSubmit(handleSubmit)}
+    //             className="space-y-6"
+    //           >
+    //             {error && <p className="text-red-500">{error}</p>}
+    //             <FormField
+    //               control={form.control}
+    //               name="supplier_id"
+    //               render={({ field }) => (
+    //                 <FormItem>
+    //                   <FormLabel>
+    //                     Select Supplier <span className="text-red-500">*</span>
+    //                   </FormLabel>
+    //                   <FormControl>
+    //                     <Select
+    //                       onValueChange={(value) => {
+    //                         field.onChange(value);
+    //                         handleSupplierChange(value);
+    //                       }}
+    //                       value={field.value}
+    //                       disabled={isLoading}
+    //                     >
+    //                       <SelectTrigger className="w-full">
+    //                         <SelectValue
+    //                           placeholder={
+    //                             isLoading
+    //                               ? "Loading suppliers..."
+    //                               : "Select a supplier"
+    //                           }
+    //                         />
+    //                       </SelectTrigger>
+    //                       <SelectContent>
+    //                         {suppliers.map((supplier) => (
+    //                           <SelectItem
+    //                             key={supplier.id}
+    //                             value={supplier.id.toString()}
+    //                           >
+    //                             {supplier.Company_name} ({supplier.Currency})
+    //                           </SelectItem>
+    //                         ))}
+    //                       </SelectContent>
+    //                     </Select>
+    //                   </FormControl>
+    //                   <FormMessage />
+    //                 </FormItem>
+    //               )}
+    //             />
+    //             <FormField
+    //               control={form.control}
+    //               name="MarginPrice"
+    //               render={({ field }) => (
+    //                 <FormItem>
+    //                   <FormLabel>
+    //                     Margin Price <span className="text-red-500">*</span>
+    //                   </FormLabel>
+    //                   <FormControl>
+    //                     <Input
+    //                       placeholder="Enter margin price"
+    //                       {...field}
+    //                       type="number"
+    //                     />
+    //                   </FormControl>
+    //                   <FormMessage />
+    //                 </FormItem>
+    //               )}
+    //             />
+    //             <div className="flex gap-2">
+    //               <Button type="submit" disabled={isSubmitting || isLoading}>
+    //                 {isSubmitting ? (
+    //                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+    //                 ) : null}
+    //                 {editingId ? "Update Margin" : "Add Margin"}
+    //               </Button>
+    //               {editingId && (
+    //                 <Button
+    //                   type="button"
+    //                   variant="outline"
+    //                   onClick={cancelEdit}
+    //                   disabled={isSubmitting}
+    //                 >
+    //                   Cancel
+    //                 </Button>
+    //               )}
+    //             </div>
+    //           </form>
+    //         </Form>
+    //       </CardContent>
+    //     </Card>
+
+    //     <Card>
+    //       <CardHeader>
+    //         <CardTitle>Margin List</CardTitle>
+    //       </CardHeader>
+    //       <CardContent>
+    //         {isLoading ? (
+    //           <div className="flex justify-center items-center h-32">
+    //             <Loader2 className="h-8 w-8 animate-spin" />
+    //           </div>
+    //         ) : margins.length === 0 ? (
+    //           <p className="text-center text-gray-500 py-8">No margins found</p>
+    //         ) : (
+    //           <div className="rounded-md border">
+    //             <Table>
+    //               <TableHeader>
+    //                 <TableRow>
+    //                   <TableHead>Supplier</TableHead>
+    //                   <TableHead>Margin Price</TableHead>
+    //                   <TableHead>Currency</TableHead>
+    //                   <TableHead className="text-right">Actions</TableHead>
+    //                 </TableRow>
+    //               </TableHeader>
+    //               <TableBody>
+    //                 {margins.map((margin) => (
+    //                   <TableRow key={margin.id}>
+    //                     <TableCell className="font-medium">
+    //                       {margin.Company_name}
+    //                     </TableCell>
+    //                     <TableCell>{margin.MarginPrice}</TableCell>
+    //                     <TableCell>{margin.Currency}</TableCell>
+    //                     <TableCell className="text-right">
+    //                       <div className="flex justify-end gap-2">
+    //                         <Button
+    //                           variant="ghost"
+    //                           size="icon"
+    //                           onClick={() => handleEdit(margin)}
+    //                         >
+    //                           <Pencil className="h-4 w-4" />
+    //                         </Button>
+    //                         <Button
+    //                           variant="ghost"
+    //                           size="icon"
+    //                           onClick={() => handleDelete(margin.id)}
+    //                         >
+    //                           <Trash2 className="h-4 w-4 text-red-500" />
+    //                         </Button>
+    //                       </div>
+    //                     </TableCell>
+    //                   </TableRow>
+    //                 ))}
+    //               </TableBody>
+    //             </Table>
+    //           </div>
+    //         )}
+    //       </CardContent>
+    //     </Card>
+    //   </div>
+    // </DashboardContainer>
     <DashboardContainer scrollable>
       <div className="space-y-6">
         <Card>
@@ -333,47 +488,93 @@ const AddMargin = () => {
             ) : margins.length === 0 ? (
               <p className="text-center text-gray-500 py-8">No margins found</p>
             ) : (
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Supplier</TableHead>
-                      <TableHead>Margin Price</TableHead>
-                      <TableHead>Currency</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {margins.map((margin) => (
-                      <TableRow key={margin.id}>
-                        <TableCell className="font-medium">
-                          {margin.Company_name}
-                        </TableCell>
-                        <TableCell>{margin.MarginPrice}</TableCell>
-                        <TableCell>{margin.Currency}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleEdit(margin)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDelete(margin.id)}
-                            >
-                              <Trash2 className="h-4 w-4 text-red-500" />
-                            </Button>
+              <>
+                {/* Desktop Table */}
+                <div className="hidden md:block">
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Supplier</TableHead>
+                          <TableHead>Margin Price</TableHead>
+                          <TableHead>Currency</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {margins.map((margin) => (
+                          <TableRow key={margin.id}>
+                            <TableCell className="font-medium">
+                              {margin.Company_name}
+                            </TableCell>
+                            <TableCell>{margin.MarginPrice}</TableCell>
+                            <TableCell>{margin.Currency}</TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleEdit(margin)}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleDelete(margin.id)}
+                                >
+                                  <Trash2 className="h-4 w-4 text-red-500" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="md:hidden space-y-4">
+                  {margins.map((margin) => (
+                    <Card key={margin.id}>
+                      <CardHeader className="flex flex-row justify-between items-start p-4">
+                        <div>
+                          <CardTitle className="text-lg">
+                            {margin.Company_name}
+                          </CardTitle>
+                          <div className="mt-2 flex items-center gap-2">
+                            <Badge variant="outline">
+                              {margin.Currency}
+                            </Badge>
+                            <Badge variant="default">
+                              {margin.MarginPrice}
+                            </Badge>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(margin)}
+                            className="h-8 w-8"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(margin.id)}
+                            className="h-8 w-8 text-red-500 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  ))}
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
@@ -381,5 +582,4 @@ const AddMargin = () => {
     </DashboardContainer>
   );
 };
-
 export default AddMargin;

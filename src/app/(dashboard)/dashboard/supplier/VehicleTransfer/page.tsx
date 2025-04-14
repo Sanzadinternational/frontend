@@ -1,4 +1,3 @@
-
 "use client";
 import { useState, useEffect } from "react";
 import * as z from "zod";
@@ -38,6 +37,7 @@ import { useToast } from "@/hooks/use-toast";
 import DashboardContainer from "@/components/layout/DashboardContainer";
 import { removeToken } from "@/components/utils/auth";
 import { Badge } from "@/components/ui/badge";
+import { ChooseCurrency } from "@/components/constants/currency";
 const transferSchema = z.object({
   rows: z.array(
     z.object({
@@ -85,11 +85,11 @@ type Transfer = {
   Zone_name: string;
   VehicleBrand: string;
   VehicleModel: string;
-  vehicleTax: string,
-          parking: string,
-          tollTax: string,
-          driverCharge: string,
-          driverTips: string,
+  vehicleTax: string;
+  parking: string;
+  tollTax: string;
+  driverCharge: string;
+  driverTips: string;
 };
 
 const VehicleTransfer = () => {
@@ -109,6 +109,7 @@ const VehicleTransfer = () => {
   const [editingTransferId, setEditingTransferId] = useState<string | null>(
     null
   );
+  const chooseCurrency = ChooseCurrency;
   const form = useForm<z.infer<typeof transferSchema>>({
     resolver: zodResolver(transferSchema),
     defaultValues: {
@@ -118,7 +119,7 @@ const VehicleTransfer = () => {
           SelectZone: "",
           Price: "",
           Extra_Price: "",
-          Currency: "Rs",
+          Currency: "INR",
           TransferInfo: "",
           NightTime: "no",
           NightTime_Price: "",
@@ -230,7 +231,7 @@ const VehicleTransfer = () => {
           SelectZone: "",
           Price: "",
           Extra_Price: "",
-          Currency: "Rs",
+          Currency: "INR",
           TransferInfo: "",
           NightTime: "no",
           NightTime_Price: "",
@@ -271,10 +272,10 @@ const VehicleTransfer = () => {
     // Set editing state
     setEditingTransferId(transfer.id);
     setIsEditing(true);
-  
+
     // Get current form values
     const currentRows = form.getValues("rows");
-    
+
     // Replace the first row with the transfer data
     const updatedRows = [...currentRows];
     updatedRows[0] = {
@@ -288,16 +289,18 @@ const VehicleTransfer = () => {
       NightTime_Price: transfer.NightTime_Price || "",
       transferId: transfer.id,
       vehicleTax: transfer.vehicleTax,
-          parking: transfer.parking,
-          tollTax: transfer.tollTax,
-          driverCharge: transfer.driverCharge,
-          driverTips: transfer.driverTips,
+      parking: transfer.parking,
+      tollTax: transfer.tollTax,
+      driverCharge: transfer.driverCharge,
+      driverTips: transfer.driverTips,
     };
-    
+
     form.setValue("rows", updatedRows);
-    
+
     // Scroll to form
-    document.getElementById('transfer-form')?.scrollIntoView({ behavior: 'smooth' });
+    document
+      .getElementById("transfer-form")
+      ?.scrollIntoView({ behavior: "smooth" });
   };
   const handleDelete = async (id: string, index: number) => {
     try {
@@ -409,7 +412,7 @@ const VehicleTransfer = () => {
             SelectZone: "",
             Price: "",
             Extra_Price: "",
-            Currency: "Rs",
+            Currency: "INR",
             TransferInfo: "",
             NightTime: "no",
             NightTime_Price: "",
@@ -482,7 +485,10 @@ const VehicleTransfer = () => {
                           name={`rows.${index}.uniqueId`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Select Vehicle <span className="text-red-500">*</span></FormLabel>
+                              <FormLabel>
+                                Select Vehicle{" "}
+                                <span className="text-red-500">*</span>
+                              </FormLabel>
                               <FormControl>
                                 <Select
                                   onValueChange={field.onChange}
@@ -521,7 +527,10 @@ const VehicleTransfer = () => {
                           name={`rows.${index}.SelectZone`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Select Zone <span className="text-red-500">*</span></FormLabel>
+                              <FormLabel>
+                                Select Zone{" "}
+                                <span className="text-red-500">*</span>
+                              </FormLabel>
                               <FormControl>
                                 <Select
                                   onValueChange={field.onChange}
@@ -549,7 +558,9 @@ const VehicleTransfer = () => {
                           name={`rows.${index}.Currency`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Currency <span className="text-red-500">*</span></FormLabel>
+                              <FormLabel>
+                                Currency <span className="text-red-500">*</span>
+                              </FormLabel>
                               <FormControl>
                                 <Select
                                   {...field}
@@ -562,9 +573,14 @@ const VehicleTransfer = () => {
                                     <SelectValue placeholder="Select Currency" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="Rs">Rs</SelectItem>
-                                    <SelectItem value="USD">USD</SelectItem>
-                                    <SelectItem value="ED">ED</SelectItem>
+                                    {chooseCurrency?.map((cur) => (
+                                      <SelectItem
+                                        key={cur.value}
+                                        value={`${cur.value}`}
+                                      >
+                                        {cur.name}
+                                      </SelectItem>
+                                    ))}
                                   </SelectContent>
                                 </Select>
                               </FormControl>
@@ -596,7 +612,9 @@ const VehicleTransfer = () => {
                           name={`rows.${index}.Price`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Price <span className="text-red-500">*</span></FormLabel>
+                              <FormLabel>
+                                Price <span className="text-red-500">*</span>
+                              </FormLabel>
                               <FormControl>
                                 <div className="flex">
                                   <span className="bg-secondary px-2 py-1 rounded-l-sm flex items-center">
@@ -622,7 +640,10 @@ const VehicleTransfer = () => {
                           name={`rows.${index}.Extra_Price`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Extra Price Per Mile <span className="text-red-500">*</span></FormLabel>
+                              <FormLabel>
+                                Extra Price Per Mile{" "}
+                                <span className="text-red-500">*</span>
+                              </FormLabel>
                               <FormControl>
                                 <div className="flex">
                                   <span className="bg-secondary px-2 py-1 rounded-l-sm flex items-center">
@@ -643,9 +664,7 @@ const VehicleTransfer = () => {
                           )}
                         />
 
-
-
-<FormField
+                        <FormField
                           control={form.control}
                           name={`rows.${index}.vehicleTax`}
                           render={({ field }) => (
@@ -670,7 +689,7 @@ const VehicleTransfer = () => {
                             </FormItem>
                           )}
                         />
-<FormField
+                        <FormField
                           control={form.control}
                           name={`rows.${index}.parking`}
                           render={({ field }) => (
@@ -869,233 +888,169 @@ const VehicleTransfer = () => {
             </form>
           </Form>
 
-          {/* {transfers.length > 0 && (
+          {transfers.length > 0 && (
             <div className="mt-8">
               <h3 className="text-lg font-medium mb-4">Existing Transfers</h3>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Vehicle</TableHead>
-                    <TableHead>Zone</TableHead>
-                    <TableHead>Transfer Info</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Extra Price/Mile</TableHead>
-                    <TableHead>Night Time</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {transfers.map((transfer, index) => {
-                    const vehicle = vehicles.find(
-                      (v) => v.id === transfer.vehicle_id
-                    );
-                    const zone = zones.find((z) => z.id === transfer.zone_id);
 
-                    return (
-                      <TableRow key={transfer.id}>
-                        <TableCell>
-                          {vehicle
-                            ? `${vehicle.VehicleBrand} (${vehicle.VehicleModel})`
-                            : transfer.VehicleBrand
-                            ? `${transfer.VehicleBrand} (${transfer.VehicleModel})`
-                            : "Unknown Vehicle"}
-                        </TableCell>
-                        <TableCell>
-                          {transfer.Zone_name ||
-                            (zone ? zone.name : "Unknown Zone")}
-                        </TableCell>
-                        <TableCell>{transfer.Transfer_info || "-"}</TableCell>
-                        <TableCell>
-                          {transfer.Currency} {transfer.price}
-                        </TableCell>
-                        <TableCell>
-                          {transfer.Currency} {transfer.extra_price_per_mile}
-                        </TableCell>
-                        <TableCell>
-                          {transfer.NightTime === "yes"
-                            ? `Yes (${transfer.Currency} ${transfer.NightTime_Price}/hr)`
-                            : "No"}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                           
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleEditTransfer(transfer)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDelete(transfer.id, index)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+              {/* Desktop Table (hidden on mobile) */}
+              <div className="hidden md:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Vehicle</TableHead>
+                      <TableHead>Zone</TableHead>
+                      <TableHead>Transfer Info</TableHead>
+                      <TableHead>Price</TableHead>
+                      <TableHead>Extra Price/Mile</TableHead>
+                      <TableHead>Night Time</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {transfers.map((transfer, index) => {
+                      const vehicle = vehicles.find(
+                        (v) => v.id === transfer.vehicle_id
+                      );
+                      const zone = zones.find((z) => z.id === transfer.zone_id);
+
+                      return (
+                        <TableRow key={transfer.id}>
+                          <TableCell>
+                            {vehicle
+                              ? `${vehicle.VehicleBrand} (${vehicle.VehicleModel})`
+                              : transfer.VehicleBrand
+                              ? `${transfer.VehicleBrand} (${transfer.VehicleModel})`
+                              : "Unknown Vehicle"}
+                          </TableCell>
+                          <TableCell>
+                            {transfer.Zone_name ||
+                              (zone ? zone.name : "Unknown Zone")}
+                          </TableCell>
+                          <TableCell>{transfer.Transfer_info || "-"}</TableCell>
+                          <TableCell>
+                            {transfer.Currency} {transfer.price}
+                          </TableCell>
+                          <TableCell>
+                            {transfer.Currency} {transfer.extra_price_per_mile}
+                          </TableCell>
+                          <TableCell>
+                            {transfer.NightTime === "yes"
+                              ? `Yes (${transfer.Currency} ${transfer.NightTime_Price}/hr)`
+                              : "No"}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleEditTransfer(transfer)}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDelete(transfer.id, index)}
+                                className="text-red-500 hover:text-red-700"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Cards (hidden on desktop) */}
+              <div className="md:hidden space-y-4">
+                {transfers.map((transfer, index) => {
+                  const vehicle = vehicles.find(
+                    (v) => v.id === transfer.vehicle_id
+                  );
+                  const zone = zones.find((z) => z.id === transfer.zone_id);
+
+                  return (
+                    <Card key={transfer.id}>
+                      <CardHeader className="flex flex-row justify-between items-start p-4">
+                        <div>
+                          <CardTitle className="text-lg">
+                            {vehicle
+                              ? `${vehicle.VehicleBrand} (${vehicle.VehicleModel})`
+                              : transfer.VehicleBrand
+                              ? `${transfer.VehicleBrand} (${transfer.VehicleModel})`
+                              : "Unknown Vehicle"}
+                          </CardTitle>
+                          <div className="mt-2">
+                            <Badge variant="outline">
+                              {transfer.Zone_name ||
+                                (zone ? zone.name : "Unknown Zone")}
+                            </Badge>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEditTransfer(transfer)}
+                            className="h-8 w-8"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(transfer.id, index)}
+                            className="h-8 w-8 text-red-500 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="p-4 pt-0 grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium text-gray-500">
+                            Transfer Info
+                          </div>
+                          <div className="text-sm">
+                            {transfer.Transfer_info || "-"}
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium text-gray-500">
+                            Price
+                          </div>
+                          <div className="text-sm">
+                            {transfer.Currency} {transfer.price}
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium text-gray-500">
+                            Extra Price/Mile
+                          </div>
+                          <div className="text-sm">
+                            {transfer.Currency} {transfer.extra_price_per_mile}
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium text-gray-500">
+                            Night Time
+                          </div>
+                          <div className="text-sm">
+                            {transfer.NightTime === "yes"
+                              ? `Yes (${transfer.Currency} ${transfer.NightTime_Price}/hr)`
+                              : "No"}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
             </div>
-          )} */}
-
-{transfers.length > 0 && (
-  <div className="mt-8">
-    <h3 className="text-lg font-medium mb-4">Existing Transfers</h3>
-    
-    {/* Desktop Table (hidden on mobile) */}
-    <div className="hidden md:block">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Vehicle</TableHead>
-            <TableHead>Zone</TableHead>
-            <TableHead>Transfer Info</TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead>Extra Price/Mile</TableHead>
-            <TableHead>Night Time</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {transfers.map((transfer, index) => {
-            const vehicle = vehicles.find(
-              (v) => v.id === transfer.vehicle_id
-            );
-            const zone = zones.find((z) => z.id === transfer.zone_id);
-
-            return (
-              <TableRow key={transfer.id}>
-                <TableCell>
-                  {vehicle
-                    ? `${vehicle.VehicleBrand} (${vehicle.VehicleModel})`
-                    : transfer.VehicleBrand
-                    ? `${transfer.VehicleBrand} (${transfer.VehicleModel})`
-                    : "Unknown Vehicle"}
-                </TableCell>
-                <TableCell>
-                  {transfer.Zone_name ||
-                    (zone ? zone.name : "Unknown Zone")}
-                </TableCell>
-                <TableCell>{transfer.Transfer_info || "-"}</TableCell>
-                <TableCell>
-                  {transfer.Currency} {transfer.price}
-                </TableCell>
-                <TableCell>
-                  {transfer.Currency} {transfer.extra_price_per_mile}
-                </TableCell>
-                <TableCell>
-                  {transfer.NightTime === "yes"
-                    ? `Yes (${transfer.Currency} ${transfer.NightTime_Price}/hr)`
-                    : "No"}
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEditTransfer(transfer)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(transfer.id, index)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </div>
-
-    {/* Mobile Cards (hidden on desktop) */}
-    <div className="md:hidden space-y-4">
-      {transfers.map((transfer, index) => {
-        const vehicle = vehicles.find(
-          (v) => v.id === transfer.vehicle_id
-        );
-        const zone = zones.find((z) => z.id === transfer.zone_id);
-
-        return (
-          <Card key={transfer.id}>
-            <CardHeader className="flex flex-row justify-between items-start p-4">
-              <div>
-                <CardTitle className="text-lg">
-                  {vehicle
-                    ? `${vehicle.VehicleBrand} (${vehicle.VehicleModel})`
-                    : transfer.VehicleBrand
-                    ? `${transfer.VehicleBrand} (${transfer.VehicleModel})`
-                    : "Unknown Vehicle"}
-                </CardTitle>
-                <div className="mt-2">
-                  <Badge variant="outline">
-                    {transfer.Zone_name || (zone ? zone.name : "Unknown Zone")}
-                  </Badge>
-                </div>
-              </div>
-              <div className="flex space-x-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleEditTransfer(transfer)}
-                  className="h-8 w-8"
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleDelete(transfer.id, index)}
-                  className="h-8 w-8 text-red-500 hover:text-red-700"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="p-4 pt-0 grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <div className="text-sm font-medium text-gray-500">Transfer Info</div>
-                <div className="text-sm">{transfer.Transfer_info || "-"}</div>
-              </div>
-              <div className="space-y-2">
-                <div className="text-sm font-medium text-gray-500">Price</div>
-                <div className="text-sm">
-                  {transfer.Currency} {transfer.price}
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="text-sm font-medium text-gray-500">Extra Price/Mile</div>
-                <div className="text-sm">
-                  {transfer.Currency} {transfer.extra_price_per_mile}
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="text-sm font-medium text-gray-500">Night Time</div>
-                <div className="text-sm">
-                  {transfer.NightTime === "yes"
-                    ? `Yes (${transfer.Currency} ${transfer.NightTime_Price}/hr)`
-                    : "No"}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        );
-      })}
-    </div>
-  </div>
-)}
+          )}
         </CardContent>
       </Card>
     </DashboardContainer>
