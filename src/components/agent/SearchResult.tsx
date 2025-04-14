@@ -57,6 +57,7 @@ const SearchResult = ({
       try {
         const data = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
         setUserData(data);
+        console.log("userData",userData);
       } catch (err: any) {
         console.log("API error fetching data", err);
         removeToken();
@@ -65,6 +66,20 @@ const SearchResult = ({
 
     fetchUserData();
   }, []);
+
+ // Function to get the display currency
+ const getDisplayCurrency = (vehicleCurrency: string) => {
+  // If user is not logged in, show INR
+  if (!userData) return "INR";
+  
+  // If user is logged in and is an agent, show vehicle's currency
+  if (userData.role === "agent") return vehicleCurrency;
+  
+  // For non-agent users, show INR
+  return "INR";
+};
+
+
   const showLocation = () => {
     setDisplayForm(!displayForm);
   };
@@ -361,7 +376,9 @@ const SearchResult = ({
           ) : (
             <div className="flex flex-col gap-5 p-4 md:h-96">
               {vehicles.length > 0 ? (
-                vehicles.map((vehicle, index) => (
+                vehicles.map((vehicle, index) =>{
+                  const displayCurrency = getDisplayCurrency(vehicle.currency);
+                  return (
                   <Card key={index} className="">
                     <CardHeader>
                       <CardTitle>{vehicle.brand}</CardTitle>
@@ -412,26 +429,15 @@ const SearchResult = ({
                                 : "One Way"}
                             </p>
                             <h2 className="text-2xl font-medium">
-                              {vehicle.currency}{" "}
+                              {/* {vehicle.currency}{" "} */}
+                              {displayCurrency}{" "}
                               {returnDate && returnTime
                                 ? (Number(vehicle.price) * 2).toFixed(2) // Double the price for round trip
                                 : Number(vehicle.price).toFixed(2)}
                             </h2>
                           </div>
                           <div>
-                            {/* <Button
-                          className="w-full"
-                          onClick={() => handleBookNow(vehicle)}
-                        >
-                          Book Now
-                        </Button> */}
-                            {/* <Button
-                          className="w-full"
-                          onClick={() => handleBookNow(vehicle)}
-                          // disabled={!userData} // Disable if no user is logged in
-                        >
-                          {userData ? "Book Now" : "Login to Book"}
-                        </Button> */}
+                            
                             <Button
                               className="w-full"
                               onClick={() => handleBookNow(vehicle)}
@@ -465,7 +471,7 @@ const SearchResult = ({
                       </Button>
                     </CardFooter>
                   </Card>
-                ))
+                )})
               ) : (
                 <p>No vehicles available.</p>
               )}

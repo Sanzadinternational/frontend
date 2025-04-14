@@ -315,6 +315,7 @@ const Profile = () => {
         const data = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
         setUser(data);
         setUpdatedUser(data);
+        console.log("user Data",data);
       } catch (err: any) {
         setError(err.message);
         if (err.message.includes("401")) removeToken();
@@ -365,9 +366,10 @@ const Profile = () => {
 
       const data = await response.json();
       setUser(data);
+      console.log("updated Data:",data);
       setEditing(false);
       setPreview(null);
-      window.location.reload();
+      // window.location.reload();
     } catch (err: any) {
       console.error("Error updating profile:", err.message);
       setError(err.message);
