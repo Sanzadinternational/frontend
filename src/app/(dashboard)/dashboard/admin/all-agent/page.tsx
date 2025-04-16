@@ -240,10 +240,68 @@ async function getUserDetails(email: string) {
   return response.json();
 }
 // Reusable component for detail items
-function DetailItem({ label, value }: { label: string; value?: string | null }) {
+// function DetailItem({ label, value }: { label: string; value?: string | null }) {
+//   const [expanded, setExpanded] = useState(false);
+  
+//   if (!value) return null;
+
+//   return (
+//     <div className="text-sm">
+//       <div className="flex justify-between items-start">
+//         <span className="font-medium text-muted-foreground">{label}</span>
+//         {value.length > 30 && (
+//           <Button 
+//             variant="ghost" 
+//             size="sm" 
+//             className="h-6 px-2 text-muted-foreground"
+//             onClick={() => setExpanded(!expanded)}
+//           >
+//             {expanded ? (
+//               <ChevronUp className="h-4 w-4" />
+//             ) : (
+//               <ChevronDown className="h-4 w-4" />
+//             )}
+//           </Button>
+//         )}
+//       </div>
+//       <p className={`mt-1 ${expanded ? '' : 'line-clamp-1'}`}>
+//         {value}
+//       </p>
+//     </div>
+//   );
+// }
+// Update the DetailItem component
+function DetailItem({ label, value, isFile = false }: { label: string; value?: string | null, isFile?: boolean }) {
   const [expanded, setExpanded] = useState(false);
   
   if (!value) return null;
+
+  if (isFile) {
+    return (
+      <div className="text-sm">
+        <span className="font-medium text-muted-foreground">{label}</span>
+        <div className="mt-1">
+          <Button
+            variant="link"
+            size="sm"
+            className="h-6 px-0 text-primary"
+            onClick={() => {
+              // Create a temporary anchor element to trigger download
+              const link = document.createElement('a');
+              link.href = `${API_BASE_URL}/${value}`; // Assuming value is the relative path
+              link.target = '_blank';
+              link.download = value.split('/').pop() || 'document';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+          >
+            Download Certificate
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="text-sm">
@@ -296,6 +354,7 @@ export default function DemoPage() {
       const userDetails = await getUserDetails(email);
       if (Array.isArray(userDetails) && userDetails.length > 0) {
         setSelectedUser(userDetails[0]); // Extract first item
+        console.log(userDetails);
       } else {
         setSelectedUser(null);
       }
@@ -423,67 +482,6 @@ export default function DemoPage() {
         )}
       </div>
 
-      {/* <Dialog open={!!selectedUser} onOpenChange={() => setSelectedUser(null)}>
-        <DialogContent className="max-w-[95vw] md:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Agent Details</DialogTitle>
-          </DialogHeader>
-          {selectedUser && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Company Name</dt>
-                  <dd className="mt-1 text-sm">{selectedUser?.Company_name || "N/A"}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Email</dt>
-                  <dd className="mt-1 text-sm">{selectedUser?.Email || "N/A"}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Contact Person</dt>
-                  <dd className="mt-1 text-sm">{selectedUser?.Contact_Person || "N/A"}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Country</dt>
-                  <dd className="mt-1 text-sm">{selectedUser?.Country || "N/A"}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">City</dt>
-                  <dd className="mt-1 text-sm">{selectedUser?.City || "N/A"}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Address</dt>
-                  <dd className="mt-1 text-sm">{selectedUser?.Address || "N/A"}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Zip Code</dt>
-                  <dd className="mt-1 text-sm">{selectedUser?.Zip_code || "N/A"}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Office Number</dt>
-                  <dd className="mt-1 text-sm">{selectedUser?.Office_number || "N/A"}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Mobile Number</dt>
-                  <dd className="mt-1 text-sm">{selectedUser?.Mobile_number || "N/A"}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Currency</dt>
-                  <dd className="mt-1 text-sm">{selectedUser?.Currency || "N/A"}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">IATA Code</dt>
-                  <dd className="mt-1 text-sm">{selectedUser?.IATA_Code || "N/A"}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Tax ID</dt>
-                  <dd className="mt-1 text-sm">{selectedUser?.Gst_Vat_Tax_number || "N/A"}</dd>
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog> */}
       <Dialog open={!!selectedUser} onOpenChange={() => setSelectedUser(null)}>
         <DialogContent className="max-w-[95vw] md:max-w-2xl h-[80vh] flex flex-col">
           <DialogHeader>
@@ -529,6 +527,11 @@ export default function DemoPage() {
                   <DetailItem label="Currency" value={selectedUser?.Currency} />
                   <DetailItem label="IATA Code" value={selectedUser?.IATA_Code} />
                   <DetailItem label="Tax ID" value={selectedUser?.Gst_Vat_Tax_number} />
+                  <DetailItem 
+          label="GST/Tax Certificate" 
+          value={selectedUser?.Gst_Tax_Certificate} 
+          isFile={true} 
+        />
                 </div>
               </div>
 

@@ -470,6 +470,11 @@ export default function SupplierManagementPage() {
                   <DetailItem label="Currency" value={selectedUser?.Currency} />
                   <DetailItem label="IATA Code" value={selectedUser?.IATA_Code} />
                   <DetailItem label="Tax ID" value={selectedUser?.Gst_Vat_Tax_number} />
+                  <DetailItem 
+      label="GST/Tax Certificate" 
+      value={selectedUser?.Gst_Tax_Certificate} 
+      isFile={true} 
+    />
                 </div>
               </div>
 
@@ -527,10 +532,77 @@ export default function SupplierManagementPage() {
 }
 
 // Reusable component for detail items
-function DetailItem({ label, value }: { label: string; value?: string | null }) {
+// function DetailItem({ label, value }: { label: string; value?: string | null }) {
+//   const [expanded, setExpanded] = useState(false);
+  
+//   if (!value) return null;
+
+//   return (
+//     <div className="text-sm">
+//       <div className="flex justify-between items-start">
+//         <span className="font-medium text-muted-foreground">{label}</span>
+//         {value.length > 30 && (
+//           <Button 
+//             variant="ghost" 
+//             size="sm" 
+//             className="h-6 px-2 text-muted-foreground"
+//             onClick={() => setExpanded(!expanded)}
+//           >
+//             {expanded ? (
+//               <ChevronUp className="h-4 w-4" />
+//             ) : (
+//               <ChevronDown className="h-4 w-4" />
+//             )}
+//           </Button>
+//         )}
+//       </div>
+//       <p className={`mt-1 ${expanded ? '' : 'line-clamp-1'}`}>
+//         {value}
+//       </p>
+//     </div>
+//   );
+// }
+
+// Update the DetailItem component
+function DetailItem({ 
+  label, 
+  value, 
+  isFile = false 
+}: { 
+  label: string; 
+  value?: string | null; 
+  isFile?: boolean 
+}) {
   const [expanded, setExpanded] = useState(false);
   
   if (!value) return null;
+
+  if (isFile) {
+    return (
+      <div className="text-sm">
+        <span className="font-medium text-muted-foreground">{label}</span>
+        <div className="mt-1">
+          <Button
+            variant="link"
+            size="sm"
+            className="h-6 px-0 text-primary"
+            onClick={() => {
+              // Create a temporary anchor element to trigger download
+              const link = document.createElement('a');
+              link.href = `${API_BASE_URL}/${value}`; // Assuming value is the relative path
+              link.target = '_blank';
+              link.download = value.split('/').pop() || 'document';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+          >
+            Download Certificate
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="text-sm">
