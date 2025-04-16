@@ -332,7 +332,8 @@ import Image from "next/image";
 import { Input } from "./ui/input";
 import { Skeleton } from "./ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-
+import { ChooseCurrency } from "@/components/constants/currency";
+import { Select,SelectTrigger,SelectValue,SelectContent,SelectItem } from "./ui/select";
 interface User {
   userId: string;
   Company_name: string;
@@ -340,6 +341,8 @@ interface User {
   Office_number: string;
   Mobile_number: string;
   Gst_Vat_Tax_number: string;
+  PAN_number?: string;
+  Currency?: string; 
   Country: string;
   City: string;
   Address: string;
@@ -617,6 +620,46 @@ const Profile = () => {
               editing={!isAdmin() && editing} // Only editable for non-admins
               onChange={handleChange}
             />
+            <FormField
+        label="PAN Number"
+        name="PAN_number"
+        value={updatedUser?.PAN_number || ""}
+        editing={false}
+        onChange={handleChange}
+      />
+          <FormField
+        label="Currency"
+        name="Currency"
+        value={updatedUser?.Currency || ""}
+        editing={false}
+        onChange={handleChange}
+      />
+            {/* <div className="space-y-1">
+        <label className="text-sm font-medium text-gray-700">Currency</label>
+        {editing && !isAdmin() ? (
+          <Select
+            value={updatedUser?.Currency || ""}
+            onValueChange={(value) => {
+              setUpdatedUser(prev => prev ? { ...prev, Currency: value } : null);
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select currency" />
+            </SelectTrigger>
+            <SelectContent>
+              {ChooseCurrency.map((currency) => (
+                <SelectItem key={currency.value} value={currency.value}>
+                  {currency.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <p className="text-gray-900">
+            {updatedUser?.Currency || "N/A"}
+          </p>
+        )}
+      </div> */}
           </div>
         </CardContent>
       </Card>
@@ -671,12 +714,45 @@ const Profile = () => {
 };
 
 // Helper component for form fields
+// const FormField = ({
+//   label,
+//   name,
+//   value,
+//   editing,
+//   onChange,
+//   ...props
+// }: {
+//   label: string;
+//   name: string;
+//   value: string;
+//   editing: boolean;
+//   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+// }) => {
+//   return (
+//     <div className="space-y-1">
+//       <label className="text-sm font-medium text-gray-700">{label}</label>
+//       {editing ? (
+//         <Input
+//           name={name}
+//           value={value}
+//           onChange={onChange}
+//           className="w-full"
+//           {...props}
+//         />
+//       ) : (
+//         <p className="text-gray-900">{value || "N/A"}</p>
+//       )}
+//     </div>
+//   );
+// };
+// Helper component for form fields
 const FormField = ({
   label,
   name,
   value,
   editing,
   onChange,
+  type = "text",
   ...props
 }: {
   label: string;
@@ -684,6 +760,7 @@ const FormField = ({
   value: string;
   editing: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
 }) => {
   return (
     <div className="space-y-1">
@@ -694,6 +771,7 @@ const FormField = ({
           value={value}
           onChange={onChange}
           className="w-full"
+          type={type}
           {...props}
         />
       ) : (
@@ -702,5 +780,4 @@ const FormField = ({
     </div>
   );
 };
-
 export default Profile;
