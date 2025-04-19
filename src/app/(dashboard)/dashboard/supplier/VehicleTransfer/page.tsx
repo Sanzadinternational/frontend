@@ -2872,16 +2872,25 @@ const VehicleTransfer = () => {
  
   const handleSubmit = async (data: z.infer<typeof transferSchema>) => {
     setIsSubmitting(true);
-console.log("formData",data);
+    console.log("Form Data Before Submission:", data);
     try {
       const userData = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
       const promises = [];
 
       for (const row of data.rows) {
-        // const vehicleTaxAmount = row.vehicleTaxType === "percentage"
-        // ? (parseFloat(row.Price) || 0) * (parseFloat(row.vehicleTax) || 0) / 100
-        // : parseFloat(row.vehicleTax) || 0;
-        const calculatedTax = calculateVehicleTax(row);
+         // Calculate the tax amount based on the type
+      const taxAmount = calculateVehicleTax({
+        vehicleTaxType: row.vehicleTaxType,
+        vehicleTax: row.vehicleTax,
+        Price: row.Price
+      });
+      console.log(`Row ${row.uniqueId || 'new'} Vehicle Tax Details:`, {
+        originalTaxValue: row.vehicleTax,
+        taxType: row.vehicleTaxType,
+        calculatedTaxAmount: taxAmount,
+        price: row.Price,
+        currency: row.Currency
+      });
         const transferData = {
           uniqueId: row.uniqueId,
           SelectZone: row.SelectZone,
@@ -2892,14 +2901,15 @@ console.log("formData",data);
           NightTime: row.NightTime || "no",
           NightTime_Price: row.NightTime === "yes" ? row.NightTime_Price : "",
           supplier_id: userData.userId,
-          vehicleTax: calculatedTax.toString(),
-        vehicleTaxType: row.vehicleTaxType,
+          vehicleTax: row.vehicleTax, 
+        vehicleTaxType: row.vehicleTaxType, 
+        vehicleTaxAmount: taxAmount.toString(), 
           parking: row.parking,
           tollTax: row.tollTax,
           driverCharge: row.driverCharge,
           driverTips: row.driverTips,
         };
-
+        console.log(`Prepared Transfer Data for ${row.uniqueId || 'new'}:`, transferData);
         if (row.transferId) {
           promises.push(
             fetchWithAuth(
@@ -2910,6 +2920,7 @@ console.log("formData",data);
               }
             )
           );
+          
         } else {
           promises.push(
             fetchWithAuth(`${API_BASE_URL}/supplier/new_transfer`, {
@@ -2920,7 +2931,9 @@ console.log("formData",data);
         }
       }
 
-      await Promise.all(promises);
+      // await Promise.all(promises);
+      const results = await Promise.all(promises);
+    console.log("API Responses:", results);
       const updatedTransfers = await fetchWithAuth(
         `${API_BASE_URL}/supplier/getTransferBySupplierId/${userData.userId}`
       );

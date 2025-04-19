@@ -3,15 +3,17 @@ import DashboardContainer from "@/components/layout/DashboardContainer";
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
-    CardTitle
+    CardTitle,CardFooter
   } from '@/components/ui/card';
   import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
   import { useEffect,useState } from "react";
   import { fetchWithAuth } from "@/components/utils/api";
   import { removeToken } from "@/components/utils/auth";
   import { Skeleton } from "@/components/ui/skeleton";
+import { Car, FileUser, IndianRupee, Proportions, Users } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 const Page = () => {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const [user, setUser] = useState<any>(null);
@@ -54,149 +56,101 @@ const Page = () => {
         <div className="space-y-2">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">
-            Hi, {user.Company_name} 👋
+            Hi, {user.Company_name} 
           </h2>
-          <div className="hidden items-center space-x-2 md:flex">
-            {/* <CalendarDateRangePicker />
-            <Button>Download</Button> */}
-          </div>
         </div>
-        <Tabs defaultValue="overview" className="space-y-4">
+        <Tabs defaultValue="supplier" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="analytics" disabled>
-              Analytics
+            <TabsTrigger value="supplier">Supplier</TabsTrigger>
+            <TabsTrigger value="agent">
+              Agent
             </TabsTrigger>
+            <TabsTrigger value="admin">Admin</TabsTrigger>
+            <TabsTrigger value="reports" disabled>Reports</TabsTrigger>
           </TabsList>
-          <TabsContent value="overview" className="space-y-4">
+          <TabsContent value="supplier" className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Card>
+            <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Total Revenue
+                  Supplier
                   </CardTitle>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-muted-foreground"
-                  >
-                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                  </svg>
+                  <FileUser width={20} height={20}/>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$45,231.89</div>
+                  <div className="text-xl font-bold">Supplier List</div>
                   <p className="text-xs text-muted-foreground">
-                    +20.1% from last month
+                    find all supplier here
                   </p>
                 </CardContent>
+                <CardFooter>
+                  <Link href="/dashboard/admin/all-supplier">
+                    <Button variant="outline">View Supplier</Button>
+                  </Link>
+                </CardFooter>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Subscriptions
+                    Supplier
                   </CardTitle>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-muted-foreground"
-                  >
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-                  </svg>
+                  <IndianRupee width={20} height={20}/>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">+2350</div>
+                  <div className="text-xl font-bold">Add Margin</div>
                   <p className="text-xs text-muted-foreground">
-                    +180.1% from last month
+                    add supplier-wise margin
                   </p>
                 </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Sales</CardTitle>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-muted-foreground"
-                  >
-                    <rect width="20" height="14" x="2" y="5" rx="2" />
-                    <path d="M2 10h20" />
-                  </svg>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">+12,234</div>
-                  <p className="text-xs text-muted-foreground">
-                    +19% from last month
-                  </p>
-                </CardContent>
+                <CardFooter>
+                  <Link href="/dashboard/admin/add-margin">
+                    <Button variant="outline">Add Margin</Button>
+                  </Link>
+                </CardFooter>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Active Now
+                    Supplier
                   </CardTitle>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-muted-foreground"
-                  >
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                  </svg>
+                  <Car width={20} height={20}/>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">+573</div>
+                  <div className="text-xl font-bold">Vehicle Info</div>
                   <p className="text-xs text-muted-foreground">
-                    +201 since last hour
+                    add vehicle model, brand, etc.
                   </p>
                 </CardContent>
+                <CardFooter>
+                  <Link href="/dashboard/admin/vehicle-details">
+                    <Button variant="outline">Add Info</Button>
+                  </Link>
+                </CardFooter>
               </Card>
+              
             </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
-              <div className="col-span-4">
-                {/* <BarGraph /> */}
-                Bar Graph
-              </div>
-              <Card className="col-span-4 md:col-span-3">
-                <CardHeader>
-                  <CardTitle>Recent Sales</CardTitle>
-                  <CardDescription>
-                    You made 265 sales this month.
-                  </CardDescription>
+          </TabsContent>
+          <TabsContent value="agent" className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                  Agent
+                  </CardTitle>
+                  <FileUser width={20} height={20}/>
                 </CardHeader>
                 <CardContent>
-                  {/* <RecentSales /> */}
-                  Recent Sales
+                  <div className="text-xl font-bold">Agent List</div>
+                  <p className="text-xs text-muted-foreground">
+                    find all agents here
+                  </p>
                 </CardContent>
-              </Card>
-              <div className="col-span-4">
-                {/* <AreaGraph /> */}
-                Sales Graph
-              </div>
-              <div className="col-span-4 md:col-span-3">
-                {/* <PieGraph /> */}
-                Analytics
-              </div>
+                <CardFooter>
+                  <Link href="/dashboard/admin/all-agent">
+                    <Button variant="outline">View Agent</Button>
+                  </Link>
+                </CardFooter>
+              </Card>              
             </div>
           </TabsContent>
         </Tabs>

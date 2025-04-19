@@ -477,16 +477,6 @@ export default function SupplierManagementPage() {
     />
                 </div>
               </div>
-
-              {/* Additional Notes Section */}
-              {selectedUser?.Notes && (
-                <div className="md:col-span-2 space-y-2">
-                  <h3 className="font-medium text-sm text-muted-foreground">Notes</h3>
-                  <p className="text-sm p-3 bg-muted/50 rounded-md">
-                    {selectedUser.Notes}
-                  </p>
-                </div>
-              )}
             </div>
           </ScrollArea>
 
@@ -531,39 +521,6 @@ export default function SupplierManagementPage() {
   );
 }
 
-// Reusable component for detail items
-// function DetailItem({ label, value }: { label: string; value?: string | null }) {
-//   const [expanded, setExpanded] = useState(false);
-  
-//   if (!value) return null;
-
-//   return (
-//     <div className="text-sm">
-//       <div className="flex justify-between items-start">
-//         <span className="font-medium text-muted-foreground">{label}</span>
-//         {value.length > 30 && (
-//           <Button 
-//             variant="ghost" 
-//             size="sm" 
-//             className="h-6 px-2 text-muted-foreground"
-//             onClick={() => setExpanded(!expanded)}
-//           >
-//             {expanded ? (
-//               <ChevronUp className="h-4 w-4" />
-//             ) : (
-//               <ChevronDown className="h-4 w-4" />
-//             )}
-//           </Button>
-//         )}
-//       </div>
-//       <p className={`mt-1 ${expanded ? '' : 'line-clamp-1'}`}>
-//         {value}
-//       </p>
-//     </div>
-//   );
-// }
-
-// Update the DetailItem component
 function DetailItem({ 
   label, 
   value, 
