@@ -11,7 +11,7 @@ import {
   import { fetchWithAuth } from "@/components/utils/api";
   import { removeToken } from "@/components/utils/auth";
   import { Skeleton } from "@/components/ui/skeleton";
-import { Car, FileUser, IndianRupee, Proportions, Users } from "lucide-react";
+import { Car, FileUser, IndianRupee, Proportions, User, Users } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 const Page = () => {
@@ -148,6 +148,48 @@ const Page = () => {
                 <CardFooter>
                   <Link href="/dashboard/admin/all-agent">
                     <Button variant="outline">View Agent</Button>
+                  </Link>
+                </CardFooter>
+              </Card>              
+            </div>
+          </TabsContent>
+          <TabsContent value="admin" className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                  Admin
+                  </CardTitle>
+                  <FileUser width={20} height={20}/>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-xl font-bold">Admin List</div>
+                  <p className="text-xs text-muted-foreground">
+                    find all admin here
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <Link href="/dashboard/admin/all-admin">
+                    <Button variant="outline">View Admin</Button>
+                  </Link>
+                </CardFooter>
+              </Card> 
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                  Admin
+                  </CardTitle>
+                  <User width={20} height={20}/>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-xl font-bold">Add Admin</div>
+                  <p className="text-xs text-muted-foreground">
+                    add new admin here
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <Link href="/dashboard/admin/add-admin">
+                    <Button variant="outline">Add Admin</Button>
                   </Link>
                 </CardFooter>
               </Card>              
