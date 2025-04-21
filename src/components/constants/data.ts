@@ -137,13 +137,13 @@ export const sideBarItems: Role[] = [
         items: [
           {
             title: 'Agent Operations',
-            url: '/dashboard/admin/agent-operations',
+            url: '/dashboard/admin/all-agent',
             icon: 'billing',
             show: 'AgentOperation' // Will check userData.AgentOperation
           },
           {
             title: 'Supplier Operations',
-            url: '/dashboard/admin/supplier-operations',
+            url: '/dashboard/admin/all-supplier',
             icon: 'billing',
             show: 'SupplierOpration' // Will check userData.SupplierOpration
           }
@@ -177,7 +177,7 @@ export const sideBarItems: Role[] = [
         items: [
           {
             title: 'Agent Products',
-            url: '/dashboard/admin/agent-products',
+            url: '#',
             icon: 'entry',
             show: 'Agent_product' // Will check userData.Agent_product
           },
