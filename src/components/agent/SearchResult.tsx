@@ -247,6 +247,7 @@ const SearchResult = ({
       distance_miles: `${distance}`,
       estimatedTime: `${estimatedTime}`,
       agent_id: `${userData.userId}`,
+      targetCurrency:`${userData.Currency}`,
       vehicle: {
         brand: vehicle.brand,
         currency: vehicle.currency,
