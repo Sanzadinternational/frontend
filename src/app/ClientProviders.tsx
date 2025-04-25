@@ -1,10 +1,7 @@
 "use client";
-
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { Toaster } from "@/components/ui/toaster";
-// import { RoleProvider } from "@/components/context/RoleContext";
 import { BookingProvider } from "@/components/context/BookingContext";
-
 export default function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
     <BookingProvider>
@@ -14,7 +11,7 @@ export default function ClientProviders({ children }: { children: React.ReactNod
         enableSystem
         disableTransitionOnChange
       >
-        {children}
+        {children} 
         <Toaster />
       </ThemeProvider>
       </BookingProvider>

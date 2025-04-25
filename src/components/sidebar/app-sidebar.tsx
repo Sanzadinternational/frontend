@@ -53,7 +53,7 @@ import { UserNav } from "../layout/user-nav";
 import { fetchWithAuth } from "@/components/utils/api";
 import { removeToken } from "@/components/utils/auth";
 import { useRouter } from "next/navigation";
-
+import { useSidebar } from "@/components/ui/sidebar";
 export const company = {
   name: "Sanzad",
   logo: Car,
@@ -70,6 +70,7 @@ export default function AppSidebar({
   const [userData, setUserData] = useState<any>(null);
   const [error, setError] = useState<string>("");
   const router = useRouter();
+  const { openMobile, setOpenMobile } = useSidebar();
 
   const logout = () => {
     try {
@@ -98,7 +99,11 @@ export default function AppSidebar({
 
     fetchUserData();
   }, []);
-
+  useEffect(() => {
+    if (openMobile && window.innerWidth < 768) {
+      setOpenMobile(false); 
+    }
+  }, [pathname]);
   if (error) return <p>Error: {error}</p>;
   if (!userData) return <p>Loading...</p>;
 
@@ -328,3 +333,4 @@ export default function AppSidebar({
     </SidebarProvider>
   );
 }
+

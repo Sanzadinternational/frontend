@@ -1,11 +1,9 @@
 import AppSidebar from "@/components/sidebar/app-sidebar"
-
+import { SidebarProvider } from "@/components/ui/sidebar"
 const DashboardLayout = ({children}:{children:React.ReactNode}) => {
   return (
-    // <div className="flex justify-center items-center h-[100vh]">
-    //     {children}
-    // </div>
-    <AppSidebar>{children}</AppSidebar>
+    <SidebarProvider>
+    <AppSidebar>{children}</AppSidebar></SidebarProvider>
   )
 }
 
