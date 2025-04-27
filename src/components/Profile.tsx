@@ -440,6 +440,7 @@ const Profile = () => {
         },
         body: formData,
       });
+          console.log(formData);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
