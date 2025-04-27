@@ -408,11 +408,11 @@ const Profile = () => {
     setEditing(true);
   };
 
-  const handleSave = async () => {
+ const handleSave = async () => {
     try {
       if (!updatedUser) return alert("No data to update!");
       setIsSubmitting(true);
-
+  
       const formData = new FormData();
       
       // For admin/superadmin, only allow updating name and image
@@ -432,7 +432,13 @@ const Profile = () => {
           formData.append("profileImage", image);
         }
       }
-
+  
+      // Log the data being sent to the server
+      console.log("Data being sent to server:", {
+        ...updatedUser,
+        profileImage: image ? "(new image file)" : user?.profileImage
+      });
+  
       const response = await fetch(`${API_BASE_URL}/view/UpdateProfile/${user?.userId}`, {
         method: "PUT",
         headers: {
@@ -440,26 +446,31 @@ const Profile = () => {
         },
         body: formData,
       });
-          console.log(formData);
-
+  
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         throw new Error(errorData?.message || `Failed to update profile: ${response.status}`);
       }
-
+  
       const data = await response.json();
       const updatedData = data.updateResult?.[0] || data;
       
+      // Log the response from the server
+      console.log("Server response:", data);
+  
       // Update user data with new image if uploaded
       const profileImageUrl = image ? 
         (preview || `${API_BASE_URL}/uploads/${updatedData.profileImage}`) : 
         updatedData.profileImage;
-
+  
       const updatedUserData = {
         ...updatedData,
         profileImage: profileImageUrl
       };
-
+  
+      // Log the final updated user data
+      console.log("Updated user data:", updatedUserData);
+  
       setUser(updatedUserData);
       setUpdatedUser(updatedUserData);
       setEditing(false);
