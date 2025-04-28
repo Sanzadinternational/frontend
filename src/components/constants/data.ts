@@ -130,26 +130,6 @@ export const sideBarItems: Role[] = [
         items: []
       },
       {
-        title: 'Operation',
-        url: '#',
-        icon: 'billing',
-        isActive: true,
-        items: [
-          {
-            title: 'Agent Operations',
-            url: '/dashboard/admin/all-agent',
-            icon: 'billing',
-            show: 'AgentOperation' // Will check userData.AgentOperation
-          },
-          {
-            title: 'Supplier Operations',
-            url: '/dashboard/admin/all-supplier',
-            icon: 'billing',
-            show: 'SupplierOpration' // Will check userData.SupplierOpration
-          }
-        ]
-      },
-      {
         title: 'Accounts',
         url: '#',
         icon: 'reports',
@@ -166,6 +146,26 @@ export const sideBarItems: Role[] = [
             url: '/dashboard/admin/supplier-accounts',
             icon: 'reports',
             show: 'SupplierAccount' // Will check userData.SupplierAccount
+          }
+        ]
+      },
+      {
+        title: 'Operation',
+        url: '#',
+        icon: 'settings',
+        isActive: false,
+        items: [
+          {
+            title: 'Agent Operations',
+            url: '/dashboard/admin/all-agent',
+            icon: 'settings',
+            show: 'AgentOperation' // Will check userData.AgentOperation
+          },
+          {
+            title: 'Supplier Operations',
+            url: '/dashboard/admin/all-supplier',
+            icon: 'settings',
+            show: 'SupplierOpration' // Will check userData.SupplierOpration
           }
         ]
       },

@@ -34,6 +34,7 @@ import {
     UserCircle2Icon,
     UserPen,
     UserX2Icon,
+    Package,
     X
   } from 'lucide-react';
   
@@ -69,6 +70,7 @@ import {
     arrowRight: ArrowRight,
     sun: SunMedium,
     moon: Moon,
+    package:Package,
     // laptop: Laptop,
     // gitHub: ({ ...props }: LucideProps) => (
     //   <svg
