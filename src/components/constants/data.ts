@@ -255,8 +255,8 @@ export const sideBarItems: Role[] = [
         ]
       },
       {
-        title: 'Reports',
-        url: '#',
+        title: 'Booking',
+        url: '/dashboard/admin/all-booking',
         icon: 'reports',
         isActive: false
       }
