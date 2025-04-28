@@ -68,7 +68,7 @@ const Page = () => {
         <Tabs defaultValue="vehicles" className="space-y-4">
           <TabsList>
             <TabsTrigger value="vehicles">Vehicles</TabsTrigger>
-            <TabsTrigger value="booking" disabled>
+            <TabsTrigger value="booking">
               Booking
             </TabsTrigger>
             <TabsTrigger value="reports" disabled>
@@ -153,6 +153,32 @@ const Page = () => {
                   </Link>
                 </CardFooter>
               </Card>
+            </div>
+          </TabsContent>
+          <TabsContent value="booking" className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Booking
+                  </CardTitle>
+                  <Car width={20} height={20}/>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-xl font-bold">All Booking</div>
+                  <p className="text-xs text-muted-foreground">
+                    find all booking here
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <Link href="/dashboard/supplier/booking">
+                    <Button variant="outline">View Booking</Button>
+                  </Link>
+                </CardFooter>
+              </Card>
+              
+             
+             
             </div>
           </TabsContent>
         </Tabs>

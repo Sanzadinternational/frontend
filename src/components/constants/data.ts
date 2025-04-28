@@ -31,7 +31,7 @@ export const sideBarItems: Role[] = [
       },
       {
         title: 'Booking',
-        url: '#',
+        url: '/dashboard/agent/booking',
         icon: 'booking',
         isActive: false
       },
@@ -95,7 +95,7 @@ export const sideBarItems: Role[] = [
       },
       {
         title: 'Booking',
-        url: '#',
+        url: '/dashboard/supplier/booking',
         icon: 'booking',
         isActive: false
       },
@@ -257,7 +257,7 @@ export const sideBarItems: Role[] = [
       {
         title: 'Booking',
         url: '/dashboard/admin/all-booking',
-        icon: 'reports',
+        icon: 'booking',
         isActive: false
       }
     ]      

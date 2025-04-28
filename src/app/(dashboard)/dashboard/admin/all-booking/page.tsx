@@ -25,7 +25,8 @@ interface Booking {
   price: string;
   status: string;
   booked_at: string;
-  // Add other fields as needed
+  distance_miles?: string;
+  completed_at?: string | null;
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -44,23 +45,45 @@ const BookingTable = () => {
   } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Filter bookings based on search term
-  const filteredBookings = bookings.filter(booking => 
-    booking.pickup_location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    booking.drop_location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    booking.price.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    booking.status.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Safe date formatting
+  const safeFormatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return isNaN(date.getTime()) ? 'Invalid date' : format(date, 'PPpp');
+    } catch {
+      return 'Invalid date';
+    }
+  };
+
+  // Safe filtering with null checks
+  const filteredBookings = bookings.filter(booking => {
+    const pickup = booking.pickup_location?.toLowerCase() || '';
+    const drop = booking.drop_location?.toLowerCase() || '';
+    const price = booking.price?.toString().toLowerCase() || '';
+    const status = booking.status?.toLowerCase() || '';
+    const search = searchTerm.toLowerCase();
+
+    return (
+      pickup.includes(search) ||
+      drop.includes(search) ||
+      price.includes(search) ||
+      status.includes(search)
+    );
+  });
 
   // Sort bookings
   const sortedBookings = [...filteredBookings].sort((a, b) => {
     if (!sortConfig) return 0;
     
     const key = sortConfig.key;
-    if (a[key] < b[key]) {
+    const aValue = a[key] || '';
+    const bValue = b[key] || '';
+    
+    if (aValue < bValue) {
       return sortConfig.direction === 'ascending' ? -1 : 1;
     }
-    if (a[key] > b[key]) {
+    if (aValue > bValue) {
       return sortConfig.direction === 'ascending' ? 1 : -1;
     }
     return 0;
@@ -89,7 +112,9 @@ const BookingTable = () => {
         throw new Error("Failed to fetch bookings");
       }
       const data = await response.json();
-      setBookings(data.result || []);
+      // Extract booking objects from the nested structure
+      const extractedBookings = data.result?.map((item: any) => item.booking) || [];
+      setBookings(extractedBookings);
     } catch (error: any) {
       console.error("Error fetching bookings:", error);
       toast({
@@ -121,7 +146,6 @@ const BookingTable = () => {
         description: "Booking status updated",
       });
 
-      // Refresh bookings
       fetchBookings();
     } catch (error: any) {
       console.error("Error updating booking:", error);
@@ -256,15 +280,15 @@ const BookingTable = () => {
                         {paginatedBookings.map((booking) => (
                           <TableRow key={booking.id}>
                             <TableCell className="font-medium">
-                              {booking.pickup_location}
+                              {booking.pickup_location || 'N/A'}
                             </TableCell>
-                            <TableCell>{booking.drop_location}</TableCell>
-                            <TableCell>₹{booking.price}</TableCell>
+                            <TableCell>{booking.drop_location || 'N/A'}</TableCell>
+                            <TableCell>₹{booking.price || '0'}</TableCell>
                             <TableCell>
                               {getStatusBadge(booking.status)}
                             </TableCell>
                             <TableCell>
-                              {format(new Date(booking.booked_at), 'PPpp')}
+                              {safeFormatDate(booking.booked_at)}
                             </TableCell>
                             <TableCell className="text-right">
                               <div className="flex justify-end gap-2">
@@ -331,16 +355,16 @@ const BookingTable = () => {
                         <div className="flex justify-between items-start">
                           <div>
                             <CardTitle className="text-lg">
-                              {booking.pickup_location} → {booking.drop_location}
+                              {booking.pickup_location || 'N/A'} → {booking.drop_location || 'N/A'}
                             </CardTitle>
                             <div className="mt-2 flex items-center gap-2">
                               <Badge variant="outline">
-                                ₹{booking.price}
+                                ₹{booking.price || '0'}
                               </Badge>
                               {getStatusBadge(booking.status)}
                             </div>
                             <div className="mt-2 text-sm text-gray-500">
-                              {format(new Date(booking.booked_at), 'PPpp')}
+                              {safeFormatDate(booking.booked_at)}
                             </div>
                           </div>
                           <div className="flex flex-col gap-2">
