@@ -329,13 +329,32 @@ const SupplierRegistration: React.FC = () => {
   //   setSelectedCity("");
   // };
 
+  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const selectedFile = e.target.files?.[0];
+  //   if (selectedFile) {
+  //     setFile(selectedFile);
+  //     setPreview(URL.createObjectURL(selectedFile));
+  //     form.setValue("Gst_Tax_Certificate", selectedFile); // Set file in form
+  //     form.clearErrors("Gst_Tax_Certificate"); // Clear any previous errors
+  //   }
+  // };
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
+      // Validate file type
+      if (selectedFile.type !== "application/pdf" && !selectedFile.name.endsWith('.pdf')) {
+        toast({
+          title: "Invalid File Type",
+          description: "Please upload a PDF file only.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
       setFile(selectedFile);
       setPreview(URL.createObjectURL(selectedFile));
-      form.setValue("Gst_Tax_Certificate", selectedFile); // Set file in form
-      form.clearErrors("Gst_Tax_Certificate"); // Clear any previous errors
+      form.setValue("Gst_Tax_Certificate", selectedFile);
+      form.clearErrors("Gst_Tax_Certificate");
     }
   };
   const handleCountryChange = (value: string) => {
@@ -832,24 +851,6 @@ const SupplierRegistration: React.FC = () => {
                   name="Gst_Tax_Certificate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Upload Documents</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="file"
-                          // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
-                          placeholder="Upload Docs"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
-                <FormField
-                  control={form.control}
-                  name="Gst_Tax_Certificate"
-                  render={({ field }) => (
-                    <FormItem>
                       <FormLabel>
                         Upload Document (GST Tax Certificate){" "}
                         <span className="text-red-500">*</span>
@@ -880,6 +881,38 @@ const SupplierRegistration: React.FC = () => {
                               Preview File
                             </a>
                           )}
+                        </div>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                /> */}
+                <FormField
+                  control={form.control}
+                  name="Gst_Tax_Certificate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Upload Document (Tax Certificate) <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="file"
+                          accept=".pdf,application/pdf" // This restricts to PDF files only
+                          onChange={handleFileChange}
+                        />
+                      </FormControl>
+                      {preview && (
+                        <div className="mt-4">
+                          <p>Preview:</p>
+                          <a
+                            href={preview}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 underline"
+                          >
+                            View PDF
+                          </a>
                         </div>
                       )}
                       <FormMessage />
