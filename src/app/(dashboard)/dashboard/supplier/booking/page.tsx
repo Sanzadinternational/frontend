@@ -16,28 +16,27 @@ import { Search, ArrowUpDown, Loader2, Check, X, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { fetchWithAuth } from "@/components/utils/api";
-import { removeToken,getToken } from "@/components/utils/auth";
+import { removeToken, getToken } from "@/components/utils/auth";
 
 interface Booking {
   id: string;
-  pickup_location: string;
-  drop_location: string;
-  price: string;
-  status: string;
-  booked_at: string;
-  distance_miles: string;
-  completed_at: string | null;
+  pickup_location?: string;
+  drop_location?: string;
+  price?: string;
+  status?: string;
+  booked_at?: string;
+  distance_miles?: string;
+  completed_at?: string | null;
 }
 
 const ITEMS_PER_PAGE = 10;
 
-const AgentBookingsTable = () => {
+const SupplierBookingsTable = () => {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [agentId, setAgentId] = useState<number | null>(null);
+  const [supplierId, setSupplierId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-
 
   // Search and filter state
   const [searchTerm, setSearchTerm] = useState("");
@@ -46,6 +45,17 @@ const AgentBookingsTable = () => {
     direction: 'ascending' | 'descending';
   } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Safe date formatting
+  const safeFormatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return isNaN(date.getTime()) ? 'Invalid date' : format(date, 'PPpp');
+    } catch {
+      return 'Invalid date';
+    }
+  };
 
   // Check authentication status
   const isAuthenticated = !!getToken();
@@ -64,19 +74,19 @@ const AgentBookingsTable = () => {
         
         const dashboardData = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
         const userId = dashboardData.userId;
-        setAgentId(userId);
+        setSupplierId(userId);
         
         const bookingsData = await fetchWithAuth(
           `${API_BASE_URL}/supplier/GetBookingBySupplierId/${userId}`
         );
-        setBookings(bookingsData.result || []);
-    
+        // Extract booking objects from the nested structure
+        const extractedBookings = bookingsData.result?.map((item: any) => item.booking) || [];
+        setBookings(extractedBookings);
       } catch (err) {
         console.error("Error fetching data:", err);
         const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
         setError(errorMessage);
         
-        // Remove token if unauthorized
         if (errorMessage.includes("Unauthorized")) {
           removeToken();
         }
@@ -88,17 +98,11 @@ const AgentBookingsTable = () => {
     fetchData();
   }, [isAuthenticated]);
 
-  // Filter and sort bookings
-//   const filteredBookings = bookings.filter(booking => 
-//     booking.pickup_location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//     booking.drop_location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//     booking.price.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//     booking.status.toLowerCase().includes(searchTerm.toLowerCase())
-//   );
-const filteredBookings = bookings.filter((booking) => {
+  // Safe filtering with null checks
+  const filteredBookings = bookings.filter((booking) => {
     const pickup = booking.pickup_location?.toLowerCase() ?? "";
     const drop = booking.drop_location?.toLowerCase() ?? "";
-    const price = booking.price?.toLowerCase() ?? "";
+    const price = booking.price?.toString().toLowerCase() ?? "";
     const status = booking.status?.toLowerCase() ?? "";
     const search = searchTerm.toLowerCase();
 
@@ -109,22 +113,30 @@ const filteredBookings = bookings.filter((booking) => {
       status.includes(search)
     );
   });
+
+  // Sort bookings with null checks
   const sortedBookings = [...filteredBookings].sort((a, b) => {
     if (!sortConfig) return 0;
-    if (a[sortConfig.key] < b[sortConfig.key]) {
+    
+    const key = sortConfig.key;
+    const aValue = a[key] || '';
+    const bValue = b[key] || '';
+    
+    if (aValue < bValue) {
       return sortConfig.direction === 'ascending' ? -1 : 1;
     }
-    if (a[sortConfig.key] > b[sortConfig.key]) {
+    if (aValue > bValue) {
       return sortConfig.direction === 'ascending' ? 1 : -1;
     }
     return 0;
   });
 
+  // Pagination
+  const totalPages = Math.ceil(sortedBookings.length / ITEMS_PER_PAGE);
   const paginatedBookings = sortedBookings.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
-  const totalPages = Math.ceil(sortedBookings.length / ITEMS_PER_PAGE);
 
   const requestSort = (key: keyof Booking) => {
     let direction: 'ascending' | 'descending' = 'ascending';
@@ -134,7 +146,7 @@ const filteredBookings = bookings.filter((booking) => {
     setSortConfig({ key, direction });
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string | undefined) => {
     switch (status) {
       case "1": return <Badge className="bg-green-500"><Check className="h-3 w-3 mr-1" />Booked</Badge>;
       case "0": return <Badge className="bg-yellow-500"><Clock className="h-3 w-3 mr-1" />Pending</Badge>;
@@ -206,7 +218,7 @@ const filteredBookings = bookings.filter((booking) => {
               </div>
             ) : bookings.length === 0 ? (
               <p className="text-center text-gray-500 py-8">
-                {agentId ? "No bookings found" : "Loading your bookings..."}
+                {supplierId ? "No bookings found" : "Loading your bookings..."}
               </p>
             ) : (
               <>
@@ -276,19 +288,17 @@ const filteredBookings = bookings.filter((booking) => {
                         {paginatedBookings.map((booking) => (
                           <TableRow key={booking.id}>
                             <TableCell className="font-medium">
-                              {booking.pickup_location}
+                              {booking.pickup_location || 'N/A'}
                             </TableCell>
-                            <TableCell>{booking.drop_location}</TableCell>
-                            <TableCell>{booking.distance_miles} miles</TableCell>
-                            <TableCell>₹{booking.price}</TableCell>
+                            <TableCell>{booking.drop_location || 'N/A'}</TableCell>
+                            <TableCell>{booking.distance_miles || '0'} miles</TableCell>
+                            <TableCell>₹{booking.price || '0'}</TableCell>
                             <TableCell>
                               {getStatusBadge(booking.status)}
                             </TableCell>
                             <TableCell>
-                                {booking.booked_at
-                                  ? format(new Date(booking.booked_at), "PPpp")
-                                  : "N/A"}
-                              </TableCell>
+                              {safeFormatDate(booking.booked_at)}
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -327,24 +337,22 @@ const filteredBookings = bookings.filter((booking) => {
                         <div className="space-y-2">
                           <div className="flex justify-between">
                             <CardTitle className="text-lg">
-                              {booking.pickup_location} → {booking.drop_location}
+                              {booking.pickup_location || 'N/A'} → {booking.drop_location || 'N/A'}
                             </CardTitle>
                             {getStatusBadge(booking.status)}
                           </div>
                           <div className="grid grid-cols-2 gap-2">
                             <div>
                               <p className="text-sm text-muted-foreground">Distance</p>
-                              <p>{booking.distance_miles} miles</p>
+                              <p>{booking.distance_miles || '0'} miles</p>
                             </div>
                             <div>
                               <p className="text-sm text-muted-foreground">Price</p>
-                              <p>₹{booking.price}</p>
+                              <p>₹{booking.price || '0'}</p>
                             </div>
                             <div className="col-span-2">
                               <p className="text-sm text-muted-foreground">Booked At</p>
-                              <p>{booking.booked_at
-                                ? format(new Date(booking.booked_at), "PPpp")
-                                : "N/A"}</p>
+                              <p>{safeFormatDate(booking.booked_at)}</p>
                             </div>
                           </div>
                         </div>
@@ -384,4 +392,4 @@ const filteredBookings = bookings.filter((booking) => {
   );
 };
 
-export default AgentBookingsTable;
+export default SupplierBookingsTable;
