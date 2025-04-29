@@ -103,7 +103,7 @@ export const columns = (
               View
             </DropdownMenuItem>
             
-            <DropdownMenuItem>Delete</DropdownMenuItem>
+            {/* <DropdownMenuItem>Delete</DropdownMenuItem> */}
           </DropdownMenuContent>
         </DropdownMenu>
       )
