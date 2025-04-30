@@ -211,10 +211,7 @@ const SearchResult = ({
 
   const handleBookNow = (vehicle) => {
     if (!userData) {
-      // if (window.confirm("You need to log in to book a vehicle. Do you want to log in now?")) {
-      //   const currentUrl = window.location.href;
-      //   window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
-      // }
+      
       const currentUrl = window.location.href;
       window.location.href = `/login?redirect=${encodeURIComponent(
         currentUrl

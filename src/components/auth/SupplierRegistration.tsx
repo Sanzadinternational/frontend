@@ -75,7 +75,7 @@ const SupplierRegistration: React.FC = () => {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const [countries, setCountries] = useState<Country[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>("");
-  // const [selectedCity, setSelectedCity] = useState<string>("");
+
   const [selectedCurrency, setSelectedCurrency] = useState<string>("");
   const [selectedDialCode, setSelectedDialCode] = useState<string>("");
   const [selectedFlag, setSelectedFlag] = useState<string>(""); // To store the Unicode flag
@@ -220,17 +220,7 @@ const SupplierRegistration: React.FC = () => {
     }
     formData.append("Gst_Tax_Certificate", fileInput.files[0]);
 
-    // Debug FormData
-    // console.log("FormData Content:");
-    // for (const [key, value] of formData.entries()) {
-    //   if (value instanceof File) {
-    //     console.log(
-    //       `${key}: File - ${value.name}, Size: ${value.size} bytes, Type: ${value.type}`
-    //     );
-    //   } else {
-    //     console.log(`${key}:`, value);
-    //   }
-    // }
+  
 
     if (isOtpVerified) {
       try {
@@ -238,7 +228,7 @@ const SupplierRegistration: React.FC = () => {
           `${API_BASE_URL}/supplier/registration`,
           {
             method: "POST",
-            body: formData, // No need for headers, FormData handles it
+            body: formData, 
           }
         );
 
@@ -269,75 +259,10 @@ const SupplierRegistration: React.FC = () => {
     }
   };
 
-  // const handleSubmit: SubmitHandler<FormData> = async (data) => {
-  //   setIsSubmiting(true);
-  //   // Concatenate dial code with office number and mobile number
-  //   const officeNumberWithDialCode = `${selectedDialCode}${data.Office_number}`;
-  //   const mobileNumberWithDialCode = `${selectedDialCode}${data.Mobile_number}`;
-  //   // Prepare the updated data
-  //   const updatedData = {
-  //     ...data,
-  //     Office_number: officeNumberWithDialCode,
-  //     Mobile_number: mobileNumberWithDialCode,
-  //   };
-  //   if (isOtpVerified) {
-  //     try {
-  //       const registrationResponse = await fetch(
-  //         `${API_BASE_URL}/supplier/registration`,
-  //         {
-  //           method: "POST",
-  //           headers: { "Content-Type": "application/json" },
-  //           body: JSON.stringify(updatedData),
-  //         }
-  //       );
+ 
 
-  //       if (registrationResponse.ok) {
-  //         toast({
-  //           title: "User Registration",
-  //           description: "Registered Sucessfully...",
-  //         });
-  //         router.push("/login");
-  //       } else {
-  //         const errorData = await registrationResponse.json();
-  //         toast({
-  //           title:'Error during registration',
-  //           description:(errorData.message),
-  //           variant:'destructive',
-  //         })
-  //         console.log("Registration failed:", errorData);
-  //         console.log(data);
-  //       }
-  //     } catch (error) {
-  //       toast({
-  //         title:'Error during registration',
-  //         description:(error as Error).message,
-  //         variant:'destructive',
-  //       })
-  //       console.log("Error during registration:", error);
-  //     }finally{
-  //       setIsSubmiting(false);
-  //     }
-  //   } else {
-  //     console.log("Please verify the OTP first.");
-  //   }
-  // };
-
-  // const handleCountryChange = (value: string) => {
-  //   setSelectedCountry(value);
-  //   form.setValue("Country", value);
-  //   form.setValue("City", "");
-  //   setSelectedCity("");
-  // };
-
-  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const selectedFile = e.target.files?.[0];
-  //   if (selectedFile) {
-  //     setFile(selectedFile);
-  //     setPreview(URL.createObjectURL(selectedFile));
-  //     form.setValue("Gst_Tax_Certificate", selectedFile); // Set file in form
-  //     form.clearErrors("Gst_Tax_Certificate"); // Clear any previous errors
-  //   }
-  // };
+ 
+ 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -361,23 +286,15 @@ const SupplierRegistration: React.FC = () => {
     const country = countries.find((country) => country.name === value);
     if (country) {
       setSelectedCountry(value);
-      setSelectedDialCode(country.dialCode); // Assuming API response has dialCode
-      setSelectedFlag(country.flag); // Assuming API response has unicodeFlag
+      setSelectedDialCode(country.dialCode); 
+      setSelectedFlag(country.flag); 
       form.setValue("Country", value);
       form.trigger("Country");
       form.setValue("City", "");
-      // setSelectedCity("");
+      
     }
   };
 
-  // const handleCityChange = (value: string) => {
-  //   setSelectedCity(value);
-  //   form.setValue("City", value);
-  //   form.trigger("City"); // Ensure city validation is triggered
-  // };
-
-  // const cities =
-  //   countries.find((country) => country.name === selectedCountry)?.cities || [];
 
   const handleCurrencyChange = (value: string) => {
     setSelectedCurrency(value);
@@ -405,13 +322,13 @@ const SupplierRegistration: React.FC = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel
-                  // className="uppercase text-xs font-bold text-zinc-500 dark:text-white"
+                  
                   >
                     Company Name <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      
                       placeholder="Enter Company Name"
                       {...field}
                     />
@@ -431,7 +348,7 @@ const SupplierRegistration: React.FC = () => {
                   <FormControl>
                     <Input
                       type="text"
-                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      
                       placeholder="Enter Owner Name"
                       {...field}
                     />
@@ -451,7 +368,7 @@ const SupplierRegistration: React.FC = () => {
                   <FormControl>
                     <Textarea
                       placeholder="Enter Your Address"
-                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      
                       {...field}
                     />
                   </FormControl>
@@ -502,26 +419,10 @@ const SupplierRegistration: React.FC = () => {
                     City <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
-                    {/* <Select
-                      {...field}
-                      onValueChange={handleCityChange}
-                      value={selectedCity}
-                      disabled={!selectedCountry}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a city" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {cities.map((city, index) => (
-                          <SelectItem key={index} value={city}>
-                            {city}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select> */}
+                    
                     <Input
                       type="text"
-                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                     
                       placeholder="Enter Your City"
                       {...field}
                     />
@@ -542,7 +443,7 @@ const SupplierRegistration: React.FC = () => {
                   <FormControl>
                     <Input
                       type="text"
-                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                    
                       placeholder="Enter Zip Code"
                       {...field}
                     />
@@ -568,7 +469,7 @@ const SupplierRegistration: React.FC = () => {
                           alt="flag"
                           width={30}
                           height={30}
-                        /> // Display flag
+                        /> 
                       )}
                       {selectedDialCode && (
                         <span className=" px-1 py-1">
@@ -582,12 +483,7 @@ const SupplierRegistration: React.FC = () => {
                         {...field}
                       />
                     </div>
-                    {/* <Input
-                          type="number"
-                          // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
-                          placeholder="Enter Office Number"
-                          {...field}
-                        /> */}
+                   
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -688,7 +584,7 @@ const SupplierRegistration: React.FC = () => {
                       </FormLabel>
                       <FormControl>
                         <Input
-                          // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                          
                           type="password"
                           placeholder="Enter Password"
                           {...field}
@@ -707,7 +603,7 @@ const SupplierRegistration: React.FC = () => {
                       <FormControl>
                         <Input
                           type="text"
-                          // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                         
                           placeholder="Contact Person"
                           {...field}
                         />
@@ -733,7 +629,7 @@ const SupplierRegistration: React.FC = () => {
                               alt="flag"
                               width={30}
                               height={30}
-                            /> // Display flag
+                            /> 
                           )}
                           {selectedDialCode && (
                             <span className="bg-gray-100 border border-gray-300 px-1 py-1">
@@ -746,12 +642,7 @@ const SupplierRegistration: React.FC = () => {
                             {...field}
                           />
                         </div>
-                        {/* <Input
-                          type="number"
-                          // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
-                          placeholder="Enter Mobile Number"
-                          {...field}
-                        /> */}
+                      
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -766,7 +657,7 @@ const SupplierRegistration: React.FC = () => {
                       <FormControl>
                         <Input
                           type="text"
-                          // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                         
                           placeholder="Enter GST/VAT/TAX Number"
                           {...field}
                         />
@@ -784,7 +675,7 @@ const SupplierRegistration: React.FC = () => {
                       <FormControl>
                         <Input
                           type="text"
-                          // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                         
                           placeholder="Enter PAN Number"
                           {...field}
                         />
@@ -811,9 +702,7 @@ const SupplierRegistration: React.FC = () => {
                             <SelectValue placeholder="Select Currency" />
                           </SelectTrigger>
                           <SelectContent>
-                            {/* <SelectItem value="Rs">Rs</SelectItem>
-                            <SelectItem value="usd">USD</SelectItem>
-                            <SelectItem value="ed">ED</SelectItem> */}
+                           
                             {chooseCurrency?.map((cur) => (
                               <SelectItem
                                 key={cur.value}
@@ -846,47 +735,6 @@ const SupplierRegistration: React.FC = () => {
                   </div>
                 </ScrollArea>
 
-                {/* <FormField
-                  control={form.control}
-                  name="Gst_Tax_Certificate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Upload Document (GST Tax Certificate){" "}
-                        <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="file"
-                          accept=".pdf,.jpg,.png"
-                          onChange={handleFileChange}
-                        />
-                      </FormControl>
-                      {preview && (
-                        <div className="mt-4">
-                          <p>Preview:</p>
-                          {file?.type.startsWith("image/") ? (
-                            <Image
-                              src={preview}
-                              alt="File Preview"
-                              width={150}
-                              height={150}
-                            />
-                          ) : (
-                            <a
-                              href={preview}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Preview File
-                            </a>
-                          )}
-                        </div>
-                      )}
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
                 <FormField
                   control={form.control}
                   name="Gst_Tax_Certificate"
@@ -898,7 +746,7 @@ const SupplierRegistration: React.FC = () => {
                       <FormControl>
                         <Input
                           type="file"
-                          accept=".pdf,application/pdf" // This restricts to PDF files only
+                          accept=".pdf,application/pdf" 
                           onChange={handleFileChange}
                         />
                       </FormControl>

@@ -223,17 +223,7 @@ const AgentRegistration: React.FC = () => {
     }
     formData.append("Gst_Tax_Certificate", fileInput.files[0]);
 
-    // Debug FormData
-    // console.log("FormData Content:");
-    // for (const [key, value] of formData.entries()) {
-    //   if (value instanceof File) {
-    //     console.log(
-    //       `${key}: File - ${value.name}, Size: ${value.size} bytes, Type: ${value.type}`
-    //     );
-    //   } else {
-    //     console.log(`${key}:`, value);
-    //   }
-    // }
+   
 
     if (isOtpVerified) {
       try {
@@ -241,7 +231,7 @@ const AgentRegistration: React.FC = () => {
           `${API_BASE_URL}/agent/registration`,
           {
             method: "POST",
-            body: formData, // No need for headers, FormData handles it
+            body: formData, 
           }
         );
 
@@ -275,15 +265,6 @@ const AgentRegistration: React.FC = () => {
   };
 
 
-  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const selectedFile = e.target.files?.[0];
-  //   if (selectedFile) {
-  //     setFile(selectedFile);
-  //     setPreview(URL.createObjectURL(selectedFile));
-  //     form.setValue("Gst_Tax_Certificate", selectedFile); // Set file in form
-  //     form.clearErrors("Gst_Tax_Certificate"); // Clear any previous errors
-  //   }
-  // };
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -307,22 +288,14 @@ const AgentRegistration: React.FC = () => {
     const selected = countries.find((country) => country.name === value);
     if (selected) {
       setSelectedCountry(value);
-      setSelectedDialCode(selected.dialCode); // Assuming API response has dialCode
-      setSelectedFlag(selected.flag); // Assuming API response has unicodeFlag
+      setSelectedDialCode(selected.dialCode); 
+      setSelectedFlag(selected.flag); 
       form.setValue("Country", value);
       form.setValue("City", "");
-      // setSelectedCity("");
+      
     }
   };
 
-  // const handleCityChange = (value: string) => {
-  //   setSelectedCity(value);
-  //   form.setValue("City", value);
-  //   form.trigger("City"); // Ensure city validation is triggered
-  // };
-
-  // const cities =
-  //   countries.find((country) => country.name === selectedCountry)?.cities || [];
 
   const handleCurrencyChange = (value: string) => {
     setSelectedCurrency(value);
@@ -350,13 +323,13 @@ const AgentRegistration: React.FC = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel
-                  // className="uppercase text-xs font-bold text-zinc-500 dark:text-white"
+                  
                   >
                     Company Name <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                     
                       placeholder="Enter Company Name"
                       {...field}
                     />
@@ -375,7 +348,7 @@ const AgentRegistration: React.FC = () => {
                   <FormControl>
                     <Textarea
                       placeholder="Enter Your Address"
-                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                     
                       {...field}
                     />
                   </FormControl>
@@ -423,26 +396,9 @@ const AgentRegistration: React.FC = () => {
                 <FormItem>
                   <FormLabel>City <span className="text-red-500">*</span></FormLabel>
                   <FormControl>
-                    {/* <Select
-                      {...field}
-                      onValueChange={handleCityChange}
-                      value={selectedCity}
-                      disabled={!selectedCountry}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a city" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {cities.map((city, index) => (
-                          <SelectItem key={index} value={city}>
-                            {city}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select> */}
                     <Input
                       type="text"
-                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                     
                       placeholder="Enter Your City"
                       {...field}
                     />
@@ -461,7 +417,7 @@ const AgentRegistration: React.FC = () => {
                   <FormControl>
                     <Input
                       type="text"
-                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      
                       placeholder="Enter Zip Code"
                       {...field}
                     />
@@ -480,7 +436,7 @@ const AgentRegistration: React.FC = () => {
                   <FormControl>
                     <Input
                       type="text"
-                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                      
                       placeholder="Enter IATA Code"
                       {...field}
                     />
@@ -499,7 +455,7 @@ const AgentRegistration: React.FC = () => {
                   <FormControl>
                     <Input
                       type="text"
-                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
+                   
                       placeholder="Enter GST/VAT/TAX Number"
                       {...field}
                     />
@@ -518,7 +474,6 @@ const AgentRegistration: React.FC = () => {
                   <FormControl>
                     <Input
                       type="text"
-                      // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                       placeholder="Contact Person"
                       {...field}
                     />
@@ -616,7 +571,6 @@ const AgentRegistration: React.FC = () => {
                       <FormLabel>Create Password <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input
-                          // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
                           type="password"
                           placeholder="Enter Password"
                           {...field}
@@ -654,12 +608,7 @@ const AgentRegistration: React.FC = () => {
                             {...field}
                           />
                         </div>
-                        {/* <Input
-                          type="number"
-                          // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
-                          placeholder="Enter Office Number"
-                          {...field}
-                        /> */}
+                       
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -693,12 +642,7 @@ const AgentRegistration: React.FC = () => {
                             {...field}
                           />
                         </div>
-                        {/* <Input
-                          type="number"
-                          // className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white"
-                          placeholder="Enter Mobile Number"
-                          {...field}
-                        /> */}
+                       
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -726,9 +670,6 @@ const AgentRegistration: React.FC = () => {
                                 <SelectItem key={cur.value} value={`${cur.value}`}>{cur.name}</SelectItem>
                               ))
                             }
-                            {/* <SelectItem value="Rs">Rs</SelectItem>
-                            <SelectItem value="usd">USD</SelectItem>
-                            <SelectItem value="ed">ED</SelectItem> */}
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -752,46 +693,6 @@ const AgentRegistration: React.FC = () => {
                     ))}
                   </div>
                 </ScrollArea>
-                {/* <FormField
-                  control={form.control}
-                  name="Gst_Tax_Certificate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Upload Document (GST Tax Certificate) <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="file"
-                          accept=".pdf,.jpg,.png"
-                          onChange={handleFileChange}
-                        />
-                      </FormControl>
-                      {preview && (
-                        <div className="mt-4">
-                          <p>Preview:</p>
-                          {file?.type.startsWith("image/") ? (
-                            <Image
-                              src={preview}
-                              alt="File Preview"
-                              width={150}
-                              height={150}
-                            />
-                          ) : (
-                            <a
-                              href={preview}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Preview File
-                            </a>
-                          )}
-                        </div>
-                      )}
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
 <FormField
   control={form.control}
   name="Gst_Tax_Certificate"
