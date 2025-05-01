@@ -1,90 +1,3 @@
-// "use client";
-// import { useState, useEffect, useRef } from "react";
-
-// const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
-//   const inputRef = useRef<HTMLInputElement>(null);
-//   const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
-//   const [predictions, setPredictions] = useState<any[]>([]);
-
-//   useEffect(() => {
-//     const loadGoogleMapsScript = () => {
-//       if (document.querySelector("#google-maps-script")) return;
-
-//       const script = document.createElement("script");
-//       script.id = "google-maps-script";
-//       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-//       script.async = true;
-//       script.defer = true;
-//       script.onload = () => setIsGoogleLoaded(true);
-//       document.head.appendChild(script);
-//     };
-
-//     if (!window.google?.maps?.places) {
-//       loadGoogleMapsScript();
-//     } else {
-//       setIsGoogleLoaded(true);
-//     }
-//   }, [apiKey]);
-
-//   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-//     const inputValue = event.target.value;
-//     if (!inputValue) {
-//       setPredictions([]);
-//       return;
-//     }
-
-//     const service = new window.google.maps.places.AutocompleteService();
-//     service.getPlacePredictions(
-//       { input: inputValue, types: ["geocode"] },
-//       (results) => setPredictions(results || [])
-//     );
-//   };
-
-//   const handleSelectPlace = (placeId: string, description: string) => {
-//     const placesService = new window.google.maps.places.PlacesService(document.createElement("div"));
-//     placesService.getDetails({ placeId }, (place) => {
-//       if (place && place.geometry) {
-//         onPlaceSelected({
-//           address: description,
-//           lat: place.geometry.location.lat(),
-//           lng: place.geometry.location.lng(),
-//         });
-//         if (inputRef.current) inputRef.current.value = description;
-//         setPredictions([]);
-//       }
-//     });
-//   };
-
-//   return (
-//     <div className="relative w-full">
-//       <input
-//         ref={inputRef}
-//         type="text"
-//         className="w-full border p-2 rounded-md"
-//         placeholder="Search Zone"
-//         onChange={handleInputChange}
-//         disabled={!isGoogleLoaded}
-//       />
-//       {predictions.length > 0 && (
-//         <ul className="absolute w-full border mt-1 bg-white rounded-md z-50">
-//           {predictions.map((prediction) => (
-//             <li
-//               key={prediction.place_id}
-//               className="p-2 cursor-pointer hover:bg-gray-200"
-//               onClick={() => handleSelectPlace(prediction.place_id, prediction.description)}
-//             >
-//               {prediction.description}
-//             </li>
-//           ))}
-//         </ul>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default AutocompleteInput;
-
-
 
 "use client";
 import { useState, useEffect, useRef } from "react";
@@ -196,7 +109,8 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
         <input
           ref={inputRef}
           type="text"
-          className="w-full bg-slate-100 dark:text-white dark:bg-slate-700 border border-gray-300 dark:border-gray-600 rounded-md pl-12 p-3 text-lg focus:ring-2 focus:ring-blue-400"
+          // className="w-full bg-slate-100 dark:text-white dark:bg-slate-700 border border-gray-300 dark:border-gray-600 rounded-md pl-12 p-3 text-lg focus:ring-2 focus:ring-blue-400"
+          className="flex h-9 w-full rounded-md border border-input bg-transparent pl-12 p-3 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
           placeholder={isGoogleLoaded ? "Search a location..." : "Loading Google Maps..."}
           disabled={!isGoogleLoaded}
           onChange={handleInputChange}

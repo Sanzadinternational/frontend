@@ -3,6 +3,7 @@ import Image from "next/image";
 import {
   Card,
   CardContent,
+  CardDescription,
   // CardDescription,
   CardFooter,
   CardHeader,
@@ -21,9 +22,7 @@ export default function Home() {
             Transfer Rides In All Countries
           </p>
           <Button className="my-2 bg-blue-500 dark:bg-card-foreground">
-            <Link href='/contact'>
-            Contact
-            </Link>
+            <Link href="/contact">Contact</Link>
           </Button>
         </div>
         <div className="flex justify-center">
@@ -38,26 +37,43 @@ export default function Home() {
       <div className="flex justify-center mt-[-80px]">
         <Location />
       </div>
-      <div id="about" className="flex flex-col md:grid grid-cols-2 gap-5 mt-20 mb-20 px-10">
-        <Card>
-          <CardHeader>
-            <CardTitle>About</CardTitle>
-            {/* <CardDescription>Card Description</CardDescription> */}
-          </CardHeader>
-          <CardContent>
-            <p>
-              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repellat
-              provident perferendis voluptatibus. Maiores odit accusantium
-              necessitatibus eum voluptates, numquam sint sunt quibusdam,
-              laboriosam a, debitis voluptatibus ab aliquam ipsum aspernatur.
-            </p>
-          </CardContent>
-          <CardFooter className="flex justify-end">
-            <Button>Connect</Button>
-          </CardFooter>
-        </Card>
-        <div className=" flex flex-col md:grid grid-cols-2 gap-3">
-          {features.map((feature, id) => (
+      <div
+        id="about"
+        className="flex flex-col items-center gap-5 mt-20 px-10"
+      >
+        <div className="w-full flex flex-col items-center gap-1">
+          <h2 className="text-muted-foreground text-xl">About Us</h2>
+          <h3 className="text-2xl md:text-4xl font-semibold">We provide best<br/>tour in the world</h3>
+          <p className="md:w-1/2 text-muted-foreground text-center">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolorum esse atque ducimus inventore cum rem exercitationem dolore! Culpa possimus quae, in animi sed eligendi consequuntur necessitatibus aliquid est, modi expedita!</p>
+        </div>
+        <div className="w-full flex items-center justify-center bg-slate-100 md:h-[500px] rounded-md">
+          {/* <div className="relative block h-[500px] w-full bg-gray-200"> */}
+          <Image src="/Car-Mockup_Sanzad-International.webp" alt="about" width={600} height={600}/>
+          {/* </div> */}
+          {/* <Card>
+            <CardContent className="relative block h-[500px] w-full bg-gray-200">
+              <Image src="/Car-Mockup_Sanzad-International.webp" alt="about" fill style={{ objectFit: 'cover' }} />
+            </CardContent>
+            <CardFooter className="flex flex-col items-center">
+              <h5 className="text-xl pt-3">User 1</h5>
+              <CardDescription>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eaque molestiae ipsum sequi minima reprehenderit a eum, quas nostrum dolorem magnam impedit.</CardDescription>
+            </CardFooter>
+          </Card> */}
+          {/* <Card>
+            <CardContent className="relative block h-[350px] w-full">
+              <Image src="/female-profile-pic.webp" alt="about" fill
+    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+    className="object-cover" />
+            </CardContent>
+            <CardFooter className="flex flex-col items-start">
+              <h5 className="text-xl pt-3">User 2</h5>
+              <CardDescription>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eaque molestiae ipsum sequi minima reprehenderit a eum, quas nostrum dolorem magnam impedit.</CardDescription>
+            </CardFooter>
+          </Card> */}
+        </div>
+      </div>
+      <div id="features" className="flex flex-col md:flex-row gap-5 mt-10 mb-20 px-10">
+      {features.map((feature, id) => (
             <Card key={id}>
               <CardHeader>
                 <CardTitle>{feature.title}</CardTitle>
@@ -67,9 +83,6 @@ export default function Home() {
               </CardContent>
             </Card>
           ))}
-        </div>
-        <div>
-        </div>
       </div>
     </>
   );

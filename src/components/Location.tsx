@@ -21,22 +21,16 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
-import { Plane, Hotel, TrainFront, Bus, Building, MapPin } from "lucide-react";
+import { Plane, Hotel, TrainFront, Bus, UsersRound, MapPin } from "lucide-react";
 const placeTypeIcons: { [key: string]: JSX.Element } = {
-  // airport: <FaPlane className="w-6 h-6 text-blue-500" />,
-  airport: <Plane className="w-6 h-6 text-blue-500" />,
-  // lodging: <FaHotel className="w-6 h-6 text-yellow-500" />,
+  airport: <Plane className="w-6 h-6 text-blue-500 dark:text-sky-300" />,
   lodging: <Hotel className="w-6 h-6 text-yellow-500" />,
-  // restaurant: <FaUtensils className="w-6 h-6 text-red-500" />,
-  // establishment: <FaBuilding className="w-6 h-6 text-gray-500" />,
-  establishment: <MapPin className="w-6 h-6 text-gray-500" />,
-  // train_station: <FaTrain className="w-6 h-6 text-green-500" />,
+  establishment: <MapPin className="w-6 h-6 text-gray-500 dark:text-gray-100" />,
   train_station: <TrainFront className="w-6 h-6 text-green-500" />,
-  // bus_station: <FaBus className="w-6 h-6 text-purple-500" />,
-  bus_station: <Bus className="w-6 h-6 text-purple-500" />,
+  bus_station: <Bus className="w-6 h-6 text-purple-500 dark:text-purple-200" />,
 };
 
-const defaultIcon = <MapPin className="w-6 h-6 text-gray-500" />;
+const defaultIcon = <MapPin className="w-6 h-6 text-gray-500 dark:text-gray-100" />;
 
 const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -131,13 +125,15 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
       <div className="relative flex items-center">
         {/* Icon inside input */}
         <span className="absolute left-4 text-xl text-gray-500 w-6 h-6 flex items-center justify-center">
-          {selectedIcon || <MapPin className="text-gray-500" />}
+          {selectedIcon || <MapPin className="text-gray-500 dark:text-gray-300" />}
         </span>
 
         <input
           ref={inputRef}
           type="text"
-          className="w-full bg-slate-100 dark:text-white dark:bg-slate-700 border border-gray-300 dark:border-gray-600 rounded-md pl-12 p-3 text-lg focus:ring-2 focus:ring-blue-400"
+          className="w-full bg-slate-100 dark:text-white dark:bg-slate-500 border border-gray-300 dark:border-gray-600 pl-12 p-3 text-lg rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0"
+          // className="flex h-9 w-full rounded-md border border-input bg-transparent pl-12 p-3 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+          // className=" bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-1"
           placeholder={
             isGoogleLoaded ? "Search a location..." : "Loading Google Maps..."
           }
@@ -331,12 +327,28 @@ export default function Location() {
                         Number of Passengers
                       </FormLabel>
                       <FormControl>
-                        <input
+                        {/* <input
                           {...field}
                           type="text"
                           placeholder="Enter number of passengers"
                           className=" bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-1"
-                        />
+                          
+                        /> */}
+                        <div className="relative flex items-center">
+          {/* Icon inside input */}
+          {/* <span className="absolute left-3 text-xl text-gray-500 w-6 h-6 flex items-center justify-center">
+            <UsersRound className="w-5 h-5 text-gray-500 dark:text-gray-300" />
+          </span> */}
+          <input
+            {...field}
+            type="text"
+            placeholder="Enter number of passengers"
+            className="w-full bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-1"
+          />
+          <span className="absolute right-3 text-xl text-gray-500 w-6 h-6 flex items-center justify-center">
+            <UsersRound className="w-5 h-5 text-gray-500 dark:text-gray-300" />
+          </span>
+        </div>
                       </FormControl>
                       <FormMessage>
                         {form.formState.errors.pax?.message}
