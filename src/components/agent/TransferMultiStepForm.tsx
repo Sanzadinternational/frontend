@@ -2,7 +2,8 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import { fetchWithAuth } from "../utils/api";
+import { removeToken } from "../utils/auth";
 import SearchResult from "./SearchResult";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "../ui/button";
@@ -10,6 +11,20 @@ import Booking from "./Booking";
 import Confirm from "./Confirm";
 
 const TransferMultiStepForm = () => {
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const data = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
+        setUser(data);
+        console.log("userData",data);
+      } catch (err: any) {
+        console.log("API error fetching data", err);
+        removeToken();
+      }
+    };
+
+    fetchUserData();
+  }, []);
   const searchParams = useSearchParams();
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,6 +32,8 @@ const TransferMultiStepForm = () => {
   const [bookingInfo, setBookingInfo] = useState(null);
   const [distance, setDistance] = useState(null);
   const [estimatedTime, setEstimatedTime]= useState(null);
+  const [user,setUser] = useState();
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   // Extract query parameters
   const formData = {
     pickup: searchParams.get("pickup") || "",
@@ -28,6 +45,7 @@ const TransferMultiStepForm = () => {
     returnTime: searchParams.get("returnTime") || "",
     pickupLocation: searchParams.get("pickupLocation") || "",
     dropoffLocation: searchParams.get("dropoffLocation") || "",
+    targetCurrency:user?.Currency,
   };
   
   // Call the search API using the query parameters
