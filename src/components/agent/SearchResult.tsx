@@ -375,7 +375,7 @@ const SearchResult = ({
             <div className="flex flex-col gap-5 p-4 md:h-96">
               {vehicles.length > 0 ? (
                 vehicles.map((vehicle, index) =>{
-                  const displayCurrency = getDisplayCurrency(vehicle.currency);
+                  const displayCurrency = getDisplayCurrency(userData?.Currency);
                   return (
                   <Card key={index} className="">
                     <CardHeader>
