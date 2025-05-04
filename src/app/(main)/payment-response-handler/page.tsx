@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import Login from '@/components/payment-response-handler';
+import PaymentResponseHandler from '@/components/payment-response-handler';
 
 export default function LoginPage() {
   return (
