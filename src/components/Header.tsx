@@ -79,7 +79,7 @@ const Header = () => {
         </Link>
         <Link
           className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
-          href="#"
+          href="#features"
         >
           Features
         </Link>
@@ -139,6 +139,9 @@ const Header = () => {
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Link href="/contact">Contact</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href="#features">Features</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
