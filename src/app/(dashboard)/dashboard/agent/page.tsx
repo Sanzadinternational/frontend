@@ -90,7 +90,7 @@ const [user, setUser] = useState<any>(null);
                 </p>
               </CardContent>
               <CardFooter>
-                <Link href="/dashboard/supplier/booking">
+                <Link href="/dashboard/agent/booking">
                   <Button variant="outline">View Booking</Button>
                 </Link>
               </CardFooter>
