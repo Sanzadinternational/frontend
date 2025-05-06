@@ -398,14 +398,19 @@ const SearchResult = ({
                           />
                           <div className="flex flex-col md:items-end justify-between">
                             <dl className="px-2 py-1 text-sm">
-                              <div className="flex md:justify-end gap-1">
+                              <div className="flex md:justify-end items-center gap-1">
                                 <dt>Passengers</dt>
                                 <dd>{vehicle.passengers}</dd>
                                 <Users width={15} height={15} />
                               </div>
-                              <div className="flex md:justify-end gap-1">
+                              <div className="flex md:justify-end items-center gap-1">
                                 <dt>Medium Bags</dt>
                                 <dd>{vehicle.mediumBag}</dd>
+                                <Luggage width={15} height={15} />
+                              </div>
+                              <div className="flex md:justify-end items-center gap-1">
+                                <dt>Small Bags</dt>
+                                <dd>{vehicle.SmallBag||"N/A"}</dd>
                                 <Luggage width={15} height={15} />
                               </div>
                             </dl>
@@ -415,7 +420,7 @@ const SearchResult = ({
                                 Transfer Info
                               </HoverCardTrigger>
                               <HoverCardContent className="w-80 text-wrap">
-                                {vehicle.transferInfo || "API Data"}
+                                {vehicle.transferInfo || "No Info Available"}
                               </HoverCardContent>
                             </HoverCard>
                           </div>
@@ -431,7 +436,7 @@ const SearchResult = ({
                               {/* {vehicle.currency}{" "} */}
                               {displayCurrency}{" "}
                               {returnDate && returnTime
-                                ? (Number(vehicle.price) * 2).toFixed(2) // Double the price for round trip
+                                ? (Number(vehicle.price) * 2).toFixed(2) 
                                 : Number(vehicle.price).toFixed(2)}
                             </h2>
                           </div>
@@ -440,7 +445,7 @@ const SearchResult = ({
                             <Button
                               className="w-full"
                               onClick={() => handleBookNow(vehicle)}
-                              // disabled={!userData || userData.role !== "agent"} // Disable if not logged in or not an agent
+                              
                             >
                               {userData && userData.role === "agent"
                                 ? "Book Now"
@@ -455,7 +460,7 @@ const SearchResult = ({
                         variant="outline"
                         className="mr-1"
                         onClick={() => handleEmailQuote(vehicle, false)}
-                        // disabled={isLoadingOneWay}
+                       
                         disabled={isLoadingOneWay || !userData} // Disable if no userData
                       >
                         {isLoadingOneWay ? "Sending..." : "Email Quote"}

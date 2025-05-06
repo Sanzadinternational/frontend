@@ -151,21 +151,16 @@ const totalPrice = (basePrice + extraCost) * (isReturnTrip ? 2 : 1); // Double p
                         </div>
                         <div className="flex justify-between">
                             <dt className="text-muted-foreground">Total Cost</dt>
-                            {/* <dd>
-                                {`${bookingInfo?.vehicle?.currency} 
-                               
-                                ${(Number(bookingInfo?.vehicle?.price || 0) + (Number(bookingInfo?.extraCost) || 0)).toFixed(2)}`}
-                                </dd> */}
-                                <dd>{`${bookingInfo?.vehicle?.currency} ${totalPrice.toFixed(2)}`}</dd>
+                                <dd>{`${bookingInfo?.targetCurrency} ${totalPrice.toFixed(2)}`}</dd>
                         </div>
                     </dl>
                 </CardContent>
             </Card>
             <ScrollArea className="md:w-2/3 rounded-xl border">
-                {/* <h2 className="text-2xl px-4 pt-2">Transfer Details</h2> */}
+               
                 <Card>
                     <CardHeader>
-                {/* <h2 className="text-2xl px-4 pt-2">Transfer Details</h2> */}
+               
                         <CardTitle className="text-2xl">Transfer Details</CardTitle>
                         <CardTitle>Passenger Information (Lead Passenger)</CardTitle>
                         <CardDescription>Details are used in Voucher</CardDescription>
