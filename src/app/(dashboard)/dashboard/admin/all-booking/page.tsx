@@ -591,10 +591,10 @@ const BookingTable = () => {
   };
 
   const updatePaymentStatus = async (
-    paymentId: string | null,
+    bookingId: string | null,
     newStatus: string
   ) => {
-    if (!paymentId) {
+    if (!bookingId) {
       toast({
         title: "Error",
         description: "No payment associated with this booking",
@@ -605,7 +605,7 @@ const BookingTable = () => {
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/admin/UpdatePaymentStatus/${paymentId}`,
+        `${API_BASE_URL}/payment/ChangePaymentStatusByBookingId/${bookingId}`,
         {
           method: "PUT",
           headers: {
@@ -888,7 +888,7 @@ const BookingTable = () => {
                                     size="sm"
                                     onClick={() =>
                                       updatePaymentStatus(
-                                        item.payments?.id || null,
+                                        item.booking?.id || null,
                                         "completed"
                                       )
                                     }
@@ -906,7 +906,7 @@ const BookingTable = () => {
                                     size="sm"
                                     onClick={() =>
                                       updatePaymentStatus(
-                                        item.payments?.id || null,
+                                        item.booking?.id || null,
                                         "failed"
                                       )
                                     }

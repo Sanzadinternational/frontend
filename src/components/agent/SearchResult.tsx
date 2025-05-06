@@ -250,6 +250,7 @@ const SearchResult = ({
         currency: vehicle.currency,
         extraPricePerKm: vehicle.extraPricePerKm,
         mediumBag: vehicle.mediumBag,
+        smallBag:vehicle.SmallBag,
         nightTime: vehicle.nightTime,
         nightTimePrice: vehicle.nightTimePrice,
         passengers: vehicle.passengers,
