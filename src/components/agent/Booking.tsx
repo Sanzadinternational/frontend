@@ -49,7 +49,7 @@ const Booking = ({ bookingInfo,setBookingInfo, nextStep }) => {
             suplier_id: bookingInfo?.vehicle?.suplier_id,
             vehicle_id: bookingInfo?.vehicle?.vehicle_id,
             agent_id: bookingInfo?.agent_id,
-            pickup_location: bookingInfo?.pickup_location,
+            pickup_location: bookingInfo?.pickup,
             drop_location: bookingInfo?.dropoff,
             pickup_lat: bookingInfo?.pickup_lat,
             pickup_lng: bookingInfo?.pickup_lng,

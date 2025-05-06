@@ -50,6 +50,30 @@ const Page = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [notificationOpen, setNotificationOpen] = useState(false);
 
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     try {
+  //       const data = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
+  //       setUser(data);
+  //     } catch (err: any) {
+  //       setError(err.message);
+  //       removeToken();
+  //       window.location.href = "/login";
+  //     }
+  //   };
+
+  //   fetchUserData();
+
+  //   // Listen for new supplier registration
+  //   socket.on("new_supplier_registered", (data) => {
+  //     setNotifications((prev) => [data.message, ...prev]);
+  //     setUnreadCount((prev) => prev + 1);
+  //   });
+
+  //   return () => {
+  //     socket.off("new_supplier_registered");
+  //   };
+  // }, []);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -61,20 +85,27 @@ const Page = () => {
         window.location.href = "/login";
       }
     };
-
+  
     fetchUserData();
-
+  
     // Listen for new supplier registration
     socket.on("new_supplier_registered", (data) => {
       setNotifications((prev) => [data.message, ...prev]);
       setUnreadCount((prev) => prev + 1);
     });
-
+  
+    // Listen for new orders
+    socket.on("Order", (data) => {
+      setNotifications((prev) => [data.message, ...prev]);
+      setUnreadCount((prev) => prev + 1);
+    });
+  
     return () => {
+      // Clean up both event listeners
       socket.off("new_supplier_registered");
+      socket.off("Order");
     };
   }, []);
-
   const handleNotificationClick = () => {
     setNotificationOpen(true);
     setUnreadCount(0);
