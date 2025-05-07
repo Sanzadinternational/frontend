@@ -306,7 +306,7 @@ const Page = () => {
               <TabsTrigger value="supplier">Supplier</TabsTrigger>
               <TabsTrigger value="agent">Agent</TabsTrigger>
               <TabsTrigger value="admin">Admin</TabsTrigger>
-              <TabsTrigger value="reports" disabled>Reports</TabsTrigger>
+              <TabsTrigger value="booking">Booking</TabsTrigger>
             </TabsList>
 
             {/* Supplier Tab */}
@@ -414,6 +414,26 @@ const Page = () => {
                   <CardFooter>
                     <Link href="/dashboard/admin/add-admin">
                       <Button variant="outline">Add Admin</Button>
+                    </Link>
+                  </CardFooter>
+                </Card>
+              </div>
+            </TabsContent>
+            {/* Booking Tab */}
+            <TabsContent value="booking" className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium">Booking</CardTitle>
+                    <Car width={20} height={20} />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-xl font-bold">Booking List</div>
+                    <p className="text-xs text-muted-foreground">find all booking here</p>
+                  </CardContent>
+                  <CardFooter>
+                    <Link href="/dashboard/admin/all-booking">
+                      <Button variant="outline">View Booking</Button>
                     </Link>
                   </CardFooter>
                 </Card>
