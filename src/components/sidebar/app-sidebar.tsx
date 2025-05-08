@@ -54,9 +54,10 @@ import { fetchWithAuth } from "@/components/utils/api";
 import { removeToken } from "@/components/utils/auth";
 import { useRouter } from "next/navigation";
 import { useSidebar } from "@/components/ui/sidebar";
+import Image from "next/image";
 export const company = {
   name: "Sanzad",
-  logo: Car,
+  // logo: Car,
   plan: "International",
 };
 
@@ -147,12 +148,15 @@ export default function AppSidebar({
       <Sidebar collapsible="icon" className="bg-white dark:bg-black">
         <SidebarHeader className="bg-white dark:bg-black">
           <div className="flex gap-2 py-2 text-sidebar-accent-foreground ">
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            {/* <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <company.logo className="size-4" />
-            </div>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{company.name}</span>
-              <span className="truncate text-xs">{company.plan}</span>
+            </div> */}
+            <div className="flex aspect-square size-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+  <Image src="/sanzad-logo.png" alt="Company Logo" width={40} height={40} />
+</div>
+            <div className="relative text-left">
+              <span className="truncate font-semibold text-lg absolute bottom-3">{company.name}</span>
+              <span className="truncate text-sm absolute bottom-0">{company.plan}</span>
             </div>
           </div>
         </SidebarHeader>

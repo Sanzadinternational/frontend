@@ -327,18 +327,7 @@ export default function Location() {
                         Number of Passengers
                       </FormLabel>
                       <FormControl>
-                        {/* <input
-                          {...field}
-                          type="text"
-                          placeholder="Enter number of passengers"
-                          className=" bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-1"
-                          
-                        /> */}
                         <div className="relative flex items-center">
-          {/* Icon inside input */}
-          {/* <span className="absolute left-3 text-xl text-gray-500 w-6 h-6 flex items-center justify-center">
-            <UsersRound className="w-5 h-5 text-gray-500 dark:text-gray-300" />
-          </span> */}
           <input
             {...field}
             type="text"
@@ -409,9 +398,10 @@ export default function Location() {
 
               {/* Return Button to toggle return fields */}
               <Button
-                className="mr-1 bg-blue-500 dark:bg-card-foreground"
+                className="mr-1 text-black dark:text-white bg-slate-100 dark:bg-slate-500 hover:text-white"
                 type="button"
                 onClick={toggleReturnFields}
+    
               >
                 {showReturnFields ? "Remove Return" : "Add Return"}
               </Button>
