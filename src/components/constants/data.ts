@@ -204,7 +204,7 @@ export const sideBarItems: Role[] = [
         title: 'Agent',
         url: '#',
         icon: 'user',
-        isActive: true,
+        isActive: false,
         items: [
           {
             title: 'Available Agent',
@@ -217,7 +217,7 @@ export const sideBarItems: Role[] = [
         title: 'Supplier',
         url: '#',
         icon: 'user',
-        isActive: true,
+        isActive: false,
         items: [
           {
             title: 'Available Supplier',
@@ -240,7 +240,7 @@ export const sideBarItems: Role[] = [
         title: 'Admin',
         url: '#',
         icon: 'user',
-        isActive: true,
+        isActive: false,
         items: [
           {
             title: 'All Admin',
