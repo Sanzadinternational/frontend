@@ -46,7 +46,7 @@ export default function Home() {
           <h3 className="text-2xl md:text-4xl font-semibold text-center">We&apos;re Wholesale Destination <br/>Management Tour Operators</h3>
           <p className="md:w-1/2 text-muted-foreground text-center">We provide packages for Groups, FITs, Van Tours, MICE & Leisure Tours to Travel Agents for Europe, UK, USA, South America, Central America & Canada.</p>
         </div>
-        <div className="w-full flex flex-col md:flex-row justify-between bg-slate-100 dark:bg-primary dark:text-black md:h-[500px] rounded-md bg-[url(/about-background.svg)] bg-cover">
+        <div className="w-full flex flex-col md:flex-row justify-between bg-slate-100 dark:bg-primary dark:text-black md:h-[500px] rounded-md bg-[url(/about-background.svg)] bg-cover relative">
           <div className="flex flex-col justify-center px-4 md:pl-10 py-10 gap-5 md:w-2/3">
             <h3 className="text-2xl font-semibold">Founders</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -73,8 +73,11 @@ export default function Home() {
           <div className="md:w-1/3 relative">
             <Image src='/Kaizad Gazdar & Riya Gazdar-Founder Sanzad International.svg' alt="Founders" width={400} height={400} className="md:absolute bottom-0 right-0 md:scale-[1.2] md:bottom-[40px] md:right-[40px]"/>
           </div>
-        
+        <Image src='/point-to-point-transfer.svg'alt="point-to-point-transfer" width={80} height={80} className="absolute bottom-1 left-1 opacity-50"/>
+        <Image src='/traveling-cap.svg'alt="traveling-cap" width={80} height={80} className="absolute top-1 left-1"/>
+        <Image src='/navigation.svg'alt="navigation" width={150} height={150} className="absolute top-1 left-[650px]"/>
         </div>
+        
       </div>
       <div id="features" className="flex flex-col md:flex-row gap-5 mt-10 mb-20 px-10">
       {features.map((feature, id) => (
