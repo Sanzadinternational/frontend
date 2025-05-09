@@ -46,7 +46,7 @@ export default function Home() {
           <h3 className="text-2xl md:text-4xl font-semibold text-center">We&apos;re Wholesale Destination <br/>Management Tour Operators</h3>
           <p className="md:w-1/2 text-muted-foreground text-center">We provide packages for Groups, FITs, Van Tours, MICE & Leisure Tours to Travel Agents for Europe, UK, USA, South America, Central America & Canada.</p>
         </div>
-        <div className="w-full flex flex-col md:flex-row justify-between bg-slate-100 dark:bg-primary dark:text-black md:h-[500px] rounded-md">
+        <div className="w-full flex flex-col md:flex-row justify-between bg-slate-100 dark:bg-primary dark:text-black md:h-[500px] rounded-md bg-[url(/about-background.svg)] bg-cover">
           <div className="flex flex-col justify-center px-4 md:pl-10 py-10 gap-5 md:w-2/3">
             <h3 className="text-2xl font-semibold">Founders</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -56,7 +56,7 @@ export default function Home() {
                 <CardDescription>Global CEO</CardDescription>
               </CardHeader>
               <CardContent>
-                <p>WIth 24+ years of experience spread over managing operations, customer care and customer retention he also operated outbound process for European vacation rental market with expertise in designing, implementing and managing customer-oriented system.</p>
+                <p>With more than 24 years of experience in operations, customer service, and retention, he possesses a deep understanding of overseeing outbound processes within the European vacation rental sector and creating systems focused on customer needs.</p>
               </CardContent>
             </Card>
             <Card className="">
@@ -65,13 +65,13 @@ export default function Home() {
                 <CardDescription>Managing Director</CardDescription>
               </CardHeader>
               <CardContent>
-                <p>With over 22 years in the travel industry, with B2B online brands like Ezeego1 and Ottila International, she specializes in global accommodation procurement and oversee travel operations and sales for leisure and corporate sectors. She also has an extensive network of international suppliers and tourism organizations</p>
+                <p>With more than 22 years of experience in the travel sector, she focuses on worldwide lodging acquisition and oversees travel operations and sales for both leisure and corporate markets, utilizing an extensive network of global suppliers and tourism entities.</p>
               </CardContent>
             </Card>
             </div>
           </div>
           <div className="md:w-1/3 relative">
-            <Image src='/Kaizad Gazdar & Riya Gazdar-Founder Sanzad International.svg' alt="Founders" width={400} height={400} className="md:absolute bottom-0 right-0"/>
+            <Image src='/Kaizad Gazdar & Riya Gazdar-Founder Sanzad International.svg' alt="Founders" width={400} height={400} className="md:absolute bottom-0 right-0 md:scale-[1.2] md:bottom-[40px] md:right-[40px]"/>
           </div>
         
         </div>

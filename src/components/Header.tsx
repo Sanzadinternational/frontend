@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ThemeToggler from "./theme/ThemeToggler";
-import { Flag, IndianRupee, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,7 +19,6 @@ const Header = () => {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string>("");
-  // const router = useRouter();
   const logout = () => {
     try {
       removeToken();
@@ -32,10 +31,8 @@ const Header = () => {
     const fetchUserData = async () => {
       try {
         const data = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
-        console.log("User Data:", data); // Debugging log for API response
         setUser(data);
       } catch (err: any) {
-        console.error("Error fetching user data:", err); // Debugging log for errors
         setError(err.message);
         removeToken();
       }
@@ -45,7 +42,6 @@ const Header = () => {
   }, []);
 
   if (error) {
-    // return <p className="text-red-500 text-center">Error: {error}</p>;
     console.log("Error:", { error });
   }
   return (
@@ -79,7 +75,7 @@ const Header = () => {
         </Link>
         <Link
           className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
-          href="#features"
+          href="/#features"
         >
           Features
         </Link>
@@ -112,37 +108,37 @@ const Header = () => {
             </Link>
           )}
         </div>
-        {/* <div className="hidden md:grid grid-cols-2 divide-x divide-white border border-slate-100 mr-2 p-1 rounded-sm">
-          <div>
-            <Flag width={20} height={20} />
-          </div>
-          <div>
-            <IndianRupee width={20} height={20} />
-          </div>
-        </div> */}
-        <div className="">
+        <div>
           <ThemeToggler />
         </div>
         <div className="mr-2 flex items-center md:hidden">
           <DropdownMenu>
-            <DropdownMenuTrigger className="focus:outline-none">
+            <DropdownMenuTrigger className="focus:outline-none" asChild>
               <Menu />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuLabel>Menu</DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <Link href="/">
               <DropdownMenuItem>
-                <Link href="/">Home</Link>
+               Home
               </DropdownMenuItem>
+              </Link>
+              <Link href="/#about">
               <DropdownMenuItem>
-                <Link href="/#about">About</Link>
+                About
               </DropdownMenuItem>
+              </Link>
+              <Link href="/contact">
               <DropdownMenuItem>
-                <Link href="/contact">Contact</Link>
+                Contact
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="#features">Features</Link>
+              </Link>
+              <Link href="/#features">
+              <DropdownMenuItem >
+               Features
               </DropdownMenuItem>
+              </Link>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
