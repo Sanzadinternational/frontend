@@ -43,33 +43,37 @@ export default function Home() {
       >
         <div className="w-full flex flex-col items-center gap-1">
           <h2 className="text-muted-foreground text-xl">About Us</h2>
-          <h3 className="text-2xl md:text-4xl font-semibold">We provide best<br/>tour in the world</h3>
-          <p className="md:w-1/2 text-muted-foreground text-center">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolorum esse atque ducimus inventore cum rem exercitationem dolore! Culpa possimus quae, in animi sed eligendi consequuntur necessitatibus aliquid est, modi expedita!</p>
+          <h3 className="text-2xl md:text-4xl font-semibold text-center">We&apos;re Wholesale Destination <br/>Management Tour Operators</h3>
+          <p className="md:w-1/2 text-muted-foreground text-center">We provide packages for Groups, FITs, Van Tours, MICE & Leisure Tours to Travel Agents for Europe, UK, USA, South America, Central America & Canada.</p>
         </div>
-        <div className="w-full flex items-center justify-center bg-slate-100 md:h-[500px] rounded-md">
-          {/* <div className="relative block h-[500px] w-full bg-gray-200"> */}
-          <Image src="/Car-Mockup_Sanzad-International.webp" alt="about" width={600} height={600}/>
-          {/* </div> */}
-          {/* <Card>
-            <CardContent className="relative block h-[500px] w-full bg-gray-200">
-              <Image src="/Car-Mockup_Sanzad-International.webp" alt="about" fill style={{ objectFit: 'cover' }} />
-            </CardContent>
-            <CardFooter className="flex flex-col items-center">
-              <h5 className="text-xl pt-3">User 1</h5>
-              <CardDescription>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eaque molestiae ipsum sequi minima reprehenderit a eum, quas nostrum dolorem magnam impedit.</CardDescription>
-            </CardFooter>
-          </Card> */}
-          {/* <Card>
-            <CardContent className="relative block h-[350px] w-full">
-              <Image src="/female-profile-pic.webp" alt="about" fill
-    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-    className="object-cover" />
-            </CardContent>
-            <CardFooter className="flex flex-col items-start">
-              <h5 className="text-xl pt-3">User 2</h5>
-              <CardDescription>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eaque molestiae ipsum sequi minima reprehenderit a eum, quas nostrum dolorem magnam impedit.</CardDescription>
-            </CardFooter>
-          </Card> */}
+        <div className="w-full flex flex-col md:flex-row justify-between bg-slate-100 md:h-[500px] rounded-md">
+          <div className="flex flex-col justify-center px-4 md:pl-10 py-10 gap-5 md:w-2/3">
+            <h3 className="text-2xl font-semibold">Founders</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <Card className="">
+              <CardHeader>
+                <CardTitle>Kaizad Gazdar</CardTitle>
+                <CardDescription>Global CEO</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p>WIth 24+ years of experience spread over managing operations, customer care and customer retention he also operated outbound process for European vacation rental market with expertise in designing, implementing and managing customer-oriented system.</p>
+              </CardContent>
+            </Card>
+            <Card className="">
+              <CardHeader>
+                <CardTitle>Riya Gazdar</CardTitle>
+                <CardDescription>Managing Director</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p>With over 22 years in the travel industry, with B2B online brands like Ezeego1 and Ottila International, she specializes in global accommodation procurement and oversee travel operations and sales for leisure and corporate sectors. She also has an extensive network of international suppliers and tourism organizations</p>
+              </CardContent>
+            </Card>
+            </div>
+          </div>
+          <div className="md:w-1/3 relative">
+            <Image src='/Kaizad Gazdar & Riya Gazdar-Founder Sanzad International.svg' alt="Founders" width={400} height={400} className="md:absolute bottom-0 right-0"/>
+          </div>
+        
         </div>
       </div>
       <div id="features" className="flex flex-col md:flex-row gap-5 mt-10 mb-20 px-10">

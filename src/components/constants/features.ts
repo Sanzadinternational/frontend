@@ -1,18 +1,18 @@
 export const features = [
     {
-      title: "No Extra",
-      description: `Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repellat provident perferendis voluptatibus.`,
+      title: "Wholesale supplier ",
+      description: `We cover Europe, UK, USA, South America, Central America and Canada, for FIT Travel, Groups, MICE & Van Tours.`,
     },
     {
-      title: "Free Cancelation",
-      description: `Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repellat provident perferendis voluptatibus.`,
+      title: "Customised Services",
+      description: `We give customised local experiences, 24/7 on tour and airport assistance, chauffeured vehicles & competitive costs.`,
     },
     {
-      title: "Free Rides",
-      description: `Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repellat provident perferendis voluptatibus.`,
+      title: "Ground activities",
+      description: `We provide land activities such as hotels, tour guides, sightseeing, transfers, attraction tickets, meals, event, etc.`,
     },
     {
-      title: "Safe Rides",
-      description: `Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repellat provident perferendis voluptatibus.`,
+      title: "Professionally Led",
+      description: `We are guided by decades of experience in the travel industry and loaded with a data bank of travel agents.`,
     },
   ];
