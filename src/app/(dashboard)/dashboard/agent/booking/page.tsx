@@ -953,7 +953,7 @@ const AgentBookingsTable = () => {
                                       </div>
                                       <div>
                                         <h4 className="text-sm font-medium text-gray-500">Price</h4>
-                                        <p>₹{item.payments?.amount || item.booking.price || '0'}</p>
+                                        <p>{item.booking?.currency}{item.payments?.amount || item.booking.price || '0'}</p>
                                       </div>
                                       <div>
                                         <h4 className="text-sm font-medium text-gray-500">Payment Status</h4>

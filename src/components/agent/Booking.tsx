@@ -72,7 +72,7 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
       drop_lng: bookingInfo?.drop_lng,
       distance_miles: bookingInfo?.distance_miles,
       price: bookingInfo?.vehicle?.price,
-      targetCurrency:bookingInfo?.targetCurrency,
+      currency:bookingInfo?.targetCurrency,
       agent_address:bookingInfo?.agent_address,
       agent_city:bookingInfo?.agent_city,
       agent_country:bookingInfo?.agent_country,

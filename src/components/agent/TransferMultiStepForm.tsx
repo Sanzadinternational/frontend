@@ -504,8 +504,8 @@ const TransferMultiStepForm = () => {
       <div className="mt-6">{renderStep()}</div>
 
       {/* Navigation Buttons */}
-      <div className="mt-6 flex justify-center gap-4">
-        {/* Show Previous button only on step 2 */}
+      {/* <div className="mt-6 flex justify-center gap-4">
+        Show Previous button only on step 2
         {step === 2 && (
           <Button
             type="button"
@@ -517,7 +517,7 @@ const TransferMultiStepForm = () => {
           </Button>
         )}
         
-        {/* Show Next button only on step 1 */}
+        Show Next button only on step 1
         {step === 1 && (
           <Button
             type="button"
@@ -527,7 +527,7 @@ const TransferMultiStepForm = () => {
             Next
           </Button>
         )}
-      </div>
+      </div> */}
     </>
   );
 };

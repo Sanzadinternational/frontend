@@ -46,6 +46,7 @@ const SearchResult = ({
     returnTime,
     pickupLocation,
     dropoffLocation,
+    targetCurrency,
   } = formData;
   const [displayForm, setDisplayForm] = useState(false);
   const [map, setMap] = useState(false);
@@ -67,20 +68,7 @@ const SearchResult = ({
     fetchUserData();
   }, []);
 
- // Function to get the display currency
- const getDisplayCurrency = (vehicleCurrency: string) => {
-  // If user is not logged in, show INR
-  if (!userData) return "INR";
-  
-  // If user is logged in and is an agent, show vehicle's currency
-  if (userData.role === "agent") return vehicleCurrency;
-  
-  // For non-agent users, show INR
-  return "INR";
-};
-
-
-  const showLocation = () => {
+   const showLocation = () => {
     setDisplayForm(!displayForm);
   };
   const showMap = () => {
@@ -244,7 +232,7 @@ const SearchResult = ({
       distance_miles: `${distance}`,
       estimatedTime: `${estimatedTime}`,
       agent_id: `${userData.userId}`,
-      targetCurrency:`${userData.Currency}`,
+      targetCurrency:formData?.targetCurrency,
       agent_address:`${userData.Address}`,
       agent_city:`${userData.City}`,
       agent_country:`${userData.Country}`,
@@ -380,7 +368,6 @@ const SearchResult = ({
             <div className="flex flex-col gap-5 p-4 md:h-96">
               {vehicles.length > 0 ? (
                 vehicles.map((vehicle, index) =>{
-                  const displayCurrency = getDisplayCurrency(userData?.Currency);
                   return (
                   <Card key={index} className="">
                     <CardHeader>
@@ -437,8 +424,7 @@ const SearchResult = ({
                                 : "One Way"}
                             </p>
                             <h2 className="text-2xl font-medium">
-                              {/* {vehicle.currency}{" "} */}
-                              {displayCurrency}{" "}
+                              {targetCurrency}{" "}
                               {returnDate && returnTime
                                 ? (Number(vehicle.price) * 2).toFixed(2) 
                                 : Number(vehicle.price).toFixed(2)}

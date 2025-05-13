@@ -90,6 +90,11 @@ export const sideBarItems: Role[] = [
             title: 'Add Surcharge',
             url: '/dashboard/supplier/AddSurcharge',
             icon: 'car'
+          },
+          {
+            title: 'Add Driver',
+            url: '/dashboard/supplier/AddDriver',
+            icon: 'car'
           }
         ]
       },

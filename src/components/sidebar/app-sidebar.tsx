@@ -152,7 +152,8 @@ export default function AppSidebar({
               <company.logo className="size-4" />
             </div> */}
             <div className="flex aspect-square size-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-  <Image src="/sanzad-logo.png" alt="Company Logo" width={40} height={40} />
+  <Link href="/">
+  <Image src="/sanzad-logo.png" alt="Company Logo" width={40} height={40} /></Link>
 </div>
             <div className="relative text-left">
               <span className="truncate font-semibold text-lg absolute bottom-3">{company.name}</span>

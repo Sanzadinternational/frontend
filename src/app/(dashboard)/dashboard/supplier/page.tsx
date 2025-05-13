@@ -153,6 +153,25 @@ const Page = () => {
                   </Link>
                 </CardFooter>
               </Card>
+               <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Vehicles
+                  </CardTitle>
+                  <CalendarDays width={20} height={20}/>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-xl font-bold">Add Driver</div>
+                  <p className="text-xs text-muted-foreground">
+                    find all driver here
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <Link href="/dashboard/supplier/AddDriver">
+                    <Button variant="outline">Add Driver</Button>
+                  </Link>
+                </CardFooter>
+              </Card>
             </div>
           </TabsContent>
           <TabsContent value="booking" className="space-y-4">
