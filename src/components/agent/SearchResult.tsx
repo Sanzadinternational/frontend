@@ -245,6 +245,10 @@ const SearchResult = ({
       estimatedTime: `${estimatedTime}`,
       agent_id: `${userData.userId}`,
       targetCurrency:`${userData.Currency}`,
+      agent_address:`${userData.Address}`,
+      agent_city:`${userData.City}`,
+      agent_country:`${userData.Country}`,
+      agent_zipcode:`${userData.Zip_code}`,
       vehicle: {
         brand: vehicle.brand,
         currency: vehicle.currency,

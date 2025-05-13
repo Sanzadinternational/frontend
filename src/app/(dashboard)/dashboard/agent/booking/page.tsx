@@ -568,6 +568,7 @@ interface Booking {
   drop_lng?: string;
   distance_miles?: string;
   price?: string;
+  currency?:string;
   status?: string;
   booked_at?: string;
   completed_at?: string | null;

@@ -1373,7 +1373,7 @@ const BookingTable = () => {
     try {
       setDownloadingInvoice(bookingId);
       const response = await fetch(
-        `${API_BASE_URL}/invoices/${bookingId}/download`,
+        `${API_BASE_URL}/payment/invoices/${bookingId}/download`,
         {
           method: "GET",
           headers: {
