@@ -331,7 +331,7 @@ export default function Location() {
           <input
             {...field}
             type="text"
-            placeholder="Enter number of passengers"
+            placeholder="Number of Passengers"
             className="w-full bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-1"
           />
           <span className="absolute right-3 text-xl text-gray-500 w-6 h-6 flex items-center justify-center">

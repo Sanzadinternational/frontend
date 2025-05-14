@@ -112,13 +112,6 @@ const fetchDrivers = async (supplierId: string) => {
       });
     }
   };
-
-  // Filter drivers based on search term
-//   const filteredDrivers = drivers.filter(driver => 
-//     driver.DriverName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//     driver.DriverContact.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//     (driver.DriverCarInfo && driver.DriverCarInfo.toLowerCase().includes(searchTerm.toLowerCase()))
-//   );
 const filteredDrivers = drivers.filter(driver => {
   const searchTermLower = searchTerm.toLowerCase();
   return (

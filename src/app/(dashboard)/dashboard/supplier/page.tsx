@@ -1,5 +1,5 @@
 "use client";
-import { CalendarDays, Car, Map, Route } from "lucide-react";
+import { CalendarDays, Car, IdCard, Map, Route } from "lucide-react";
 import DashboardContainer from "@/components/layout/DashboardContainer";
 import { Button } from "@/components/ui/button";
 import {
@@ -158,7 +158,7 @@ const Page = () => {
                   <CardTitle className="text-sm font-medium">
                     Vehicles
                   </CardTitle>
-                  <CalendarDays width={20} height={20}/>
+                  <IdCard width={20} height={20}/>
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl font-bold">Add Driver</div>
