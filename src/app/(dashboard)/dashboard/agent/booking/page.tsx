@@ -1,4 +1,3 @@
-
 // "use client";
 
 // import { useEffect, useState } from "react";
@@ -95,11 +94,11 @@
 //       try {
 //         setIsLoading(true);
 //         setError(null);
-        
+
 //         const dashboardData = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
 //         const userId = dashboardData.userId;
 //         setAgentId(userId);
-        
+
 //         const bookingsData = await fetchWithAuth(
 //           `${API_BASE_URL}/agent/GetBookingByAgentId/${userId}`
 //         );
@@ -113,7 +112,7 @@
 //         console.error("Error fetching data:", err);
 //         const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
 //         setError(errorMessage);
-        
+
 //         if (errorMessage.includes("Unauthorized")) {
 //           removeToken();
 //         }
@@ -146,9 +145,9 @@
 //   // Sort bookings with null checks
 //   const sortedBookings = [...filteredBookings].sort((a, b) => {
 //     if (!sortConfig) return 0;
-    
+
 //     let aValue, bValue;
-    
+
 //     if (sortConfig.key.includes('booking.')) {
 //       const key = sortConfig.key.replace('booking.', '') as keyof Booking;
 //       aValue = a.booking[key] || '';
@@ -160,7 +159,7 @@
 //     } else {
 //       return 0;
 //     }
-    
+
 //     if (aValue < bValue) {
 //       return sortConfig.direction === 'ascending' ? -1 : 1;
 //     }
@@ -195,7 +194,7 @@
 //     }
 
 //     const statusText = status.toLowerCase();
-    
+
 //     if (type === 'booking') {
 //       switch (statusText) {
 //         case "approved":
@@ -433,7 +432,7 @@
 //                       </TableBody>
 //                     </Table>
 //                   </div>
-                  
+
 //                   {/* Pagination */}
 //                   {totalPages > 1 && (
 //                     <div className="flex items-center justify-end space-x-2 py-4">
@@ -497,7 +496,7 @@
 //                       </CardHeader>
 //                     </Card>
 //                   ))}
-                  
+
 //                   {/* Pagination for mobile */}
 //                   {totalPages > 1 && (
 //                     <div className="flex items-center justify-between space-x-2 py-4">
@@ -532,8 +531,6 @@
 
 // export default AgentBookingsTable;
 
-
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -549,12 +546,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search, ArrowUpDown, Loader2, Check, X, Clock, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Search,
+  ArrowUpDown,
+  Loader2,
+  Check,
+  X,
+  Clock,
+  ChevronDown,
+  ChevronUp,
+  Download,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { fetchWithAuth } from "@/components/utils/api";
 import { removeToken, getToken } from "@/components/utils/auth";
-
+import { useToast } from "@/hooks/use-toast";
 interface Booking {
   id: string;
   agent_id?: number;
@@ -568,7 +575,7 @@ interface Booking {
   drop_lng?: string;
   distance_miles?: string;
   price?: string;
-  currency?:string;
+  currency?: string;
   status?: string;
   booked_at?: string;
   completed_at?: string | null;
@@ -599,30 +606,36 @@ const AgentBookingsTable = () => {
   const [agentId, setAgentId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
-
+  const [downloadingInvoice, setDownloadingInvoice] = useState<string | null>(
+    null
+  );
+  const [downloadingVoucher, setDownloadingVoucher] = useState<string | null>(
+    null
+  );
+  const { toast } = useToast();
   // Search and filter state
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState<{
     key: string;
-    direction: 'ascending' | 'descending';
+    direction: "ascending" | "descending";
   } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   const toggleRowExpansion = (bookingId: string) => {
-    setExpandedRows(prev => ({
+    setExpandedRows((prev) => ({
       ...prev,
-      [bookingId]: !prev[bookingId]
+      [bookingId]: !prev[bookingId],
     }));
   };
 
   // Safe date formatting
   const safeFormatDate = (dateString: string | null | undefined) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return "N/A";
     try {
       const date = new Date(dateString);
-      return isNaN(date.getTime()) ? 'Invalid date' : format(date, 'PPpp');
+      return isNaN(date.getTime()) ? "Invalid date" : format(date, "PPpp");
     } catch {
-      return 'Invalid date';
+      return "Invalid date";
     }
   };
 
@@ -640,25 +653,27 @@ const AgentBookingsTable = () => {
       try {
         setIsLoading(true);
         setError(null);
-        
+
         const dashboardData = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
         const userId = dashboardData.userId;
         setAgentId(userId);
-        
+
         const bookingsData = await fetchWithAuth(
           `${API_BASE_URL}/agent/GetBookingByAgentId/${userId}`
         );
         // Ensure each booking has payments (even if null)
-        const normalizedData = bookingsData.result?.map((item: any) => ({
-          booking: item.booking,
-          payments: item.payments || null
-        })) || [];
+        const normalizedData =
+          bookingsData.result?.map((item: any) => ({
+            booking: item.booking,
+            payments: item.payments || null,
+          })) || [];
         setBookings(normalizedData);
       } catch (err) {
         console.error("Error fetching data:", err);
-        const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+        const errorMessage =
+          err instanceof Error ? err.message : "An unknown error occurred";
         setError(errorMessage);
-        
+
         if (errorMessage.includes("Unauthorized")) {
           removeToken();
         }
@@ -670,11 +685,131 @@ const AgentBookingsTable = () => {
     fetchData();
   }, [isAuthenticated]);
 
+  // Download invoice function
+  const downloadInvoice = async (bookingId: string) => {
+    try {
+      setDownloadingInvoice(bookingId);
+      const response = await fetch(
+        `${API_BASE_URL}/payment/invoices/${bookingId}/download`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to download invoice");
+      }
+
+      // Get the filename from the content-disposition header or generate one
+      const contentDisposition = response.headers.get("content-disposition");
+      let filename = `invoice-${bookingId}.pdf`;
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1];
+        }
+      }
+
+      // Create blob from response
+      const blob = await response.blob();
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast({
+        title: "Success",
+        description: "Invoice downloaded successfully",
+      });
+    } catch (error: any) {
+      console.error("Error downloading invoice:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to download invoice",
+        variant: "destructive",
+      });
+    } finally {
+      setDownloadingInvoice(null);
+    }
+  };
+
+  const downloadVoucher = async (bookingId: string) => {
+    try {
+      setDownloadingVoucher(bookingId);
+      const response = await fetch(
+        `${API_BASE_URL}/payment/vouchers/${bookingId}/download`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to download voucher");
+      }
+
+      // Get the filename from the content-disposition header or generate one
+      const contentDisposition = response.headers.get("content-disposition");
+      let filename = `voucher-${bookingId}.pdf`;
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1];
+        }
+      }
+
+      // Create blob from response
+      const blob = await response.blob();
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast({
+        title: "Success",
+        description: "Voucher downloaded successfully",
+      });
+    } catch (error: any) {
+      console.error("Error downloading voucher:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to download voucher",
+        variant: "destructive",
+      });
+    } finally {
+      setDownloadingVoucher(null);
+    }
+  };
+
   // Safe filtering with null checks
   const filteredBookings = bookings.filter((item) => {
     const pickup = item.booking.pickup_location?.toLowerCase() ?? "";
     const drop = item.booking.drop_location?.toLowerCase() ?? "";
-    const price = item.payments?.amount?.toString().toLowerCase() ?? item.booking.price?.toString().toLowerCase() ?? "";
+    const price =
+      item.payments?.amount?.toString().toLowerCase() ??
+      item.booking.price?.toString().toLowerCase() ??
+      "";
     const bookingStatus = item.booking.status?.toLowerCase() ?? "";
     const paymentStatus = item.payments?.payment_status?.toLowerCase() ?? "";
     const search = searchTerm.toLowerCase();
@@ -691,26 +826,26 @@ const AgentBookingsTable = () => {
   // Sort bookings with null checks
   const sortedBookings = [...filteredBookings].sort((a, b) => {
     if (!sortConfig) return 0;
-    
+
     let aValue, bValue;
-    
-    if (sortConfig.key.includes('booking.')) {
-      const key = sortConfig.key.replace('booking.', '') as keyof Booking;
-      aValue = a.booking[key] || '';
-      bValue = b.booking[key] || '';
-    } else if (sortConfig.key.includes('payments.')) {
-      const key = sortConfig.key.replace('payments.', '') as keyof Payment;
-      aValue = a.payments?.[key] || '';
-      bValue = b.payments?.[key] || '';
+
+    if (sortConfig.key.includes("booking.")) {
+      const key = sortConfig.key.replace("booking.", "") as keyof Booking;
+      aValue = a.booking[key] || "";
+      bValue = b.booking[key] || "";
+    } else if (sortConfig.key.includes("payments.")) {
+      const key = sortConfig.key.replace("payments.", "") as keyof Payment;
+      aValue = a.payments?.[key] || "";
+      bValue = b.payments?.[key] || "";
     } else {
       return 0;
     }
-    
+
     if (aValue < bValue) {
-      return sortConfig.direction === 'ascending' ? -1 : 1;
+      return sortConfig.direction === "ascending" ? -1 : 1;
     }
     if (aValue > bValue) {
-      return sortConfig.direction === 'ascending' ? 1 : -1;
+      return sortConfig.direction === "ascending" ? 1 : -1;
     }
     return 0;
   });
@@ -723,21 +858,24 @@ const AgentBookingsTable = () => {
   );
 
   const requestSort = (key: string) => {
-    let direction: 'ascending' | 'descending' = 'ascending';
-    if (sortConfig?.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
+    let direction: "ascending" | "descending" = "ascending";
+    if (sortConfig?.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
     }
     setSortConfig({ key, direction });
   };
 
-  const getStatusBadge = (status: string | undefined, type: 'booking' | 'payment') => {
+  const getStatusBadge = (
+    status: string | undefined,
+    type: "booking" | "payment"
+  ) => {
     if (!status) {
       return <Badge variant="outline">N/A</Badge>;
     }
 
     const statusText = status.toLowerCase();
-    
-    if (type === 'booking') {
+
+    if (type === "booking") {
       switch (statusText) {
         case "approved":
           return (
@@ -870,7 +1008,9 @@ const AgentBookingsTable = () => {
                           <TableHead>
                             <Button
                               variant="ghost"
-                              onClick={() => requestSort('booking.pickup_location')}
+                              onClick={() =>
+                                requestSort("booking.pickup_location")
+                              }
                               className="p-0 hover:bg-transparent"
                             >
                               Pickup
@@ -880,7 +1020,9 @@ const AgentBookingsTable = () => {
                           <TableHead>
                             <Button
                               variant="ghost"
-                              onClick={() => requestSort('booking.drop_location')}
+                              onClick={() =>
+                                requestSort("booking.drop_location")
+                              }
                               className="p-0 hover:bg-transparent"
                             >
                               Drop
@@ -890,7 +1032,7 @@ const AgentBookingsTable = () => {
                           <TableHead>
                             <Button
                               variant="ghost"
-                              onClick={() => requestSort('booking.status')}
+                              onClick={() => requestSort("booking.status")}
                               className="p-0 hover:bg-transparent"
                             >
                               Status
@@ -900,7 +1042,7 @@ const AgentBookingsTable = () => {
                           <TableHead>
                             <Button
                               variant="ghost"
-                              onClick={() => requestSort('booking.booked_at')}
+                              onClick={() => requestSort("booking.booked_at")}
                               className="p-0 hover:bg-transparent"
                             >
                               Booked At
@@ -915,13 +1057,13 @@ const AgentBookingsTable = () => {
                           <>
                             <TableRow key={item.booking.id}>
                               <TableCell className="font-medium">
-                                {item.booking.pickup_location || 'N/A'}
+                                {item.booking.pickup_location || "N/A"}
                               </TableCell>
                               <TableCell>
-                                {item.booking.drop_location || 'N/A'}
+                                {item.booking.drop_location || "N/A"}
                               </TableCell>
                               <TableCell>
-                                {getStatusBadge(item.booking.status, 'booking')}
+                                {getStatusBadge(item.booking.status, "booking")}
                               </TableCell>
                               <TableCell>
                                 {safeFormatDate(item.booking.booked_at)}
@@ -930,7 +1072,9 @@ const AgentBookingsTable = () => {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => toggleRowExpansion(item.booking.id)}
+                                  onClick={() =>
+                                    toggleRowExpansion(item.booking.id)
+                                  }
                                   className="h-8"
                                 >
                                   {expandedRows[item.booking.id] ? (
@@ -948,33 +1092,100 @@ const AgentBookingsTable = () => {
                                   <div className="p-4 space-y-4">
                                     <div className="grid grid-cols-2 gap-4">
                                       <div>
-                                        <h4 className="text-sm font-medium text-gray-500">Booking ID</h4>
+                                        <h4 className="text-sm font-medium text-gray-500">
+                                          Booking ID
+                                        </h4>
                                         <p>{item.booking.id}</p>
                                       </div>
                                       <div>
-                                        <h4 className="text-sm font-medium text-gray-500">Price</h4>
-                                        <p>{item.booking?.currency}{item.payments?.amount || item.booking.price || '0'}</p>
+                                        <h4 className="text-sm font-medium text-gray-500">
+                                          Price
+                                        </h4>
+                                        <p>
+                                          {item.booking?.currency}
+                                          {item.payments?.amount ||
+                                            item.booking.price ||
+                                            "0"}
+                                        </p>
                                       </div>
                                       <div>
-                                        <h4 className="text-sm font-medium text-gray-500">Payment Status</h4>
-                                        <p>{getStatusBadge(item.payments?.payment_status, 'payment')}</p>
+                                        <h4 className="text-sm font-medium text-gray-500">
+                                          Payment Status
+                                        </h4>
+                                        <p>
+                                          {getStatusBadge(
+                                            item.payments?.payment_status,
+                                            "payment"
+                                          )}
+                                        </p>
                                       </div>
                                       <div>
-                                        <h4 className="text-sm font-medium text-gray-500">Payment Method</h4>
-                                        <p>{item.payments?.payment_method || 'N/A'}</p>
+                                        <h4 className="text-sm font-medium text-gray-500">
+                                          Payment Method
+                                        </h4>
+                                        <p>
+                                          {item.payments?.payment_method ||
+                                            "N/A"}
+                                        </p>
                                       </div>
                                       {item.payments?.transaction_id && (
                                         <div>
-                                          <h4 className="text-sm font-medium text-gray-500">Transaction ID</h4>
+                                          <h4 className="text-sm font-medium text-gray-500">
+                                            Transaction ID
+                                          </h4>
                                           <p>{item.payments.transaction_id}</p>
                                         </div>
                                       )}
                                       {item.payments?.reference_number && (
                                         <div>
-                                          <h4 className="text-sm font-medium text-gray-500">Reference Number</h4>
-                                          <p>{item.payments.reference_number}</p>
+                                          <h4 className="text-sm font-medium text-gray-500">
+                                            Reference Number
+                                          </h4>
+                                          <p>
+                                            {item.payments.reference_number}
+                                          </p>
                                         </div>
                                       )}
+                                      <div className="flex gap-2">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() =>
+                                            downloadInvoice(item.booking.id)
+                                          }
+                                          disabled={
+                                            downloadingInvoice ===
+                                            item.booking.id
+                                          }
+                                        >
+                                          {downloadingInvoice ===
+                                          item.booking.id ? (
+                                            <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                                          ) : (
+                                            <Download className="h-4 w-4 mr-1" />
+                                          )}
+                                          Invoice
+                                        </Button>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() =>
+                                            downloadVoucher(item.booking.id)
+                                          }
+                                          disabled={
+                                            downloadingVoucher ===
+                                            item.booking.id
+                                          }
+                                        >
+                                          {downloadingVoucher ===
+                                          item.booking.id ? (
+                                            <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                                          ) : (
+                                            <Download className="h-4 w-4 mr-1" />
+                                          )}
+                                          Voucher
+                                        </Button>
+                                      </div>
                                     </div>
                                   </div>
                                 </TableCell>
@@ -985,14 +1196,16 @@ const AgentBookingsTable = () => {
                       </TableBody>
                     </Table>
                   </div>
-                  
+
                   {/* Pagination */}
                   {totalPages > 1 && (
                     <div className="flex items-center justify-end space-x-2 py-4">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                        onClick={() =>
+                          setCurrentPage(Math.max(1, currentPage - 1))
+                        }
                         disabled={currentPage === 1}
                       >
                         Previous
@@ -1003,7 +1216,9 @@ const AgentBookingsTable = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                        onClick={() =>
+                          setCurrentPage(Math.min(totalPages, currentPage + 1))
+                        }
                         disabled={currentPage === totalPages}
                       >
                         Next
@@ -1020,10 +1235,11 @@ const AgentBookingsTable = () => {
                         <div className="flex justify-between items-start">
                           <div>
                             <CardTitle className="text-lg">
-                              {item.booking.pickup_location || 'N/A'} → {item.booking.drop_location || 'N/A'}
+                              {item.booking.pickup_location || "N/A"} →{" "}
+                              {item.booking.drop_location || "N/A"}
                             </CardTitle>
                             <div className="mt-2 flex items-center gap-2">
-                              {getStatusBadge(item.booking.status, 'booking')}
+                              {getStatusBadge(item.booking.status, "booking")}
                             </div>
                             <div className="mt-2 text-sm text-gray-500">
                               {safeFormatDate(item.booking.booked_at)}
@@ -1046,46 +1262,108 @@ const AgentBookingsTable = () => {
                         <CardContent className="p-4 pt-0 border-t">
                           <div className="space-y-3">
                             <div>
-                              <h4 className="text-sm font-medium text-gray-500">Booking ID</h4>
+                              <h4 className="text-sm font-medium text-gray-500">
+                                Booking ID
+                              </h4>
                               <p className="text-sm">{item.booking.id}</p>
                             </div>
                             <div>
-                              <h4 className="text-sm font-medium text-gray-500">Price</h4>
-                              <p className="text-sm">₹{item.payments?.amount || item.booking.price || '0'}</p>
+                              <h4 className="text-sm font-medium text-gray-500">
+                                Price
+                              </h4>
+                              <p className="text-sm">
+                                ₹
+                                {item.payments?.amount ||
+                                  item.booking.price ||
+                                  "0"}
+                              </p>
                             </div>
                             <div>
-                              <h4 className="text-sm font-medium text-gray-500">Payment Status</h4>
-                              <p className="text-sm">{getStatusBadge(item.payments?.payment_status, 'payment')}</p>
+                              <h4 className="text-sm font-medium text-gray-500">
+                                Payment Status
+                              </h4>
+                              <p className="text-sm">
+                                {getStatusBadge(
+                                  item.payments?.payment_status,
+                                  "payment"
+                                )}
+                              </p>
                             </div>
                             <div>
-                              <h4 className="text-sm font-medium text-gray-500">Payment Method</h4>
-                              <p className="text-sm">{item.payments?.payment_method || 'N/A'}</p>
+                              <h4 className="text-sm font-medium text-gray-500">
+                                Payment Method
+                              </h4>
+                              <p className="text-sm">
+                                {item.payments?.payment_method || "N/A"}
+                              </p>
                             </div>
                             {item.payments?.transaction_id && (
                               <div>
-                                <h4 className="text-sm font-medium text-gray-500">Transaction ID</h4>
-                                <p className="text-sm">{item.payments.transaction_id}</p>
+                                <h4 className="text-sm font-medium text-gray-500">
+                                  Transaction ID
+                                </h4>
+                                <p className="text-sm">
+                                  {item.payments.transaction_id}
+                                </p>
                               </div>
                             )}
                             {item.payments?.reference_number && (
                               <div>
-                                <h4 className="text-sm font-medium text-gray-500">Reference Number</h4>
-                                <p className="text-sm">{item.payments.reference_number}</p>
+                                <h4 className="text-sm font-medium text-gray-500">
+                                  Reference Number
+                                </h4>
+                                <p className="text-sm">
+                                  {item.payments.reference_number}
+                                </p>
                               </div>
                             )}
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => downloadInvoice(item.booking.id)}
+                                disabled={
+                                  downloadingInvoice === item.booking.id
+                                }
+                              >
+                                {downloadingInvoice === item.booking.id ? (
+                                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                                ) : (
+                                  <Download className="h-4 w-4 mr-1" />
+                                )}
+                                Invoice
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => downloadVoucher(item.booking.id)}
+                                disabled={
+                                  downloadingVoucher === item.booking.id
+                                }
+                              >
+                                {downloadingVoucher === item.booking.id ? (
+                                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                                ) : (
+                                  <Download className="h-4 w-4 mr-1" />
+                                )}
+                                Voucher
+                              </Button>
+                            </div>
                           </div>
                         </CardContent>
                       )}
                     </Card>
                   ))}
-                  
+
                   {/* Pagination for mobile */}
                   {totalPages > 1 && (
                     <div className="flex items-center justify-between space-x-2 py-4">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                        onClick={() =>
+                          setCurrentPage(Math.max(1, currentPage - 1))
+                        }
                         disabled={currentPage === 1}
                       >
                         Previous
@@ -1096,7 +1374,9 @@ const AgentBookingsTable = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                        onClick={() =>
+                          setCurrentPage(Math.min(totalPages, currentPage + 1))
+                        }
                         disabled={currentPage === totalPages}
                       >
                         Next

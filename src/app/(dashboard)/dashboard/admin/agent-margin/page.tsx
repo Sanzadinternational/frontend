@@ -37,7 +37,7 @@ import {
 import { Pencil, Trash2, Loader2, Search, ArrowUpDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-interface Supplier {
+interface Agent {
   id: number;
   Company_name: string;
   Currency: string;
@@ -45,14 +45,14 @@ interface Supplier {
 
 interface Margin {
   id: number;
-  supplier_id: number | string;
+  agent_id: number | string;
   Company_name: string;
   Currency: string;
   MarginPrice: string;
 }
 
 const formSchema = z.object({
-  supplier_id: z.string().min(1, { message: "Supplier is required" }),
+  agent_id: z.string().min(1, { message: "Agent is required" }),
   Company_name: z.string().min(1),
   Currency: z.string().min(1),
   MarginPrice: z.string().min(1, { message: "Margin Price is required" }),
@@ -60,12 +60,12 @@ const formSchema = z.object({
 
 const ITEMS_PER_PAGE = 10;
 
-const AddMargin = () => {
+const AgentMargin = () => {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [agents, setAgents] = useState<Agent[]>([]);
   const [margins, setMargins] = useState<Margin[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -78,7 +78,7 @@ const AddMargin = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      supplier_id: "",
+      agent_id: "",
       Company_name: "",
       Currency: "",
       MarginPrice: ""
@@ -125,21 +125,21 @@ const AddMargin = () => {
     setCurrentPage(page);
   };
 
-  const fetchSuppliers = async () => {
+  const fetchAgents = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`${API_BASE_URL}/admin/AllGetSuppliers`);
+      const response = await fetch(`${API_BASE_URL}/agent/GetAgent`);
       if (!response.ok) {
-        throw new Error("Failed to fetch suppliers");
+        throw new Error("Failed to fetch agents");
       }
       const data = await response.json();
-      setSuppliers(data);
+      setAgents(data);
     } catch (error: any) {
-      console.error("Error fetching suppliers:", error);
+      console.error("Error fetching agents:", error);
       setError(error.message);
       toast({
         title: "Error",
-        description: "Failed to load suppliers",
+        description: "Failed to load agents",
         variant: "destructive",
       });
     }
@@ -147,12 +147,12 @@ const AddMargin = () => {
 
   const fetchMargins = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/GetMarginData`);
+      const response = await fetch(`${API_BASE_URL}/admin/GetAgentMargin`);
       if (!response.ok) {
         throw new Error("Failed to fetch margins");
       }
       const data = await response.json();
-      setMargins(data.data || []); // Access the data array from response
+      setMargins(data || []); // Access the data array from response
     } catch (error: any) {
       console.error("Error fetching margins:", error);
       toast({
@@ -166,16 +166,16 @@ const AddMargin = () => {
   };
 
   useEffect(() => {
-    fetchSuppliers();
+    fetchAgents();
     fetchMargins();
   }, []);
 
-  const handleSupplierChange = (supplierId: string) => {
-    const selectedSupplier = suppliers.find(s => s.id.toString() === supplierId);
-    if (selectedSupplier) {
-      form.setValue("supplier_id", supplierId);
-      form.setValue("Company_name", selectedSupplier.Company_name);
-      form.setValue("Currency", selectedSupplier.Currency);
+  const handleAgentChange = (agentId: string) => {
+    const selectedAgent = agents.find(s => s.id.toString() === agentId);
+    if (selectedAgent) {
+      form.setValue("agent_id", agentId);
+      form.setValue("Company_name", selectedAgent.Company_name);
+      form.setValue("Currency", selectedAgent.Currency);
     }
   };
 
@@ -184,7 +184,7 @@ const AddMargin = () => {
     setError(null);
 
     const payload = {
-      supplier_id: parseInt(data.supplier_id),
+      agent_id: parseInt(data.agent_id),
       Company_name: data.Company_name,
       Currency: data.Currency,
       MarginPrice: data.MarginPrice
@@ -194,7 +194,7 @@ const AddMargin = () => {
       if (editingId) {
         // Update existing margin
         const response = await axios.put(
-          `${API_BASE_URL}/admin/UpdateMarginData/${editingId}`,
+          `${API_BASE_URL}/admin/UpdateAgentMargin/${editingId}`,
           payload
         );
         if (response.status === 200) {
@@ -209,10 +209,10 @@ const AddMargin = () => {
       } else {
         // Create new margin
         const response = await axios.post(
-          `${API_BASE_URL}/admin/CreateMargindata`,
+          `${API_BASE_URL}/admin/CreateAgentMargin`,
           payload
         );
-        if (response.status === 201) {
+        if (response.status === 200) {
           toast({
             title: "Success",
             description: "Margin added successfully",
@@ -237,7 +237,7 @@ const AddMargin = () => {
 
   const handleEdit = (margin: Margin) => {
     setEditingId(margin.id);
-    form.setValue("supplier_id", margin.supplier_id.toString());
+    form.setValue("agent_id", margin.agent_id.toString());
     form.setValue("Company_name", margin.Company_name);
     form.setValue("Currency", margin.Currency);
     form.setValue("MarginPrice", margin.MarginPrice);
@@ -247,7 +247,7 @@ const AddMargin = () => {
   const handleDelete = async (id: number) => {
     try {
       const response = await axios.delete(
-        `${API_BASE_URL}/admin/DeleteMarginData/${id}`
+        `${API_BASE_URL}/admin/DeleteAgentMargin/${id}`
       );
       if (response.status === 200) {
         toast({
@@ -287,17 +287,17 @@ const AddMargin = () => {
                 {error && <p className="text-red-500">{error}</p>}
                 <FormField
                   control={form.control}
-                  name="supplier_id"
+                  name="agent_id"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Select Supplier <span className="text-red-500">*</span>
+                        Select Agent <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
                         <Select
                           onValueChange={(value) => {
                             field.onChange(value);
-                            handleSupplierChange(value);
+                            handleAgentChange(value);
                           }}
                           value={field.value}
                           disabled={isLoading}
@@ -306,18 +306,18 @@ const AddMargin = () => {
                             <SelectValue
                               placeholder={
                                 isLoading
-                                  ? "Loading suppliers..."
-                                  : "Select a supplier"
+                                  ? "Loading agents..."
+                                  : "Select an agent"
                               }
                             />
                           </SelectTrigger>
                           <SelectContent>
-                            {suppliers.map((supplier) => (
+                            {agents.map((agent) => (
                               <SelectItem
-                                key={supplier.id}
-                                value={supplier.id.toString()}
+                                key={agent.id}
+                                value={agent.id.toString()}
                               >
-                                {supplier.Company_name} ({supplier.Currency})
+                                {agent.Company_name} ({agent.Currency})
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -408,7 +408,7 @@ const AddMargin = () => {
                               onClick={() => requestSort('Company_name')}
                               className="p-0 hover:bg-transparent"
                             >
-                              Supplier
+                              Agent
                               <ArrowUpDown className="ml-2 h-4 w-4" />
                             </Button>
                           </TableHead>
@@ -576,4 +576,4 @@ const AddMargin = () => {
   );
 };
 
-export default AddMargin;
+export default AgentMargin;

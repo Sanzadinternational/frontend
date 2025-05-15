@@ -35,24 +35,24 @@ export const sideBarItems: Role[] = [
         icon: 'booking',
         isActive: false
       },
-      {
-        title: 'Voucher',
-        url: '#',
-        icon: 'page',
-        isActive: false
-      },
-      {
-        title: 'Invoice',
-        url: '#',
-        icon: 'billing',
-        isActive: false
-      },
-      {
-        title: 'Reports',
-        url: '#',
-        icon: 'reports',
-        isActive: false
-      }
+      // {
+      //   title: 'Voucher',
+      //   url: '#',
+      //   icon: 'page',
+      //   isActive: false
+      // },
+      // {
+      //   title: 'Invoice',
+      //   url: '#',
+      //   icon: 'billing',
+      //   isActive: false
+      // },
+      // {
+      //   title: 'Reports',
+      //   url: '#',
+      //   icon: 'reports',
+      //   isActive: false
+      // }
     ]      
   },
   {
@@ -104,24 +104,24 @@ export const sideBarItems: Role[] = [
         icon: 'booking',
         isActive: false
       },
-      {
-        title: 'Voucher',
-        url: '#',
-        icon: 'page',
-        isActive: false
-      },
-      {
-        title: 'Invoice',
-        url: '#',
-        icon: 'billing',
-        isActive: false
-      },
-      {
-        title: 'Reports',
-        url: '#',
-        icon: 'reports',
-        isActive: false
-      }
+      // {
+      //   title: 'Voucher',
+      //   url: '#',
+      //   icon: 'page',
+      //   isActive: false
+      // },
+      // {
+      //   title: 'Invoice',
+      //   url: '#',
+      //   icon: 'billing',
+      //   isActive: false
+      // },
+      // {
+      //   title: 'Reports',
+      //   url: '#',
+      //   icon: 'reports',
+      //   isActive: false
+      // }
     ]      
   },
   {
@@ -206,19 +206,6 @@ export const sideBarItems: Role[] = [
         isActive: false
       },
       {
-        title: 'Agent',
-        url: '#',
-        icon: 'user',
-        isActive: false,
-        items: [
-          {
-            title: 'Available Agent',
-            url: '/dashboard/admin/all-agent',
-            icon: 'add'
-          }
-        ]
-      },
-      {
         title: 'Supplier',
         url: '#',
         icon: 'user',
@@ -239,6 +226,24 @@ export const sideBarItems: Role[] = [
             url: '/dashboard/admin/vehicle-details',
             icon: 'add'
           }
+        ]
+      },
+      {
+        title: 'Agent',
+        url: '#',
+        icon: 'user',
+        isActive: false,
+        items: [
+          {
+            title: 'Available Agent',
+            url: '/dashboard/admin/all-agent',
+            icon: 'add'
+          },
+          {
+            title: 'Add Margin',
+            url: '/dashboard/admin/agent-margin',
+            icon: 'add'
+          },
         ]
       },
       {

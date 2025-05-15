@@ -71,9 +71,6 @@ const Page = () => {
             <TabsTrigger value="booking">
               Booking
             </TabsTrigger>
-            <TabsTrigger value="reports" disabled>
-              Reports
-            </TabsTrigger>
           </TabsList>
           <TabsContent value="vehicles" className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

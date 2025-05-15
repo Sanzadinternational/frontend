@@ -380,6 +380,21 @@ const Page = () => {
                     </Link>
                   </CardFooter>
                 </Card>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium">Agent</CardTitle>
+                    <IndianRupee width={20} height={20} />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-xl font-bold">Add Margin</div>
+                    <p className="text-xs text-muted-foreground">add agent-wise margin</p>
+                  </CardContent>
+                  <CardFooter>
+                    <Link href="/dashboard/admin/agent-margin">
+                      <Button variant="outline">Add Margin</Button>
+                    </Link>
+                  </CardFooter>
+                </Card>
               </div>
             </TabsContent>
 

@@ -677,8 +677,6 @@
 
 // export default SupplierBookingsTable;
 
-
-
 // "use client";
 
 // import { useEffect, useState } from "react";
@@ -1365,30 +1363,6 @@
 
 // export default SupplierBookingsTable;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 "use client";
 import React from "react";
 import { useEffect, useState } from "react";
@@ -1404,7 +1378,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search, ArrowUpDown, Loader2, Check, X, Clock, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Search,
+  ArrowUpDown,
+  Loader2,
+  Check,
+  X,
+  Clock,
+  ChevronDown,
+  ChevronUp,
+  Download,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { fetchWithAuth } from "@/components/utils/api";
@@ -1424,6 +1408,7 @@ interface Booking {
   drop_lng?: string;
   distance_miles?: string;
   price?: string;
+  currency?:string;
   status?: string;
   booked_at?: string;
   completed_at?: string | null;
@@ -1457,6 +1442,9 @@ const SupplierBookingsTable = () => {
   const [error, setError] = useState<string | null>(null);
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
   const { toast } = useToast();
+  const [downloadingVoucher, setDownloadingVoucher] = useState<string | null>(
+    null
+  );
   // Search and filter state
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState<{
@@ -1466,9 +1454,9 @@ const SupplierBookingsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const toggleRowExpansion = (bookingId: string) => {
-    setExpandedRows(prev => ({
+    setExpandedRows((prev) => ({
       ...prev,
-      [bookingId]: !prev[bookingId]
+      [bookingId]: !prev[bookingId],
     }));
   };
 
@@ -1480,6 +1468,64 @@ const SupplierBookingsTable = () => {
       return isNaN(date.getTime()) ? "Invalid date" : format(date, "PPpp");
     } catch {
       return "Invalid date";
+    }
+  };
+
+  const downloadVoucher = async (bookingId: string) => {
+    try {
+      setDownloadingVoucher(bookingId);
+      const response = await fetch(
+        `${API_BASE_URL}/payment/vouchers/${bookingId}/download`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to download voucher");
+      }
+
+      // Get the filename from the content-disposition header or generate one
+      const contentDisposition = response.headers.get("content-disposition");
+      let filename = `voucher-${bookingId}.pdf`;
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1];
+        }
+      }
+
+      // Create blob from response
+      const blob = await response.blob();
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast({
+        title: "Success",
+        description: "Voucher downloaded successfully",
+      });
+    } catch (error: any) {
+      console.error("Error downloading voucher:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to download voucher",
+        variant: "destructive",
+      });
+    } finally {
+      setDownloadingVoucher(null);
     }
   };
 
@@ -1503,8 +1549,10 @@ const SupplierBookingsTable = () => {
         setSupplierId(userId);
 
         const [bookingsData, driversData] = await Promise.all([
-          fetchWithAuth(`${API_BASE_URL}/supplier/GetBookingBySupplierId/${userId}`),
-          fetchWithAuth(`${API_BASE_URL}/supplier/GetDriver/${userId}`)
+          fetchWithAuth(
+            `${API_BASE_URL}/supplier/GetBookingBySupplierId/${userId}`
+          ),
+          fetchWithAuth(`${API_BASE_URL}/supplier/GetDriver/${userId}`),
         ]);
 
         const normalizedData =
@@ -1554,9 +1602,9 @@ const SupplierBookingsTable = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             status: newStatus,
-            driver_id: newStatus === "approved" ? selectedDriver : null
+            driver_id: newStatus === "approved" ? selectedDriver : null,
           }),
         }
       );
@@ -1564,14 +1612,15 @@ const SupplierBookingsTable = () => {
       if (!response.ok) {
         throw new Error("Failed to update booking status");
       }
-      
+
       toast({
         title: "Success",
-        description: newStatus === "approved" 
-          ? "Booking approved and driver assigned" 
-          : "Booking status updated",
+        description:
+          newStatus === "approved"
+            ? "Booking approved and driver assigned"
+            : "Booking status updated",
       });
-      
+
       // Update local state
       setBookings((prevBookings) =>
         prevBookings.map((item) =>
@@ -1586,7 +1635,7 @@ const SupplierBookingsTable = () => {
             : item
         )
       );
-      
+
       // Reset selected driver after approval
       if (newStatus === "approved") {
         setSelectedDriver(null);
@@ -1808,7 +1857,9 @@ const SupplierBookingsTable = () => {
                           <TableHead>
                             <Button
                               variant="ghost"
-                              onClick={() => requestSort("booking.pickup_location")}
+                              onClick={() =>
+                                requestSort("booking.pickup_location")
+                              }
                               className="p-0 hover:bg-transparent"
                             >
                               Pickup
@@ -1818,7 +1869,9 @@ const SupplierBookingsTable = () => {
                           <TableHead>
                             <Button
                               variant="ghost"
-                              onClick={() => requestSort("booking.drop_location")}
+                              onClick={() =>
+                                requestSort("booking.drop_location")
+                              }
                               className="p-0 hover:bg-transparent"
                             >
                               Drop
@@ -1868,7 +1921,9 @@ const SupplierBookingsTable = () => {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => toggleRowExpansion(item.booking.id)}
+                                  onClick={() =>
+                                    toggleRowExpansion(item.booking.id)
+                                  }
                                   className="h-8"
                                 >
                                   {expandedRows[item.booking.id] ? (
@@ -1887,78 +1942,148 @@ const SupplierBookingsTable = () => {
                                   <div className="p-4 space-y-4">
                                     <div className="grid grid-cols-2 gap-4">
                                       <div>
-                                        <h4 className="text-sm font-medium text-gray-500">Booking ID</h4>
+                                        <h4 className="text-sm font-medium text-gray-500">
+                                          Booking ID
+                                        </h4>
                                         <p>{item.booking.id}</p>
                                       </div>
                                       <div>
-                                        <h4 className="text-sm font-medium text-gray-500">Price</h4>
-                                        <p>₹{item.payments?.amount || item.booking.price || "0"}</p>
+                                        <h4 className="text-sm font-medium text-gray-500">
+                                          Price
+                                        </h4>
+                                        <p>
+                                          {item.booking?.currency}
+                                          {item.payments?.amount ||
+                                            item.booking.price ||
+                                            "0"}
+                                        </p>
                                       </div>
                                       <div>
-                                        <h4 className="text-sm font-medium text-gray-500">Payment Status</h4>
-                                        <p>{getStatusBadge(item.payments?.payment_status, "payment")}</p>
+                                        <h4 className="text-sm font-medium text-gray-500">
+                                          Payment Status
+                                        </h4>
+                                        <p>
+                                          {getStatusBadge(
+                                            item.payments?.payment_status,
+                                            "payment"
+                                          )}
+                                        </p>
                                       </div>
                                       <div>
-                                        <h4 className="text-sm font-medium text-gray-500">Payment Method</h4>
-                                        <p>{item.payments?.payment_method || "N/A"}</p>
+                                        <h4 className="text-sm font-medium text-gray-500">
+                                          Payment Method
+                                        </h4>
+                                        <p>
+                                          {item.payments?.payment_method ||
+                                            "N/A"}
+                                        </p>
                                       </div>
                                       {item.payments?.transaction_id && (
                                         <div>
-                                          <h4 className="text-sm font-medium text-gray-500">Transaction ID</h4>
+                                          <h4 className="text-sm font-medium text-gray-500">
+                                            Transaction ID
+                                          </h4>
                                           <p>{item.payments.transaction_id}</p>
                                         </div>
                                       )}
                                       {item.payments?.reference_number && (
                                         <div>
-                                          <h4 className="text-sm font-medium text-gray-500">Reference Number</h4>
-                                          <p>{item.payments.reference_number}</p>
+                                          <h4 className="text-sm font-medium text-gray-500">
+                                            Reference Number
+                                          </h4>
+                                          <p>
+                                            {item.payments.reference_number}
+                                          </p>
                                         </div>
                                       )}
                                     </div>
                                     
-                                    {item.booking.status?.toLowerCase() !== "approved" && (
+                                    {item.booking.status?.toLowerCase() !==
+                                      "approved" && (
                                       <div className="col-span-2">
-                                        <h4 className="text-sm font-medium text-gray-500 mb-1">Assign Driver</h4>
+                                        <h4 className="text-sm font-medium text-gray-500 mb-1">
+                                          Assign Driver
+                                        </h4>
                                         <select
                                           className="w-full p-2 border rounded"
                                           value={selectedDriver || ""}
-                                          onChange={(e) => setSelectedDriver(e.target.value)}
+                                          onChange={(e) =>
+                                            setSelectedDriver(e.target.value)
+                                          }
                                         >
-                                          <option value="">Select a driver</option>
+                                          <option value="">
+                                            Select a driver
+                                          </option>
                                           {drivers.map((driver) => (
-                                            <option key={driver.id} value={driver.id}>
-                                              {driver.DriverName} ({driver.DriverContact})
+                                            <option
+                                              key={driver.id}
+                                              value={driver.id}
+                                            >
+                                              {driver.DriverName} (
+                                              {driver.DriverContact})
                                             </option>
                                           ))}
                                         </select>
                                       </div>
                                     )}
                                     <div className="flex justify-end gap-2">
-                                      {item.booking.status?.toLowerCase() !== "approved" && (
+                                      <div>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                          downloadVoucher(item.booking.id)
+                                        }
+                                        disabled={
+                                          downloadingVoucher === item.booking.id
+                                        }
+                                        className="h-8"
+                                      >
+                                        {downloadingVoucher ===
+                                        item.booking.id ? (
+                                          <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                                        ) : (
+                                          <Download className="h-4 w-4 mr-1" />
+                                        )}
+                                        Voucher
+                                      </Button>
+                                    </div>
+                                      {item.booking.status?.toLowerCase() !==
+                                        "approved" && (
                                         <Button
                                           size="sm"
                                           onClick={() => {
                                             if (!selectedDriver) {
                                               toast({
                                                 title: "Warning",
-                                                description: "Please select a driver before approving",
+                                                description:
+                                                  "Please select a driver before approving",
                                                 variant: "destructive",
                                               });
                                               return;
                                             }
-                                            updateBookingStatus(item.booking.id, "approved");
+                                            updateBookingStatus(
+                                              item.booking.id,
+                                              "approved"
+                                            );
                                           }}
                                           className="h-8"
                                         >
                                           <Check className="h-4 w-4 mr-1" />
-                                          Approve
+                                          Approve Booking
                                         </Button>
                                       )}
-                                      {item.booking.status?.toLowerCase() !== "rejected" && (
+                                      {item.booking.status?.toLowerCase() !==
+                                        "rejected" && (
                                         <Button
                                           variant="destructive"
                                           size="sm"
-                                          onClick={() => updateBookingStatus(item.booking.id, "rejected")}
+                                          onClick={() =>
+                                            updateBookingStatus(
+                                              item.booking.id,
+                                              "rejected"
+                                            )
+                                          }
                                           className="h-8"
                                         >
                                           <X className="h-4 w-4 mr-1" />
@@ -1982,7 +2107,9 @@ const SupplierBookingsTable = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                        onClick={() =>
+                          setCurrentPage(Math.max(1, currentPage - 1))
+                        }
                         disabled={currentPage === 1}
                       >
                         Previous
@@ -1993,7 +2120,9 @@ const SupplierBookingsTable = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                        onClick={() =>
+                          setCurrentPage(Math.min(totalPages, currentPage + 1))
+                        }
                         disabled={currentPage === totalPages}
                       >
                         Next
@@ -2037,77 +2166,139 @@ const SupplierBookingsTable = () => {
                         <CardContent className="p-4 pt-0 border-t">
                           <div className="space-y-3">
                             <div>
-                              <h4 className="text-sm font-medium text-gray-500">Booking ID</h4>
+                              <h4 className="text-sm font-medium text-gray-500">
+                                Booking ID
+                              </h4>
                               <p className="text-sm">{item.booking.id}</p>
                             </div>
                             <div>
-                              <h4 className="text-sm font-medium text-gray-500">Price</h4>
-                              <p className="text-sm">₹{item.payments?.amount || item.booking.price || "0"}</p>
+                              <h4 className="text-sm font-medium text-gray-500">
+                                Price
+                              </h4>
+                              <p className="text-sm">
+                                {item.booking?.currency}
+                                {item.payments?.amount ||
+                                  item.booking.price ||
+                                  "0"}
+                              </p>
                             </div>
                             <div>
-                              <h4 className="text-sm font-medium text-gray-500">Payment Status</h4>
-                              <p className="text-sm">{getStatusBadge(item.payments?.payment_status, "payment")}</p>
+                              <h4 className="text-sm font-medium text-gray-500">
+                                Payment Status
+                              </h4>
+                              <p className="text-sm">
+                                {getStatusBadge(
+                                  item.payments?.payment_status,
+                                  "payment"
+                                )}
+                              </p>
                             </div>
                             <div>
-                              <h4 className="text-sm font-medium text-gray-500">Payment Method</h4>
-                              <p className="text-sm">{item.payments?.payment_method || "N/A"}</p>
+                              <h4 className="text-sm font-medium text-gray-500">
+                                Payment Method
+                              </h4>
+                              <p className="text-sm">
+                                {item.payments?.payment_method || "N/A"}
+                              </p>
                             </div>
                             {item.payments?.transaction_id && (
                               <div>
-                                <h4 className="text-sm font-medium text-gray-500">Transaction ID</h4>
-                                <p className="text-sm">{item.payments.transaction_id}</p>
+                                <h4 className="text-sm font-medium text-gray-500">
+                                  Transaction ID
+                                </h4>
+                                <p className="text-sm">
+                                  {item.payments.transaction_id}
+                                </p>
                               </div>
                             )}
                             {item.payments?.reference_number && (
                               <div>
-                                <h4 className="text-sm font-medium text-gray-500">Reference Number</h4>
-                                <p className="text-sm">{item.payments.reference_number}</p>
+                                <h4 className="text-sm font-medium text-gray-500">
+                                  Reference Number
+                                </h4>
+                                <p className="text-sm">
+                                  {item.payments.reference_number}
+                                </p>
                               </div>
                             )}
                             
-                            {item.booking.status?.toLowerCase() !== "approved" && (
+                            {item.booking.status?.toLowerCase() !==
+                              "approved" && (
                               <div>
-                                <h4 className="text-sm font-medium text-gray-500">Assign Driver</h4>
+                                <h4 className="text-sm font-medium text-gray-500">
+                                  Assign Driver
+                                </h4>
                                 <select
                                   className="w-full p-2 border rounded mt-1"
                                   value={selectedDriver || ""}
-                                  onChange={(e) => setSelectedDriver(e.target.value)}
+                                  onChange={(e) =>
+                                    setSelectedDriver(e.target.value)
+                                  }
                                 >
                                   <option value="">Select a driver</option>
                                   {drivers.map((driver) => (
                                     <option key={driver.id} value={driver.id}>
-                                      {driver.DriverName} ({driver.DriverCarInfo})
+                                      {driver.DriverName} (
+                                      {driver.DriverCarInfo})
                                     </option>
                                   ))}
                                 </select>
                               </div>
                             )}
                             <div className="flex gap-2 pt-2">
-                              {item.booking.status?.toLowerCase() !== "approved" && (
+                              <div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => downloadVoucher(item.booking.id)}
+                                disabled={
+                                  downloadingVoucher === item.booking.id
+                                }
+                              >
+                                {downloadingVoucher === item.booking.id ? (
+                                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                                ) : (
+                                  <Download className="h-4 w-4 mr-1" />
+                                )}
+                                Voucher
+                              </Button>
+                            </div>
+                              {item.booking.status?.toLowerCase() !==
+                                "approved" && (
                                 <Button
                                   size="sm"
                                   onClick={() => {
                                     if (!selectedDriver) {
                                       toast({
                                         title: "Warning",
-                                        description: "Please select a driver before approving",
+                                        description:
+                                          "Please select a driver before approving",
                                         variant: "destructive",
                                       });
                                       return;
                                     }
-                                    updateBookingStatus(item.booking.id, "approved");
+                                    updateBookingStatus(
+                                      item.booking.id,
+                                      "approved"
+                                    );
                                   }}
                                   className="flex-1"
                                 >
                                   <Check className="h-4 w-4 mr-1" />
-                                  Approve
+                                  Approve Booking
                                 </Button>
                               )}
-                              {item.booking.status?.toLowerCase() !== "rejected" && (
+                              {item.booking.status?.toLowerCase() !==
+                                "rejected" && (
                                 <Button
                                   variant="destructive"
                                   size="sm"
-                                  onClick={() => updateBookingStatus(item.booking.id, "rejected")}
+                                  onClick={() =>
+                                    updateBookingStatus(
+                                      item.booking.id,
+                                      "rejected"
+                                    )
+                                  }
                                   className="flex-1"
                                 >
                                   <X className="h-4 w-4 mr-1" />
@@ -2127,7 +2318,9 @@ const SupplierBookingsTable = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                        onClick={() =>
+                          setCurrentPage(Math.max(1, currentPage - 1))
+                        }
                         disabled={currentPage === 1}
                       >
                         Previous
@@ -2138,7 +2331,9 @@ const SupplierBookingsTable = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                        onClick={() =>
+                          setCurrentPage(Math.min(totalPages, currentPage + 1))
+                        }
                         disabled={currentPage === totalPages}
                       >
                         Next
