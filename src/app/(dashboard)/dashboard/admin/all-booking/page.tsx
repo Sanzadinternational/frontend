@@ -68,19 +68,28 @@ const BookingTable = () => {
   const [downloadingVoucher, setDownloadingVoucher] = useState<string | null>(
     null
   );
-  
+
   // Search and filter state
   const [searchTerm, setSearchTerm] = useState("");
-  // const [sortConfig, setSortConfig] = useState<{
-  //   key: string;
-  //   direction: "ascending" | "descending";
-  // } | null>(null);
+  const [dateSearchTerm, setDateSearchTerm] = useState<string>("");
+  const formatDateForSearch = (dateString: string | null | undefined) => {
+    if (!dateString) return "";
+    try {
+      // Ensure the date is in UTC or local time consistently
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "";
+      return format(date, "yyyy-MM-dd");
+    } catch {
+      return "";
+    }
+  };
+
   const [sortConfig, setSortConfig] = useState<{
     key: string;
     direction: "ascending" | "descending";
   }>({
     key: "booking.booked_at",
-    direction: "descending", // Default to newest first
+    direction: "descending",
   });
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -229,42 +238,24 @@ const BookingTable = () => {
     const paymentMethod = item.payments?.payment_method?.toLowerCase() || "";
     const search = searchTerm.toLowerCase();
 
-    return (
+    // Date filtering
+    const bookingDate = formatDateForSearch(item.booking.booked_at);
+    const dateSearch = formatDateForSearch(dateSearchTerm);
+
+    // Check if it matches text search OR date filter (if either is specified)
+    const matchesTextSearch =
       pickup.includes(search) ||
       drop.includes(search) ||
       price.includes(search) ||
       bookingStatus.includes(search) ||
       paymentStatus.includes(search) ||
-      paymentMethod.includes(search)
-    );
+      paymentMethod.includes(search);
+
+    const matchesDateFilter =
+      dateSearchTerm === "" || bookingDate.includes(dateSearch);
+
+    return matchesTextSearch && matchesDateFilter;
   });
-
-  // Sort bookings
-  // const sortedBookings = [...filteredBookings].sort((a, b) => {
-  //   if (!sortConfig) return 0;
-
-  //   let aValue, bValue;
-
-  //   if (sortConfig.key.includes("booking.")) {
-  //     const key = sortConfig.key.replace("booking.", "") as keyof Booking;
-  //     aValue = a.booking[key] || "";
-  //     bValue = b.booking[key] || "";
-  //   } else if (sortConfig.key.includes("payments.")) {
-  //     const key = sortConfig.key.replace("payments.", "") as keyof Payment;
-  //     aValue = a.payments?.[key] || "";
-  //     bValue = b.payments?.[key] || "";
-  //   } else {
-  //     return 0;
-  //   }
-
-  //   if (aValue < bValue) {
-  //     return sortConfig.direction === "ascending" ? -1 : 1;
-  //   }
-  //   if (aValue > bValue) {
-  //     return sortConfig.direction === "ascending" ? 1 : -1;
-  //   }
-  //   return 0;
-  // });
 
   // Sort bookings
   const sortedBookings = [...filteredBookings].sort((a, b) => {
@@ -316,33 +307,6 @@ const BookingTable = () => {
     }
     setSortConfig({ key, direction });
   };
-
-  // const fetchBookings = async () => {
-  //   try {
-  //     setIsLoading(true);
-  //     const response = await fetch(`${API_BASE_URL}/admin/GetAllBooking`);
-  //     if (!response.ok) {
-  //       throw new Error("Failed to fetch bookings");
-  //     }
-  //     const data = await response.json();
-  //     // Ensure each booking has payments (even if null)
-  //     const normalizedData =
-  //       data.result?.map((item: any) => ({
-  //         booking: item.booking,
-  //         payments: item.payments || null,
-  //       })) || [];
-  //     setBookings(normalizedData);
-  //   } catch (error: any) {
-  //     console.error("Error fetching bookings:", error);
-  //     toast({
-  //       title: "Error",
-  //       description: "Failed to load bookings",
-  //       variant: "destructive",
-  //     });
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
 
   const fetchBookings = async () => {
     try {
@@ -502,17 +466,58 @@ const BookingTable = () => {
           <CardHeader>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <CardTitle>Booking Approvals</CardTitle>
-              <div className="relative w-full md:w-64">
+              <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search bookings..."
-                  className="pl-9"
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                />
+                <div className="relative w-full md:w-64">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search bookings..."
+                    className="pl-9"
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                  {searchTerm && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchTerm("");
+                        setCurrentPage(1);
+                      }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Date Filter */}
+                <div className="flex items-center gap-2 w-full md:w-64">
+                  <Input
+                    type="date"
+                    placeholder="Filter by date"
+                    value={dateSearchTerm}
+                    onChange={(e) => {
+                      setDateSearchTerm(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                  {dateSearchTerm && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setDateSearchTerm("");
+                        setCurrentPage(1);
+                      }}
+                      className="h-8 w-8 p-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </CardHeader>
@@ -567,16 +572,6 @@ const BookingTable = () => {
                               <ArrowUpDown className="ml-2 h-4 w-4" />
                             </Button>
                           </TableHead>
-                          {/* <TableHead>
-                            <Button
-                              variant="ghost"
-                              onClick={() => requestSort("booking.booked_at")}
-                              className="p-0 hover:bg-transparent"
-                            >
-                              Booked At
-                              <ArrowUpDown className="ml-2 h-4 w-4" />
-                            </Button>
-                          </TableHead> */}
                           <TableHead>
                             <Button
                               variant="ghost"

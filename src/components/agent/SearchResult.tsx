@@ -251,6 +251,11 @@ const SearchResult = ({
         transferInfo: vehicle.transferInfo,
         vehicalType: vehicle.vehicalType,
         vehicle_id: vehicle.vehicleId,
+        vehicleTax:vehicle.vehicleTax,
+        tollTax:vehicle.tollTax,
+        parking:vehicle.parking,
+        driverTips:vehicle.driverTips,
+        driverCharge:vehicle.driverCharge,
       },
       extraCost: vehicle.extraCost || "0",
       tripType:
