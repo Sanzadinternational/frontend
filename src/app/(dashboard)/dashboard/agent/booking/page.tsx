@@ -631,7 +631,7 @@ const filteredBookings = bookings.filter((item) => {
                                           Price
                                         </h4>
                                         <p>
-                                          {item.booking?.currency}
+                                          {item.booking?.currency}{" "}
                                           {item.payments?.amount ||
                                             item.booking.price ||
                                             "0"}
@@ -813,7 +813,7 @@ const filteredBookings = bookings.filter((item) => {
                                   Price
                                 </h4>
                                 <p className="text-sm">
-                                  ₹
+                                  {item.booking?.currency}{" "}
                                   {item.payments?.amount ||
                                     item.booking.price ||
                                     "0"}

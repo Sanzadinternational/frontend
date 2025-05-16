@@ -465,9 +465,8 @@ const BookingTable = () => {
         <Card>
           <CardHeader>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <CardTitle>Booking Approvals</CardTitle>
+              <CardTitle>My Bookings</CardTitle>
               <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <div className="relative w-full md:w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -479,22 +478,8 @@ const BookingTable = () => {
                       setCurrentPage(1);
                     }}
                   />
-                  {searchTerm && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSearchTerm("");
-                        setCurrentPage(1);
-                      }}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  )}
                 </div>
-
-                {/* Date Filter */}
-                <div className="flex items-center gap-2 w-full md:w-64">
+                <div className="relative w-full md:w-64">
                   <Input
                     type="date"
                     placeholder="Filter by date"
@@ -503,19 +488,19 @@ const BookingTable = () => {
                       setDateSearchTerm(e.target.value);
                       setCurrentPage(1);
                     }}
+                    className="pr-8"
                   />
                   {dateSearchTerm && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
+                    <button
+                      type="button"
                       onClick={() => {
                         setDateSearchTerm("");
                         setCurrentPage(1);
                       }}
-                      className="h-8 w-8 p-0"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     >
                       <X className="h-4 w-4" />
-                    </Button>
+                    </button>
                   )}
                 </div>
               </div>
@@ -643,7 +628,7 @@ const BookingTable = () => {
                                           Price
                                         </h4>
                                         <p>
-                                          {item.booking?.currency}
+                                          {item.booking?.currency}{" "}
                                           {item.payments?.amount ||
                                             item.booking.price ||
                                             "0"}
@@ -836,7 +821,7 @@ const BookingTable = () => {
                                   Price
                                 </h4>
                                 <p className="text-sm">
-                                  {item.booking?.currency}
+                                  {item.booking?.currency}{" "}
                                   {item.payments?.amount ||
                                     item.booking.price ||
                                     "0"}
