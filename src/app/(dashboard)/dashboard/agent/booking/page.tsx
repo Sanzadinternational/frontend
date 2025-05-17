@@ -283,31 +283,32 @@ const AgentBookingsTable = () => {
 
   // Safe filtering with null checks
 
-const filteredBookings = bookings.filter((item) => {
-  const pickup = item.booking.pickup_location?.toLowerCase() ?? "";
-  const drop = item.booking.drop_location?.toLowerCase() ?? "";
-  const price = item.payments?.amount?.toString().toLowerCase() ?? 
-               item.booking.price?.toString().toLowerCase() ?? "";
-  const bookingStatus = item.booking.status?.toLowerCase() ?? "";
-  const paymentStatus = item.payments?.payment_status?.toLowerCase() ?? "";
-  const search = searchTerm.toLowerCase();
-  
-  // Date filtering
-  const bookingDate = item.booking.booked_at
-    ? format(new Date(item.booking.booked_at), "yyyy-MM-dd")
-    : "";
-  const dateSearch = dateSearchTerm.toLowerCase();
+  const filteredBookings = bookings.filter((item) => {
+    const pickup = item.booking.pickup_location?.toLowerCase() ?? "";
+    const drop = item.booking.drop_location?.toLowerCase() ?? "";
+    const price =
+      item.payments?.amount?.toString().toLowerCase() ??
+      item.booking.price?.toString().toLowerCase() ??
+      "";
+    const bookingStatus = item.booking.status?.toLowerCase() ?? "";
+    const paymentStatus = item.payments?.payment_status?.toLowerCase() ?? "";
+    const search = searchTerm.toLowerCase();
 
-  return (
-    pickup.includes(search) ||
-    drop.includes(search) ||
-    price.includes(search) ||
-    bookingStatus.includes(search) ||
-    paymentStatus.includes(search)
-  ) && (
-    dateSearchTerm === "" || bookingDate.includes(dateSearch)
-  );
-});
+    // Date filtering
+    const bookingDate = item.booking.booked_at
+      ? format(new Date(item.booking.booked_at), "yyyy-MM-dd")
+      : "";
+    const dateSearch = dateSearchTerm.toLowerCase();
+
+    return (
+      (pickup.includes(search) ||
+        drop.includes(search) ||
+        price.includes(search) ||
+        bookingStatus.includes(search) ||
+        paymentStatus.includes(search)) &&
+      (dateSearchTerm === "" || bookingDate.includes(dateSearch))
+    );
+  });
 
   // Sort bookings with null checks and date handling
   const sortedBookings = [...filteredBookings].sort((a, b) => {
@@ -467,48 +468,48 @@ const filteredBookings = bookings.filter((item) => {
       <div className="space-y-6">
         <Card>
           <CardHeader>
-  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-    <CardTitle>My Bookings</CardTitle>
-    <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-      <div className="relative w-full md:w-64">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search bookings..."
-          className="pl-9"
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setCurrentPage(1);
-          }}
-        />
-      </div>
-      <div className="relative w-full md:w-64">
-  <Input
-    type="date"
-    placeholder="Filter by date"
-    value={dateSearchTerm}
-    onChange={(e) => {
-      setDateSearchTerm(e.target.value);
-      setCurrentPage(1);
-    }}
-    className="pr-8" // Add padding for the clear button
-  />
-  {dateSearchTerm && (
-    <button
-      type="button"
-      onClick={() => {
-        setDateSearchTerm("");
-        setCurrentPage(1);
-      }}
-      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-    >
-      <X className="h-4 w-4" />
-    </button>
-  )}
-</div>
-    </div>
-  </div>
-</CardHeader>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <CardTitle>My Bookings</CardTitle>
+              <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                <div className="relative w-full md:w-64">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search bookings..."
+                    className="pl-9"
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                </div>
+                <div className="relative w-full md:w-64">
+                  <Input
+                    type="date"
+                    placeholder="Filter by date"
+                    value={dateSearchTerm}
+                    onChange={(e) => {
+                      setDateSearchTerm(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="pr-8" // Add padding for the clear button
+                  />
+                  {dateSearchTerm && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDateSearchTerm("");
+                        setCurrentPage(1);
+                      }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </CardHeader>
           <CardContent>
             {isLoading ? (
               <div className="flex justify-center items-center h-32">

@@ -401,21 +401,6 @@ const Page = () => {
             {/* Admin Tab */}
             <TabsContent value="admin" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Admin</CardTitle>
-                    <FileUser width={20} height={20} />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-xl font-bold">Admin List</div>
-                    <p className="text-xs text-muted-foreground">find all admin here</p>
-                  </CardContent>
-                  <CardFooter>
-                    <Link href="/dashboard/admin/all-admin">
-                      <Button variant="outline">View Admin</Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
 
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between pb-2">
