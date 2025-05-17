@@ -212,7 +212,7 @@ export const sideBarItems: Role[] = [
         isActive: false,
         items: [
           {
-            title: 'Available Supplier',
+            title: 'Supplier List',
             url: '/dashboard/admin/all-supplier',
             icon: 'add'
           },
@@ -222,7 +222,7 @@ export const sideBarItems: Role[] = [
             icon: 'add'
           },
           {
-            title: 'Vehicle Details',
+            title: 'Vehicle Info',
             url: '/dashboard/admin/vehicle-details',
             icon: 'add'
           }
@@ -235,7 +235,7 @@ export const sideBarItems: Role[] = [
         isActive: false,
         items: [
           {
-            title: 'Available Agent',
+            title: 'Agent List',
             url: '/dashboard/admin/all-agent',
             icon: 'add'
           },
