@@ -253,11 +253,6 @@ export const sideBarItems: Role[] = [
         isActive: false,
         items: [
           {
-            title: 'All Admin',
-            url: '/dashboard/admin/all-admin',
-            icon: 'add'
-          },
-          {
             title: 'Add Admin',
             url: '/dashboard/admin/add-admin',
             icon: 'userPen'
