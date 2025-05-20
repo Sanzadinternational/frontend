@@ -669,7 +669,7 @@ const SupplierBookingsTable = () => {
                                           )}
                                         </p>
                                       </div>
-                                      <div>
+                                      {/* <div>
                                         <h4 className="text-sm font-medium text-gray-500">
                                           Payment Method
                                         </h4>
@@ -695,7 +695,7 @@ const SupplierBookingsTable = () => {
                                             {item.payments.reference_number}
                                           </p>
                                         </div>
-                                      )}
+                                      )} */}
                                     </div>
 
                                     {item.booking.status?.toLowerCase() !==
@@ -727,6 +727,8 @@ const SupplierBookingsTable = () => {
                                       </div>
                                     )}
                                     <div className="flex justify-end gap-2">
+                                      {item.booking.status?.toLowerCase() ===
+                                "approved" && (
                                       <div>
                                         <Button
                                           variant="outline"
@@ -749,6 +751,7 @@ const SupplierBookingsTable = () => {
                                           Voucher
                                         </Button>
                                       </div>
+                                )}
                                       {item.booking.status?.toLowerCase() !==
                                         "approved" && (
                                         <Button
@@ -959,6 +962,8 @@ const SupplierBookingsTable = () => {
                                 </div>
                               )}
                               <div className="flex gap-2 pt-2">
+                                {item.booking.status?.toLowerCase() ===
+                                "approved" && (
                                 <div>
                                   <Button
                                     variant="outline"
@@ -978,6 +983,7 @@ const SupplierBookingsTable = () => {
                                     Voucher
                                   </Button>
                                 </div>
+                              )}
                                 {item.booking.status?.toLowerCase() !==
                                   "approved" && (
                                   <Button

@@ -677,6 +677,7 @@ const AgentBookingsTable = () => {
                                         </div>
                                       )}
                                       <div className="flex gap-2">
+                                        {item.payments?.payment_status?.toLowerCase() === "completed" && (
                                         <Button
                                           variant="outline"
                                           size="sm"
@@ -696,6 +697,8 @@ const AgentBookingsTable = () => {
                                           )}
                                           Invoice
                                         </Button>
+                                        )}
+                                         {item.booking.status?.toLowerCase() === "approved" && (
                                         <Button
                                           variant="outline"
                                           size="sm"
@@ -715,6 +718,7 @@ const AgentBookingsTable = () => {
                                           )}
                                           Voucher
                                         </Button>
+                                         )}
                                       </div>
                                     </div>
                                   </div>
@@ -860,6 +864,7 @@ const AgentBookingsTable = () => {
                                 </div>
                               )}
                               <div className="flex gap-2">
+                                {item.payments?.payment_status?.toLowerCase() === "completed" && (
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -877,6 +882,8 @@ const AgentBookingsTable = () => {
                                   )}
                                   Invoice
                                 </Button>
+                                )}
+                                {item.booking.status?.toLowerCase() === "approved" && (
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -894,6 +901,7 @@ const AgentBookingsTable = () => {
                                   )}
                                   Voucher
                                 </Button>
+                                )}
                               </div>
                             </div>
                           </CardContent>
