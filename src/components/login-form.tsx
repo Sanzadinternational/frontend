@@ -11,6 +11,7 @@ import {
   CardTitle,
   CardContent,
   CardDescription,
+  CardFooter,
 } from "@/components/ui/card";
 import {
   Form,
@@ -153,6 +154,10 @@ const Login = () => {
             <LoginFormContent />
           </Suspense>
         </CardContent>
+        <CardFooter className="flex items-center justify-center gap-1">
+          <CardDescription>Don&apos;t have an account</CardDescription>
+          <Link href="/agent" className="text-xs text-blue-500 underline">SignUp</Link>
+        </CardFooter>
       </Card>
     </div>
   );
