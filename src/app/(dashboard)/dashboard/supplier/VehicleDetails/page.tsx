@@ -1,4 +1,3 @@
-
 "use client";
 import { useState, useEffect } from "react";
 import * as z from "zod";
@@ -43,7 +42,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil, Trash2, Plus, Search, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Pencil,
+  Trash2,
+  Plus,
+  Search,
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -84,13 +91,12 @@ const VehicleDetailsForm = () => {
 
   // Search and filter state
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortConfig, setSortConfig] = useState<{ 
-    key: string; 
-    direction: 'ascending' | 'descending' 
+  const [sortConfig, setSortConfig] = useState<{
+    key: string;
+    direction: "ascending" | "descending";
   } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -144,8 +150,6 @@ const VehicleDetailsForm = () => {
     fetchData();
   }, [isDialogOpen]);
 
-
-  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -182,23 +186,24 @@ const VehicleDetailsForm = () => {
   }, [isDialogOpen, editingId]);
 
   // Filter vehicles based on search term
-  const filteredVehicles = vehicleDetails.filter(vehicle => 
-    vehicle.VehicleBrand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    vehicle.VehicleModel.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    vehicle.VehicleType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    vehicle.ServiceType.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredVehicles = vehicleDetails.filter(
+    (vehicle) =>
+      vehicle.VehicleBrand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      vehicle.VehicleModel.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      vehicle.VehicleType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      vehicle.ServiceType.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Sort vehicles
   const sortedVehicles = [...filteredVehicles].sort((a, b) => {
     if (!sortConfig) return 0;
-    
+
     const key = sortConfig.key;
     if (a[key] < b[key]) {
-      return sortConfig.direction === 'ascending' ? -1 : 1;
+      return sortConfig.direction === "ascending" ? -1 : 1;
     }
     if (a[key] > b[key]) {
-      return sortConfig.direction === 'ascending' ? 1 : -1;
+      return sortConfig.direction === "ascending" ? 1 : -1;
     }
     return 0;
   });
@@ -211,9 +216,13 @@ const VehicleDetailsForm = () => {
   );
 
   const requestSort = (key: string) => {
-    let direction: 'ascending' | 'descending' = 'ascending';
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
+    let direction: "ascending" | "descending" = "ascending";
+    if (
+      sortConfig &&
+      sortConfig.key === key &&
+      sortConfig.direction === "ascending"
+    ) {
+      direction = "descending";
     }
     setSortConfig({ key, direction });
     setCurrentPage(1); // Reset to first page when sorting
@@ -230,15 +239,18 @@ const VehicleDetailsForm = () => {
     "Extended Cargo Space",
   ];
 
-useEffect(() => {
-  const selectedBrand = form.watch("VehicleBrand");
-  if (selectedBrand) {
-    const brandData = vehicleBrands.find(brand => brand.VehicleBrand === selectedBrand);
-    if (brandData) {
-      form.setValue("ServiceType", brandData.ServiceType);
+  useEffect(() => {
+    const selectedBrand = form.watch("VehicleBrand");
+    if (selectedBrand) {
+      const brandData = vehicleBrands.find(
+        (brand) => brand.VehicleBrand === selectedBrand
+      );
+      if (brandData) {
+        form.setValue("ServiceType", brandData.ServiceType);
+      }
     }
-  }
-}, [form.watch("VehicleBrand")]);
+  }, [form.watch("VehicleBrand")]);
+
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
@@ -261,7 +273,9 @@ useEffect(() => {
 
       toast({
         title: "Success!",
-        description: `Vehicle ${editingId ? "updated" : "created"} successfully.`,
+        description: `Vehicle ${
+          editingId ? "updated" : "created"
+        } successfully.`,
       });
 
       await fetchData();
@@ -296,7 +310,7 @@ useEffect(() => {
       typeof vehicle.ExtraSpace === "string"
         ? JSON.parse(vehicle.ExtraSpace)
         : vehicle.ExtraSpace || [];
-        
+
     form.reset({
       VehicleType: vehicle.VehicleType || "",
       VehicleBrand: vehicle.VehicleBrand || "",
@@ -368,7 +382,8 @@ useEffect(() => {
             <div>
               <CardTitle>Vehicle Details</CardTitle>
               <CardDescription>
-                {filteredVehicles.length} vehicle{filteredVehicles.length !== 1 ? 's' : ''} found
+                {filteredVehicles.length} vehicle
+                {filteredVehicles.length !== 1 ? "s" : ""} found
               </CardDescription>
             </div>
             <div className="flex items-center gap-4">
@@ -402,70 +417,76 @@ useEffect(() => {
                         onSubmit={form.handleSubmit(handleSubmit)}
                         className="space-y-4 p-1"
                       >
-                                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                         <FormField
-                           control={form.control}
-                           name="VehicleType"
-                           render={({ field }) => (
-                             <FormItem>
-                               <FormLabel>Vehicle Type <span className="text-red-500">*</span></FormLabel>
-                               <FormControl>
-                                 <Select
-                                   value={field.value}
-                                   onValueChange={field.onChange}
-                                 >
-                                   <SelectTrigger className="w-full">
-                                     <SelectValue placeholder="Select Vehicle Type" />
-                                   </SelectTrigger>
-                                   <SelectContent>
-                                     {vehicleTypes.map((type) => (
-                                       <SelectItem
-                                         key={type.id}
-                                         value={type.VehicleType}
-                                       >
-                                         {type.VehicleType}
-                                       </SelectItem>
-                                     ))}
-                                   </SelectContent>
-                                 </Select>
-                               </FormControl>
-                               <FormMessage />
-                             </FormItem>
-                           )}
-                         />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="VehicleType"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>
+                                  Vehicle Type{" "}
+                                  <span className="text-red-500">*</span>
+                                </FormLabel>
+                                <FormControl>
+                                  <Select
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="Select Vehicle Type" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {vehicleTypes.map((type) => (
+                                        <SelectItem
+                                          key={type.id}
+                                          value={type.VehicleType}
+                                        >
+                                          {type.VehicleType}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
 
-                         <FormField
-                           control={form.control}
-                           name="VehicleBrand"
-                           render={({ field }) => (
-                             <FormItem>
-                               <FormLabel>Vehicle Brand <span className="text-red-500">*</span></FormLabel>
-                               <FormControl>
-                                 <Select
-                                   value={field.value}
-                                   onValueChange={field.onChange}
-                                 >
-                                   <SelectTrigger className="w-full">
-                                     <SelectValue placeholder="Select Vehicle Brand" />
-                                   </SelectTrigger>
-                                   <SelectContent>
-                                     {vehicleBrands.map((brand) => (
-                                       <SelectItem
-                                         key={brand.id}
-                                         value={brand.VehicleBrand}
-                                       >
-                                         {brand.VehicleBrand}
-                                       </SelectItem>
-                                     ))}
-                                   </SelectContent>
-                                 </Select>
-                               </FormControl>
-                               <FormMessage />
-                             </FormItem>
-                           )}
-                         />
+                          <FormField
+                            control={form.control}
+                            name="VehicleBrand"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>
+                                  Vehicle Brand{" "}
+                                  <span className="text-red-500">*</span>
+                                </FormLabel>
+                                <FormControl>
+                                  <Select
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="Select Vehicle Brand" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {vehicleBrands.map((brand) => (
+                                        <SelectItem
+                                          key={brand.id}
+                                          value={brand.VehicleBrand}
+                                        >
+                                          {brand.VehicleBrand}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
 
-                         {/* <FormField
+                          {/* <FormField
                            control={form.control}
                            name="ServiceType"
                            render={({ field }) => (
@@ -503,279 +524,305 @@ useEffect(() => {
                          /> */}
 
                           <FormField
-  control={form.control}
-  name="ServiceType"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>Service Type</FormLabel>
-      <FormControl>
-        <Input
-          {...field}
-          readOnly
-          placeholder="Service type will be auto-selected"
-        />
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
+                            control={form.control}
+                            name="ServiceType"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Service Type</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    {...field}
+                                    readOnly
+                                    placeholder="Service type will be auto-selected"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
 
+                          <FormField
+                            control={form.control}
+                            name="VehicleModel"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>
+                                  Vehicle Model{" "}
+                                  <span className="text-red-500">*</span>
+                                </FormLabel>
+                                <FormControl>
+                                  <Select
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="Select Vehicle Model" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {vehicleModels.map((model) => (
+                                        <SelectItem
+                                          key={model.id}
+                                          value={model.VehicleModel}
+                                        >
+                                          {model.VehicleModel}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
 
-                         <FormField
-                           control={form.control}
-                           name="VehicleModel"
-                           render={({ field }) => (
-                             <FormItem>
-                               <FormLabel>Vehicle Model <span className="text-red-500">*</span></FormLabel>
-                               <FormControl>
-                                 <Select
-                                   value={field.value}
-                                   onValueChange={field.onChange}
-                                 >
-                                   <SelectTrigger className="w-full">
-                                     <SelectValue placeholder="Select Vehicle Model" />
-                                   </SelectTrigger>
-                                   <SelectContent>
-                                     {vehicleModels.map((model) => (
-                                       <SelectItem
-                                         key={model.id}
-                                         value={model.VehicleModel}
-                                       >
-                                         {model.VehicleModel}
-                                       </SelectItem>
-                                     ))}
-                                   </SelectContent>
-                                 </Select>
-                               </FormControl>
-                               <FormMessage />
-                             </FormItem>
-                           )}
-                         />
+                          <FormField
+                            control={form.control}
+                            name="Doors"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>
+                                  Doors <span className="text-red-500">*</span>
+                                </FormLabel>
+                                <FormControl>
+                                  <Select
+                                    value={field.value.toString()}
+                                    onValueChange={(value) =>
+                                      field.onChange(Number(value))
+                                    }
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="Select Doors" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {numbers.map((door) => (
+                                        <SelectItem
+                                          value={`${door}`}
+                                          key={door}
+                                        >
+                                          {door}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
 
-                         <FormField
-                           control={form.control}
-                           name="Doors"
-                           render={({ field }) => (
-                             <FormItem>
-                               <FormLabel>Doors <span className="text-red-500">*</span></FormLabel>
-                               <FormControl>
-                                 <Select
-                                   value={field.value.toString()}
-                                   onValueChange={(value) =>
-                                     field.onChange(Number(value))
-                                   }
-                                 >
-                                   <SelectTrigger className="w-full">
-                                     <SelectValue placeholder="Select Doors" />
-                                   </SelectTrigger>
-                                   <SelectContent>
-                                     {numbers.map((door) => (
-                                       <SelectItem value={`${door}`} key={door}>
-                                         {door}
-                                       </SelectItem>
-                                     ))}
-                                   </SelectContent>
-                                 </Select>
-                               </FormControl>
-                               <FormMessage />
-                             </FormItem>
-                           )}
-                         />
+                          <FormField
+                            control={form.control}
+                            name="Seats"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>
+                                  Seats <span className="text-red-500">*</span>
+                                </FormLabel>
+                                <FormControl>
+                                  <Select
+                                    value={field.value.toString()}
+                                    onValueChange={(value) =>
+                                      field.onChange(Number(value))
+                                    }
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="Select Seats" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {numbers.map((seat) => (
+                                        <SelectItem
+                                          value={`${seat}`}
+                                          key={seat}
+                                        >
+                                          {seat}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
 
-                         <FormField
-                           control={form.control}
-                           name="Seats"
-                           render={({ field }) => (
-                             <FormItem>
-                               <FormLabel>Seats <span className="text-red-500">*</span></FormLabel>
-                               <FormControl>
-                                 <Select
-                                   value={field.value.toString()}
-                                   onValueChange={(value) =>
-                                     field.onChange(Number(value))
-                                   }
-                                 >
-                                   <SelectTrigger className="w-full">
-                                     <SelectValue placeholder="Select Seats" />
-                                   </SelectTrigger>
-                                   <SelectContent>
-                                     {numbers.map((seat) => (
-                                       <SelectItem value={`${seat}`} key={seat}>
-                                         {seat}
-                                       </SelectItem>
-                                     ))}
-                                   </SelectContent>
-                                 </Select>
-                               </FormControl>
-                               <FormMessage />
-                             </FormItem>
-                           )}
-                         />
+                          <FormField
+                            control={form.control}
+                            name="Cargo"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Cargo Space (litres)</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="Enter Cargo"
+                                    {...field}
+                                    type="number"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
 
-                         <FormField
-                           control={form.control}
-                           name="Cargo"
-                           render={({ field }) => (
-                             <FormItem>
-                               <FormLabel>Cargo Space (litres)</FormLabel>
-                               <FormControl>
-                                 <Input
-                                   placeholder="Enter Cargo"
-                                   {...field}
-                                   type="number"
-                                 />
-                               </FormControl>
-                               <FormMessage />
-                             </FormItem>
-                           )}
-                         />
+                          <FormField
+                            control={form.control}
+                            name="Passengers"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>
+                                  Passengers{" "}
+                                  <span className="text-red-500">*</span>
+                                </FormLabel>
+                                <FormControl>
+                                  <Select
+                                    value={field.value.toString()}
+                                    onValueChange={(value) =>
+                                      field.onChange(Number(value))
+                                    }
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="Passengers" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {numbers.map((pax) => (
+                                        <SelectItem value={`${pax}`} key={pax}>
+                                          {pax}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
 
-                         <FormField
-                           control={form.control}
-                           name="Passengers"
-                           render={({ field }) => (
-                             <FormItem>
-                               <FormLabel>Passengers <span className="text-red-500">*</span></FormLabel>
-                               <FormControl>
-                                 <Select
-                                   value={field.value.toString()}
-                                   onValueChange={(value) =>
-                                     field.onChange(Number(value))
-                                   }
-                                 >
-                                   <SelectTrigger className="w-full">
-                                     <SelectValue placeholder="Passengers" />
-                                   </SelectTrigger>
-                                   <SelectContent>
-                                     {numbers.map((pax) => (
-                                       <SelectItem value={`${pax}`} key={pax}>
-                                         {pax}
-                                       </SelectItem>
-                                     ))}
-                                   </SelectContent>
-                                 </Select>
-                               </FormControl>
-                               <FormMessage />
-                             </FormItem>
-                           )}
-                         />
+                          <FormField
+                            control={form.control}
+                            name="MediumBag"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>
+                                  Medium Bag{" "}
+                                  <span className="text-red-500">*</span>
+                                </FormLabel>
+                                <FormControl>
+                                  <Select
+                                    value={field.value.toString()}
+                                    onValueChange={(value) =>
+                                      field.onChange(Number(value))
+                                    }
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="Medium Bag" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {numbers.map((num) => (
+                                        <SelectItem key={num} value={`${num}`}>
+                                          {num}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
 
-                         <FormField
-                           control={form.control}
-                           name="MediumBag"
-                           render={({ field }) => (
-                             <FormItem>
-                               <FormLabel>Medium Bag <span className="text-red-500">*</span></FormLabel>
-                               <FormControl>
-                                 <Select
-                                   value={field.value.toString()}
-                                   onValueChange={(value) =>
-                                     field.onChange(Number(value))
-                                   }
-                                 >
-                                   <SelectTrigger className="w-full">
-                                     <SelectValue placeholder="Medium Bag" />
-                                   </SelectTrigger>
-                                   <SelectContent>
-                                     {numbers.map((num) => (
-                                       <SelectItem key={num} value={`${num}`}>
-                                         {num}
-                                       </SelectItem>
-                                     ))}
-                                   </SelectContent>
-                                 </Select>
-                               </FormControl>
-                               <FormMessage />
-                             </FormItem>
-                           )}
-                         />
+                          <FormField
+                            control={form.control}
+                            name="SmallBag"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>
+                                  Small Bag{" "}
+                                  <span className="text-red-500">*</span>
+                                </FormLabel>
+                                <FormControl>
+                                  <Select
+                                    value={field.value.toString()}
+                                    onValueChange={(value) =>
+                                      field.onChange(Number(value))
+                                    }
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="Small Bag" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {numbers.map((num) => (
+                                        <SelectItem key={num} value={`${num}`}>
+                                          {num}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
 
-                         <FormField
-                           control={form.control}
-                           name="SmallBag"
-                           render={({ field }) => (
-                             <FormItem>
-                               <FormLabel>Small Bag <span className="text-red-500">*</span></FormLabel>
-                               <FormControl>
-                                 <Select
-                                   value={field.value.toString()}
-                                   onValueChange={(value) =>
-                                     field.onChange(Number(value))
-                                   }
-                                 >
-                                   <SelectTrigger className="w-full">
-                                     <SelectValue placeholder="Small Bag" />
-                                   </SelectTrigger>
-                                   <SelectContent>
-                                     {numbers.map((num) => (
-                                       <SelectItem key={num} value={`${num}`}>
-                                         {num}
-                                       </SelectItem>
-                                     ))}
-                                   </SelectContent>
-                                 </Select>
-                               </FormControl>
-                               <FormMessage />
-                             </FormItem>
-                           )}
-                         />
+                          <FormField
+                            control={form.control}
+                            name="ExtraSpace"
+                            render={({ field }) => {
+                              const value = field.value || [];
+                              return (
+                                <FormItem className="md:col-span-2">
+                                  <FormLabel>Extra Space</FormLabel>
+                                  <FormControl>
+                                    <div className="flex flex-col gap-2">
+                                      {extraSpaceOptions.map((option) => (
+                                        <div
+                                          key={option}
+                                          className="flex items-center space-x-2"
+                                        >
+                                          <Checkbox
+                                            id={`extra-space-${option}`}
+                                            checked={value.includes(option)}
+                                            onCheckedChange={(checked) => {
+                                              const newValue = checked
+                                                ? [...value, option]
+                                                : value.filter(
+                                                    (item) => item !== option
+                                                  );
+                                              field.onChange(newValue);
+                                            }}
+                                          />
+                                          <label
+                                            htmlFor={`extra-space-${option}`}
+                                            className="text-sm"
+                                          >
+                                            {option}
+                                          </label>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              );
+                            }}
+                          />
+                        </div>
 
-                         <FormField
-                           control={form.control}
-                           name="ExtraSpace"
-                           render={({ field }) => {
-                             const value = field.value || [];
-                             return (
-                               <FormItem className="md:col-span-2">
-                                 <FormLabel>Extra Space</FormLabel>
-                                 <FormControl>
-                                   <div className="flex flex-col gap-2">
-                                     {extraSpaceOptions.map((option) => (
-                                       <div
-                                         key={option}
-                                         className="flex items-center space-x-2"
-                                       >
-                                         <Checkbox
-                                           id={`extra-space-${option}`}
-                                           checked={value.includes(option)}
-                                           onCheckedChange={(checked) => {
-                                             const newValue = checked
-                                               ? [...value, option]
-                                               : value.filter(
-                                                   (item) => item !== option
-                                                 );
-                                             field.onChange(newValue);
-                                           }}
-                                         />
-                                         <label
-                                           htmlFor={`extra-space-${option}`}
-                                           className="text-sm"
-                                         >
-                                           {option}
-                                         </label>
-                                       </div>
-                                     ))}
-                                   </div>
-                                 </FormControl>
-                                 <FormMessage />
-                               </FormItem>
-                             );
-                           }}
-                         />
-                       </div>
-
-                       <div className="flex justify-end gap-4 pt-4">
-                         <Button
-                           variant="outline"
-                          onClick={() => setIsDialogOpen(false)}
-                           type="button"
-                         >
-                           Cancel
-                         </Button>
-                         <Button type="submit" disabled={isLoading}>
-                           {isLoading ? "Saving..." : editingId ? "Update" : "Create"} Vehicle
-                         </Button>
-                       </div>
+                        <div className="flex justify-end gap-4 pt-4">
+                          <Button
+                            variant="outline"
+                            onClick={() => setIsDialogOpen(false)}
+                            type="button"
+                          >
+                            Cancel
+                          </Button>
+                          <Button type="submit" disabled={isLoading}>
+                            {isLoading
+                              ? "Saving..."
+                              : editingId
+                              ? "Update"
+                              : "Create"}{" "}
+                            Vehicle
+                          </Button>
+                        </div>
                       </form>
                     </Form>
                   </ScrollArea>
@@ -788,10 +835,7 @@ useEffect(() => {
             {vehicleDetails.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500">No vehicles available</p>
-                <Button 
-                  onClick={() => setIsDialogOpen(true)}
-                  className="mt-4"
-                >
+                <Button onClick={() => setIsDialogOpen(true)} className="mt-4">
                   <Plus className="mr-2 h-4 w-4" /> Add Your First Vehicle
                 </Button>
               </div>
@@ -805,7 +849,7 @@ useEffect(() => {
                         <TableHead>
                           <Button
                             variant="ghost"
-                            onClick={() => requestSort('VehicleBrand')}
+                            onClick={() => requestSort("VehicleBrand")}
                             className="p-0 hover:bg-transparent font-medium"
                           >
                             Vehicle
@@ -815,7 +859,7 @@ useEffect(() => {
                         <TableHead>
                           <Button
                             variant="ghost"
-                            onClick={() => requestSort('VehicleType')}
+                            onClick={() => requestSort("VehicleType")}
                             className="p-0 hover:bg-transparent font-medium"
                           >
                             Type
@@ -825,7 +869,7 @@ useEffect(() => {
                         <TableHead>
                           <Button
                             variant="ghost"
-                            onClick={() => requestSort('ServiceType')}
+                            onClick={() => requestSort("ServiceType")}
                             className="p-0 hover:bg-transparent font-medium"
                           >
                             Service
@@ -849,7 +893,9 @@ useEffect(() => {
                               </div>
                             </TableCell>
                             <TableCell>
-                              <Badge variant="outline">{vehicle.VehicleType}</Badge>
+                              <Badge variant="outline">
+                                {vehicle.VehicleType}
+                              </Badge>
                             </TableCell>
                             <TableCell>
                               <Badge>{vehicle.ServiceType}</Badge>
@@ -865,7 +911,9 @@ useEffect(() => {
                               <div className="flex flex-col gap-1">
                                 <span>Medium: {vehicle.MediumBag}</span>
                                 <span>Small: {vehicle.SmallBag}</span>
-                                {vehicle.Cargo && <span>Cargo: {vehicle.Cargo}L</span>}
+                                {vehicle.Cargo && (
+                                  <span>Cargo: {vehicle.Cargo}L</span>
+                                )}
                               </div>
                             </TableCell>
                             <TableCell>
@@ -910,13 +958,22 @@ useEffect(() => {
                       )}
                     </TableBody>
                   </Table>
-                  
+
                   {/* Pagination */}
                   {totalPages > 1 && (
                     <div className="flex items-center justify-between px-2 py-4">
                       <div className="text-sm text-muted-foreground">
-                        Showing {Math.min((currentPage - 1) * ITEMS_PER_PAGE + 1, filteredVehicles.length)}-
-                        {Math.min(currentPage * ITEMS_PER_PAGE, filteredVehicles.length)} of {filteredVehicles.length} vehicles
+                        Showing{" "}
+                        {Math.min(
+                          (currentPage - 1) * ITEMS_PER_PAGE + 1,
+                          filteredVehicles.length
+                        )}
+                        -
+                        {Math.min(
+                          currentPage * ITEMS_PER_PAGE,
+                          filteredVehicles.length
+                        )}{" "}
+                        of {filteredVehicles.length} vehicles
                       </div>
                       <div className="flex items-center space-x-2">
                         <Button
@@ -928,28 +985,35 @@ useEffect(() => {
                           <ChevronLeft className="h-4 w-4" />
                         </Button>
                         <div className="flex items-center space-x-1">
-                          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                            let pageNum;
-                            if (totalPages <= 5) {
-                              pageNum = i + 1;
-                            } else if (currentPage <= 3) {
-                              pageNum = i + 1;
-                            } else if (currentPage >= totalPages - 2) {
-                              pageNum = totalPages - 4 + i;
-                            } else {
-                              pageNum = currentPage - 2 + i;
+                          {Array.from(
+                            { length: Math.min(5, totalPages) },
+                            (_, i) => {
+                              let pageNum;
+                              if (totalPages <= 5) {
+                                pageNum = i + 1;
+                              } else if (currentPage <= 3) {
+                                pageNum = i + 1;
+                              } else if (currentPage >= totalPages - 2) {
+                                pageNum = totalPages - 4 + i;
+                              } else {
+                                pageNum = currentPage - 2 + i;
+                              }
+                              return (
+                                <Button
+                                  key={pageNum}
+                                  variant={
+                                    currentPage === pageNum
+                                      ? "default"
+                                      : "outline"
+                                  }
+                                  size="sm"
+                                  onClick={() => handlePageChange(pageNum)}
+                                >
+                                  {pageNum}
+                                </Button>
+                              );
                             }
-                            return (
-                              <Button
-                                key={pageNum}
-                                variant={currentPage === pageNum ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => handlePageChange(pageNum)}
-                              >
-                                {pageNum}
-                              </Button>
-                            );
-                          })}
+                          )}
                         </div>
                         <Button
                           variant="outline"
@@ -975,7 +1039,9 @@ useEffect(() => {
                               {vehicle.VehicleBrand} {vehicle.VehicleModel}
                             </CardTitle>
                             <div className="flex gap-2 mt-2">
-                              <Badge variant="outline">{vehicle.VehicleType}</Badge>
+                              <Badge variant="outline">
+                                {vehicle.VehicleType}
+                              </Badge>
                               <Badge>{vehicle.ServiceType}</Badge>
                             </div>
                           </div>
@@ -1000,7 +1066,9 @@ useEffect(() => {
                         </CardHeader>
                         <CardContent className="p-4 pt-0 grid grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <div className="text-sm font-medium text-gray-500">Capacity</div>
+                            <div className="text-sm font-medium text-gray-500">
+                              Capacity
+                            </div>
                             <div>
                               <div>Seats: {vehicle.Seats}</div>
                               <div>Doors: {vehicle.Doors}</div>
@@ -1008,15 +1076,21 @@ useEffect(() => {
                             </div>
                           </div>
                           <div className="space-y-2">
-                            <div className="text-sm font-medium text-gray-500">Luggage</div>
+                            <div className="text-sm font-medium text-gray-500">
+                              Luggage
+                            </div>
                             <div>
                               <div>Medium: {vehicle.MediumBag}</div>
                               <div>Small: {vehicle.SmallBag}</div>
-                              {vehicle.Cargo && <div>Cargo: {vehicle.Cargo}L</div>}
+                              {vehicle.Cargo && (
+                                <div>Cargo: {vehicle.Cargo}L</div>
+                              )}
                             </div>
                           </div>
                           <div className="col-span-2 space-y-2">
-                            <div className="text-sm font-medium text-gray-500">Extras</div>
+                            <div className="text-sm font-medium text-gray-500">
+                              Extras
+                            </div>
                             {vehicle.ExtraSpace?.length > 0 ? (
                               <div className="flex flex-wrap gap-1">
                                 {vehicle.ExtraSpace.map((extra, index) => (
@@ -1037,7 +1111,7 @@ useEffect(() => {
                       No vehicles found
                     </div>
                   )}
-                  
+
                   {/* Mobile Pagination */}
                   {totalPages > 1 && (
                     <div className="flex items-center justify-between pt-4">
@@ -1073,6 +1147,3 @@ useEffect(() => {
 };
 
 export default VehicleDetailsForm;
-
-
-
