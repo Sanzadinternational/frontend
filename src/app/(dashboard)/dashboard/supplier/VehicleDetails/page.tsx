@@ -56,7 +56,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 const formSchema = z.object({
   VehicleType: z.string().min(1, { message: "Vehicle Type is required" }),
   VehicleBrand: z.string().min(1, { message: "Vehicle Brand is required" }),
-  ServiceType: z.string().min(1, { message: "Service Type is required" }),
+  // ServiceType: z.string().min(1, { message: "Service Type is required" }),
+  ServiceType: z.string().optional(),
   VehicleModel: z.string().min(1, { message: "Vehicle Model is required" }),
   Doors: z.number().min(1, { message: "Doors are required" }),
   Seats: z.number().min(1, { message: "Seats are required" }),
@@ -143,6 +144,8 @@ const VehicleDetailsForm = () => {
     fetchData();
   }, [isDialogOpen]);
 
+
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -226,6 +229,16 @@ const VehicleDetailsForm = () => {
     "Trailer Hitch",
     "Extended Cargo Space",
   ];
+
+useEffect(() => {
+  const selectedBrand = form.watch("VehicleBrand");
+  if (selectedBrand) {
+    const brandData = vehicleBrands.find(brand => brand.VehicleBrand === selectedBrand);
+    if (brandData) {
+      form.setValue("ServiceType", brandData.ServiceType);
+    }
+  }
+}, [form.watch("VehicleBrand")]);
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
@@ -452,7 +465,7 @@ const VehicleDetailsForm = () => {
                            )}
                          />
 
-                         <FormField
+                         {/* <FormField
                            control={form.control}
                            name="ServiceType"
                            render={({ field }) => (
@@ -487,7 +500,26 @@ const VehicleDetailsForm = () => {
                                <FormMessage />
                              </FormItem>
                            )}
-                         />
+                         /> */}
+
+                          <FormField
+  control={form.control}
+  name="ServiceType"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Service Type</FormLabel>
+      <FormControl>
+        <Input
+          {...field}
+          readOnly
+          placeholder="Service type will be auto-selected"
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
 
                          <FormField
                            control={form.control}
