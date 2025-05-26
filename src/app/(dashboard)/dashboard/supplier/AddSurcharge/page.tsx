@@ -520,6 +520,7 @@ const Surcharge = () => {
                                 field.onChange(e.target.value);
                                 form.trigger("SurgeChargePrice");
                               }}
+                              min="0"
                             />
                           </FormControl>
                           <FormMessage />

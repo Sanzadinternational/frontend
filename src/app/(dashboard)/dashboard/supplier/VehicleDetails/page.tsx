@@ -656,6 +656,7 @@ const VehicleDetailsForm = () => {
                                     placeholder="Enter Cargo"
                                     {...field}
                                     type="number"
+                                    min="0"
                                   />
                                 </FormControl>
                                 <FormMessage />

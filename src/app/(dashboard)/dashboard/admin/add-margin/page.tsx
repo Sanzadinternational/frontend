@@ -340,6 +340,7 @@ const AddMargin = () => {
                           placeholder="Enter margin price"
                           {...field}
                           type="number"
+                          min="0"
                         />
                       </FormControl>
                       <FormMessage />

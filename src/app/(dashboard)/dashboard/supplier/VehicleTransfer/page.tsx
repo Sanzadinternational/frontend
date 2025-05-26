@@ -718,6 +718,7 @@ const VehicleTransfer = () => {
                                     value={field.value || ""}
                                     type="number"
                                     className="rounded-l-none"
+                                    min="0"
                                   />
                                 </div>
                               </FormControl>
@@ -746,6 +747,7 @@ const VehicleTransfer = () => {
                                     value={field.value || ""}
                                     type="number"
                                     className="rounded-l-none"
+                                    min="0"
                                   />
                                 </div>
                               </FormControl>
@@ -952,6 +954,7 @@ const VehicleTransfer = () => {
                   type="number"
                   className="rounded-l-none"
                   disabled={!price}
+                  min="0"
                 />
               </div>
             </FormControl>
@@ -1026,6 +1029,7 @@ const VehicleTransfer = () => {
                                     value={field.value || ""}
                                     type="number"
                                     className="rounded-l-none"
+                                    min="0"
                                   />
                                 </div>
                               </FormControl>
@@ -1052,6 +1056,7 @@ const VehicleTransfer = () => {
                                     value={field.value || ""}
                                     type="number"
                                     className="rounded-l-none"
+                                    min="0"
                                   />
                                 </div>
                               </FormControl>
@@ -1078,6 +1083,7 @@ const VehicleTransfer = () => {
                                     value={field.value || ""}
                                     type="number"
                                     className="rounded-l-none"
+                                    min="0"
                                   />
                                 </div>
                               </FormControl>
@@ -1104,6 +1110,7 @@ const VehicleTransfer = () => {
                                     value={field.value || ""}
                                     type="number"
                                     className="rounded-l-none"
+                                    min="0"
                                   />
                                 </div>
                               </FormControl>
@@ -1170,6 +1177,7 @@ const VehicleTransfer = () => {
                                         value={field.value || ""}
                                         type="number"
                                         className="rounded-l-none"
+                                        min="0"
                                       />
                                     </div>
                                   </FormControl>
