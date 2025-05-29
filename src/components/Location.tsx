@@ -21,7 +21,7 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
-import { Plane, Hotel, TrainFront, Bus, UsersRound, MapPin } from "lucide-react";
+import { Plane, Hotel, TrainFront, Bus, UsersRound, MapPin,Calendar as CalendarIcon, Clock as ClockIcon } from "lucide-react";
 const placeTypeIcons: { [key: string]: JSX.Element } = {
   airport: <Plane className="w-6 h-6 text-blue-500 dark:text-sky-300" />,
   lodging: <Hotel className="w-6 h-6 text-yellow-500" />,
@@ -172,6 +172,56 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
   );
 };
 
+
+const DateInput = ({ value, onChange, ...props }) => {
+  const inputRef = useRef(null);
+
+  const handleClick = () => {
+    if (inputRef.current) {
+      inputRef.current.showPicker(); // This triggers the native picker
+    }
+  };
+
+  return (
+    <div className="relative" onClick={handleClick}>
+      <input
+        ref={inputRef}
+        type="date"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-2 appearance-none cursor-pointer"
+        {...props}
+      />
+      {/* <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-300 pointer-events-none" /> */}
+    </div>
+  );
+};
+
+const TimeInput = ({ value, onChange, ...props }) => {
+  const inputRef = useRef(null);
+
+  const handleClick = () => {
+    if (inputRef.current) {
+      inputRef.current.showPicker(); // This triggers the native picker
+    }
+  };
+
+  return (
+    <div className="relative" onClick={handleClick}>
+      <input
+        ref={inputRef}
+        type="time"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-2 appearance-none cursor-pointer"
+        {...props}
+      />
+      {/* <ClockIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-300 pointer-events-none" /> */}
+    </div>
+  );
+};
+
+
 // Define the validation schema with date and time fields
 const formSchema = z.object({
   pickup: z.string().min(1, { message: "Pick Up is Required" }),
@@ -318,7 +368,7 @@ export default function Location() {
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="pax"
                   render={({ field }) => (
@@ -344,11 +394,44 @@ export default function Location() {
                       </FormMessage>
                     </FormItem>
                   )}
-                />
+                /> */}
+
+                  <FormField
+  control={form.control}
+  name="pax"
+  render={({ field }) => (
+    <FormItem className="flex flex-col">
+      <FormLabel className="uppercase text-xs font-bold text-blue-400 dark:text-white">
+        Number of Passengers
+      </FormLabel>
+      <FormControl>
+        <div className="relative flex items-center">
+          <select
+            {...field}
+            className="w-full bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-2 appearance-none"
+          >
+            {Array.from({ length: 50 }, (_, i) => i + 1).map((num) => (
+              <option key={num} value={num}>
+                {num} {num === 1 ? 'Passenger' : 'Passengers'}
+              </option>
+            ))}
+          </select>
+          <span className="absolute right-3 text-xl text-gray-500 w-6 h-6 flex items-center justify-center pointer-events-none">
+            <UsersRound className="w-5 h-5 text-gray-500 dark:text-gray-300" />
+          </span>
+        </div>
+      </FormControl>
+      <FormMessage>
+        {form.formState.errors.pax?.message}
+      </FormMessage>
+    </FormItem>
+  )}
+/>
+
 
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
                   {/* Date Field */}
-                  <FormField
+                  {/* <FormField
                     control={form.control}
                     name="date"
                     render={({ field }) => (
@@ -368,9 +451,31 @@ export default function Location() {
                         </FormMessage>
                       </FormItem>
                     )}
-                  />
+                  /> */}
+
+                    <FormField
+  control={form.control}
+  name="date"
+  render={({ field }) => (
+    <FormItem className="flex flex-col">
+      <FormLabel className="uppercase text-xs font-bold text-blue-400 dark:text-white">
+        Date
+      </FormLabel>
+      <FormControl>
+        <DateInput
+          value={field.value}
+          onChange={field.onChange}
+        />
+      </FormControl>
+      <FormMessage>
+        {form.formState.errors.date?.message}
+      </FormMessage>
+    </FormItem>
+  )}
+/>
+
                   {/* Time Field */}
-                  <FormField
+                  {/* <FormField
                     control={form.control}
                     name="time"
                     render={({ field }) => (
@@ -390,7 +495,30 @@ export default function Location() {
                         </FormMessage>
                       </FormItem>
                     )}
-                  />
+                  /> */}
+
+                    <FormField
+  control={form.control}
+  name="time"
+  render={({ field }) => (
+    <FormItem className="flex flex-col">
+      <FormLabel className="uppercase text-xs font-bold text-blue-400 dark:text-white">
+        Time
+      </FormLabel>
+      <FormControl>
+        <TimeInput
+          value={field.value}
+          onChange={field.onChange}
+        />
+      </FormControl>
+      <FormMessage>
+        {form.formState.errors.time?.message}
+      </FormMessage>
+    </FormItem>
+  )}
+/>
+
+
                 </div>
               </div>
 
@@ -410,7 +538,7 @@ export default function Location() {
               {showReturnFields && (
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
                   {/* Return Date Field */}
-                  <FormField
+                  {/* <FormField
                     control={form.control}
                     name="returnDate"
                     render={({ field }) => (
@@ -430,9 +558,29 @@ export default function Location() {
                         </FormMessage>
                       </FormItem>
                     )}
-                  />
-                  {/* Return Time Field */}
+                  /> */}
                   <FormField
+  control={form.control}
+  name="returnDate"
+  render={({ field }) => (
+    <FormItem className="flex flex-col">
+      <FormLabel className="uppercase text-xs font-bold text-blue-400 dark:text-white">
+        Return Date
+      </FormLabel>
+      <FormControl>
+        <DateInput
+          value={field.value}
+          onChange={field.onChange}
+        />
+      </FormControl>
+      <FormMessage>
+        {form.formState.errors.returnDate?.message}
+      </FormMessage>
+    </FormItem>
+  )}
+/>
+                  {/* Return Time Field */}
+                  {/* <FormField
                     control={form.control}
                     name="returnTime"
                     render={({ field }) => (
@@ -452,7 +600,29 @@ export default function Location() {
                         </FormMessage>
                       </FormItem>
                     )}
-                  />
+                  /> */}
+
+                    <FormField
+  control={form.control}
+  name="returnTime"
+  render={({ field }) => (
+    <FormItem className="flex flex-col">
+      <FormLabel className="uppercase text-xs font-bold text-blue-400 dark:text-white">
+        Return Time
+      </FormLabel>
+      <FormControl>
+        <TimeInput
+          value={field.value}
+          onChange={field.onChange}
+        />
+      </FormControl>
+      <FormMessage>
+        {form.formState.errors.returnTime?.message}
+      </FormMessage>
+    </FormItem>
+  )}
+/>
+
                 </div>
               )}
               <Button
