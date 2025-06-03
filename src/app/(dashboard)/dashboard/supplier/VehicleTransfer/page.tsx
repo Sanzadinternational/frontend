@@ -437,6 +437,8 @@ const VehicleTransfer = () => {
   };
 
   const handleDelete = async (id: string, index: number) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete?");
+  if (!confirmDelete) return;
     try {
       await fetchWithAuth(`${API_BASE_URL}/supplier/deleteTransfer/${id}`, {
         method: "DELETE",

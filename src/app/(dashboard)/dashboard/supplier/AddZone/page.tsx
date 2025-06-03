@@ -245,6 +245,8 @@ const Page = () => {
   };
 
   const handleDelete = async (id: string) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete?");
+  if (!confirmDelete) return;
     try {
       await fetchWithAuth(`${API_BASE_URL}/supplier/deleteZone/${id}`, {
         method: "DELETE",
