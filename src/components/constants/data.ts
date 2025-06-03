@@ -225,6 +225,11 @@ export const sideBarItems: Role[] = [
             title: 'Vehicle Info',
             url: '/dashboard/admin/vehicle-details',
             icon: 'add'
+          },
+          {
+            title: 'Transfer Info',
+            url: '/dashboard/admin/supplier-transfer',
+            icon: 'add'
           }
         ]
       },

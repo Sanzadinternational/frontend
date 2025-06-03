@@ -1813,6 +1813,8 @@ const resetForm = () => {
 
   // Handle delete button click
   const handleDelete = async (email: string) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete?");
+  if (!confirmDelete) return;
 
     try {
       const response = await axios.delete(`${API_BASE_URL}/admin/DestroyAdmin/${email}`);

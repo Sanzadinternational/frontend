@@ -245,6 +245,8 @@ const AgentMargin = () => {
   };
 
   const handleDelete = async (id: number) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this margin?");
+  if (!confirmDelete) return;
     try {
       const response = await axios.delete(
         `${API_BASE_URL}/admin/DeleteAgentMargin/${id}`

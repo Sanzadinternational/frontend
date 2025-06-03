@@ -29,6 +29,7 @@ import {
   Settings,
   Proportions,
   NotebookPen,
+  Route,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -356,6 +357,21 @@ const Page = () => {
                   <CardFooter>
                     <Link href="/dashboard/admin/vehicle-details">
                       <Button variant="outline">Add Info</Button>
+                    </Link>
+                  </CardFooter>
+                </Card>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium">Supplier</CardTitle>
+                    <Route width={20} height={20} />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-xl font-bold">Transfer Info</div>
+                    <p className="text-xs text-muted-foreground">View Supplier wise transfer</p>
+                  </CardContent>
+                  <CardFooter>
+                    <Link href="/dashboard/admin/supplier-transfer">
+                      <Button variant="outline">View Transfer</Button>
                     </Link>
                   </CardFooter>
                 </Card>
