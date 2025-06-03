@@ -1,3 +1,4 @@
+
 // "use client";
 
 // import { useEffect, useState } from "react";
@@ -20,7 +21,8 @@
 //   TableHeader,
 //   TableRow,
 // } from "@/components/ui/table";
-// import { Loader2, ArrowUpDown } from "lucide-react";
+// import { Loader2 } from "lucide-react";
+// import { Badge } from "@/components/ui/badge";
 
 // interface Supplier {
 //   id: number;
@@ -32,11 +34,19 @@
 //   Zone_name: string;
 //   VehicleType: string;
 //   VehicleModel: string;
+//   VehicleBrand: string;
+//   ServiceType: string;
 //   price: string;
 //   Currency: string;
 //   extra_price_per_mile: string;
 //   NightTime: string;
 //   NightTime_Price: string;
+//   vehicleTax: string;
+//   vehicleTaxType: string;
+//   tollTax: string;
+//   parking: string;
+//   driverTips: string;
+//   driverCharge: string;
 // }
 
 // const TransferDataPage = () => {
@@ -155,36 +165,113 @@
 //                   No transfer data found for this supplier
 //                 </p>
 //               ) : (
-//                 <div className="rounded-md border">
-//                   <Table>
-//                     <TableHeader>
-//                       <TableRow>
-//                         <TableHead>Zone</TableHead>
-//                         <TableHead>Vehicle Type</TableHead>
-//                         <TableHead>Model</TableHead>
-//                         <TableHead>Price</TableHead>
-//                         <TableHead>Currency</TableHead>
-//                         <TableHead>Extra Price/Mile</TableHead>
-//                         <TableHead>Night Time</TableHead>
-//                         <TableHead>Night Price</TableHead>
-//                       </TableRow>
-//                     </TableHeader>
-//                     <TableBody>
-//                       {transfers.map((transfer) => (
-//                         <TableRow key={transfer.id}>
-//                           <TableCell>{transfer.Zone_name}</TableCell>
-//                           <TableCell>{transfer.VehicleType}</TableCell>
-//                           <TableCell>{transfer.VehicleModel}</TableCell>
-//                           <TableCell>{transfer.price}</TableCell>
-//                           <TableCell>{transfer.Currency}</TableCell>
-//                           <TableCell>{transfer.extra_price_per_mile}</TableCell>
-//                           <TableCell>{transfer.NightTime}</TableCell>
-//                           <TableCell>{transfer.NightTime_Price}</TableCell>
-//                         </TableRow>
-//                       ))}
-//                     </TableBody>
-//                   </Table>
-//                 </div>
+//                 <>
+//                   {/* Desktop Table */}
+//                   <div className="hidden md:block">
+//                     <div className="rounded-md border">
+//                       <Table>
+//                         <TableHeader>
+//                           <TableRow>
+//                             <TableHead>Zone</TableHead>
+//                             <TableHead>Vehicle Info</TableHead>
+//                             <TableHead>Price</TableHead>
+//                             <TableHead>Extras</TableHead>
+//                             <TableHead>Night Time</TableHead>
+//                           </TableRow>
+//                         </TableHeader>
+//                         <TableBody>
+//                           {transfers.map((transfer) => (
+//                             <TableRow key={transfer.id}>
+//                               <TableCell>{transfer.Zone_name}</TableCell>
+//                               <TableCell>
+//                                 <div className="flex flex-col space-y-1">
+//                                   <span><strong>Type:</strong> {transfer.VehicleType}</span>
+//                                   <span><strong>Model:</strong> {transfer.VehicleModel}</span>
+//                                   <span><strong>Brand:</strong> {transfer.VehicleBrand}</span>
+//                                   <span><strong>Service:</strong> {transfer.ServiceType}</span>
+//                                 </div>
+//                               </TableCell>
+//                               <TableCell>
+//                                 <div className="flex flex-col space-y-1">
+//                                   <span><strong>Base:</strong> {transfer.price} {transfer.Currency}</span>
+//                                   <span><strong>Per Mile:</strong> {transfer.extra_price_per_mile} {transfer.Currency}</span>
+//                                 </div>
+//                               </TableCell>
+//                               <TableCell>
+//                                 <div className="flex flex-col space-y-1">
+//                                   <span><strong>Tax:</strong> {transfer.vehicleTax} {transfer.vehicleTaxType === 'percentage' ? '%' : transfer.Currency}</span>
+//                                   <span><strong>Toll:</strong> {transfer.tollTax} {transfer.Currency}</span>
+//                                   <span><strong>Tips:</strong> {transfer.driverTips} {transfer.Currency}</span>
+//                                   <span><strong>Parking:</strong> {transfer.parking} {transfer.Currency}</span>
+//                                   <span><strong>Driver:</strong> {transfer.driverCharge} {transfer.Currency}</span>
+//                                 </div>
+//                               </TableCell>
+//                               <TableCell>
+//                                 {transfer.NightTime === 'yes' ? (
+//                                   <div className="flex flex-col space-y-1">
+//                                     <Badge variant="destructive">Night Time</Badge>
+//                                     <span>{transfer.NightTime_Price} {transfer.Currency}</span>
+//                                   </div>
+//                                 ) : (
+//                                   <Badge variant="outline">Day Time</Badge>
+//                                 )}
+//                               </TableCell>
+//                             </TableRow>
+//                           ))}
+//                         </TableBody>
+//                       </Table>
+//                     </div>
+//                   </div>
+
+//                   {/* Mobile Cards */}
+//                   <div className="md:hidden space-y-4">
+//                     {transfers.map((transfer) => (
+//                       <Card key={transfer.id}>
+//                         <CardHeader className="p-4">
+//                           <div className="flex justify-between items-start">
+//                             <div>
+//                               <CardTitle className="text-lg mb-2">{transfer.Zone_name}</CardTitle>
+//                               <Badge variant={transfer.NightTime === 'yes' ? "destructive" : "outline"}>
+//                                 {transfer.NightTime === 'yes' ? 'Night Time' : 'Day Time'}
+//                               </Badge>
+//                               {transfer.NightTime === 'yes' && (
+//                                 <span className="ml-2">{transfer.NightTime_Price} {transfer.Currency}</span>
+//                               )}
+//                             </div>
+//                             <div className="text-right">
+//                               <div className="text-xl font-bold">{transfer.price} {transfer.Currency}</div>
+//                               <div className="text-sm">+ {transfer.extra_price_per_mile} {transfer.Currency}/mile</div>
+//                             </div>
+//                           </div>
+//                         </CardHeader>
+//                         <CardContent className="p-4 pt-0">
+//                           <div className="space-y-4">
+//                             <div>
+//                               <h3 className="font-medium mb-1">Vehicle Info</h3>
+//                               <div className="grid grid-cols-2 gap-2 text-sm">
+//                                 <div><span className="text-muted-foreground">Type:</span> {transfer.VehicleType}</div>
+//                                 <div><span className="text-muted-foreground">Model:</span> {transfer.VehicleModel}</div>
+//                                 <div><span className="text-muted-foreground">Brand:</span> {transfer.VehicleBrand}</div>
+//                                 <div><span className="text-muted-foreground">Service:</span> {transfer.ServiceType}</div>
+//                               </div>
+//                             </div>
+
+//                             <div>
+//                               <h3 className="font-medium mb-1">Extras</h3>
+//                               <div className="grid grid-cols-2 gap-2 text-sm">
+//                                 <div><span className="text-muted-foreground">Tax:</span> {transfer.vehicleTax} {transfer.vehicleTaxType === 'percentage' ? '%' : transfer.Currency}</div>
+//                                 <div><span className="text-muted-foreground">Toll:</span> {transfer.tollTax} {transfer.Currency}</div>
+//                                 <div><span className="text-muted-foreground">Tips:</span> {transfer.driverTips} {transfer.Currency}</div>
+//                                 <div><span className="text-muted-foreground">Parking:</span> {transfer.parking} {transfer.Currency}</div>
+//                                 <div><span className="text-muted-foreground">Driver:</span> {transfer.driverCharge} {transfer.Currency}</div>
+//                               </div>
+//                             </div>
+//                           </div>
+//                         </CardContent>
+//                       </Card>
+//                     ))}
+//                   </div>
+//                 </>
 //               )}
 //             </CardContent>
 //           </Card>
@@ -195,6 +282,7 @@
 // };
 
 // export default TransferDataPage;
+
 
 
 
@@ -220,7 +308,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface Supplier {
@@ -231,6 +319,7 @@ interface Supplier {
 interface Transfer {
   id: string;
   Zone_name: string;
+  radius_miles:string;
   VehicleType: string;
   VehicleModel: string;
   VehicleBrand: string;
@@ -248,6 +337,8 @@ interface Transfer {
   driverCharge: string;
 }
 
+const ITEMS_PER_PAGE = 5;
+
 const TransferDataPage = () => {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const { toast } = useToast();
@@ -256,6 +347,7 @@ const TransferDataPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSupplier, setSelectedSupplier] = useState<string>("");
   const [isFetchingTransfers, setIsFetchingTransfers] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -293,6 +385,7 @@ const TransferDataPage = () => {
       }
       const data = await response.json();
       setTransfers(data);
+      setCurrentPage(1); // Reset to first page when new supplier is selected
     } catch (error: any) {
       console.error("Error fetching transfers:", error);
       toast({
@@ -309,6 +402,29 @@ const TransferDataPage = () => {
   const handleSupplierChange = (value: string) => {
     setSelectedSupplier(value);
     fetchTransfers(value);
+  };
+
+  // Pagination logic
+  const totalPages = Math.ceil(transfers.length / ITEMS_PER_PAGE);
+  const paginatedTransfers = transfers.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -379,9 +495,15 @@ const TransferDataPage = () => {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {transfers.map((transfer) => (
+                          {paginatedTransfers.map((transfer) => (
                             <TableRow key={transfer.id}>
-                              <TableCell>{transfer.Zone_name}</TableCell>
+                              <TableCell>
+                                <div className="flex flex-col space-y-1">
+                                  <span>{transfer.Zone_name}</span>
+                                  <span><strong>Radius:</strong>{transfer.radius_miles} miles</span>
+                                </div>
+                                {/* {transfer.Zone_name} */}
+                                </TableCell>
                               <TableCell>
                                 <div className="flex flex-col space-y-1">
                                   <span><strong>Type:</strong> {transfer.VehicleType}</span>
@@ -420,11 +542,51 @@ const TransferDataPage = () => {
                         </TableBody>
                       </Table>
                     </div>
+
+                    {/* Desktop Pagination */}
+                    <div className="flex items-center justify-between px-2 py-4">
+                      <div className="text-sm text-muted-foreground">
+                        Showing{" "}
+                        <strong>
+                          {(currentPage - 1) * ITEMS_PER_PAGE + 1}-
+                          {Math.min(currentPage * ITEMS_PER_PAGE, transfers.length)}
+                        </strong>{" "}
+                        of <strong>{transfers.length}</strong> transfers
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={goToPreviousPage}
+                          disabled={currentPage === 1}
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                          <Button
+                            key={page}
+                            variant={currentPage === page ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => goToPage(page)}
+                          >
+                            {page}
+                          </Button>
+                        ))}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={goToNextPage}
+                          disabled={currentPage === totalPages}
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Mobile Cards */}
                   <div className="md:hidden space-y-4">
-                    {transfers.map((transfer) => (
+                    {paginatedTransfers.map((transfer) => (
                       <Card key={transfer.id}>
                         <CardHeader className="p-4">
                           <div className="flex justify-between items-start">
@@ -463,12 +625,38 @@ const TransferDataPage = () => {
                                 <div><span className="text-muted-foreground">Tips:</span> {transfer.driverTips} {transfer.Currency}</div>
                                 <div><span className="text-muted-foreground">Parking:</span> {transfer.parking} {transfer.Currency}</div>
                                 <div><span className="text-muted-foreground">Driver:</span> {transfer.driverCharge} {transfer.Currency}</div>
+                                <div><span className="text-muted-foreground">Zone Radius:</span> {transfer.radius_miles} miles</div>
                               </div>
                             </div>
                           </div>
                         </CardContent>
                       </Card>
                     ))}
+
+                    {/* Mobile Pagination */}
+                    <div className="flex items-center justify-between pt-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={goToPreviousPage}
+                        disabled={currentPage === 1}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        Previous
+                      </Button>
+                      <div className="text-sm text-muted-foreground">
+                        Page {currentPage} of {totalPages}
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={goToNextPage}
+                        disabled={currentPage === totalPages}
+                      >
+                        Next
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </>
               )}
