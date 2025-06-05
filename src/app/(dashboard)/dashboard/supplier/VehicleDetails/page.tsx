@@ -380,34 +380,37 @@ const VehicleDetailsForm = () => {
     <DashboardContainer scrollable>
       <div className="space-y-4">
         <Card>
-          <CardHeader className="flex flex-row justify-between items-center">
-            <div>
-              <CardTitle>Vehicle Details</CardTitle>
-              <CardDescription>
-                {filteredVehicles.length} vehicle
-                {filteredVehicles.length !== 1 ? "s" : ""} found
-              </CardDescription>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="relative w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search vehicles..."
-                  className="pl-9"
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setCurrentPage(1); // Reset to first page when searching
-                  }}
-                />
-              </div>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button onClick={() => setEditingId(null)}>
-                    <Plus className="mr-2 h-4 w-4" /> Add Vehicle
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-[800px] max-h-[80vh] overflow-y-auto">
+          <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+  <div className="w-full md:w-auto">
+    <CardTitle className="text-lg md:text-xl">Vehicle Details</CardTitle>
+    <CardDescription className="text-xs md:text-sm">
+      {filteredVehicles.length} vehicle{filteredVehicles.length !== 1 ? "s" : ""} found
+    </CardDescription>
+  </div>
+  <div className="flex flex-col md:flex-row items-stretch w-full md:w-auto gap-2">
+    <div className="relative w-full">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <Input
+        placeholder="Search vehicles..."
+        className="pl-9 w-full text-sm"
+        value={searchTerm}
+        onChange={(e) => {
+          setSearchTerm(e.target.value);
+          setCurrentPage(1);
+        }}
+      />
+    </div>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogTrigger asChild>
+        <Button 
+          onClick={() => setEditingId(null)}
+          className="w-full md:w-auto"
+          size="sm"
+        >
+          <Plus className="mr-2 h-4 w-4" /> Add Vehicle
+        </Button>
+      </DialogTrigger>
+                <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>
                       {editingId ? "Edit Vehicle" : "Add New Vehicle"}
