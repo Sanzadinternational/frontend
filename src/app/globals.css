@@ -37,6 +37,14 @@ input[type=number]::-webkit-outer-spin-button {
   }
 }
 /* resposive Table CSS */
+
+/* date picker */
+.rdp-weekdays{
+  display:flex;
+  justify-content: space-around;
+}
+/* date picker  */
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

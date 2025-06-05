@@ -32,13 +32,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil, Trash2, Plus, Search, ChevronUp, ChevronDown } from "lucide-react";
+import {
+  Pencil,
+  Trash2,
+  Plus,
+  Search,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import DashboardContainer from "@/components/layout/DashboardContainer";
 import { removeToken } from "@/components/utils/auth";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-
+import { Textarea } from "@/components/ui/textarea";
 const transferSchema = z.object({
   rows: z.array(
     z.object({
@@ -106,14 +113,6 @@ type TaxCalculationRow = {
   Price?: string;
 };
 
-// const calculateVehicleTax = (row: TaxCalculationRow): number => {
-//   const price = parseFloat(row.Price || "0") || 0;
-//   const taxValue = parseFloat(row.vehicleTax || "0") || 0;
-
-//   return row.vehicleTaxType === "percentage"
-//     ? (price * taxValue) / 100
-//     : taxValue;
-// };
 const calculateVehicleTax = (row: TaxCalculationRow): number => {
   const price = parseFloat(row.Price || "0") || 0;
   const taxValue = parseFloat(row.vehicleTax || "0") || 0;
@@ -137,9 +136,11 @@ const VehicleTransfer = () => {
   const [editingRows, setEditingRows] = useState<
     { index: number; transferId: string | null }[]
   >([]);
-  const [editingTransferId, setEditingTransferId] = useState<string | null>(null);
+  const [editingTransferId, setEditingTransferId] = useState<string | null>(
+    null
+  );
   const [userData, setUserData] = useState<UserData | null>(null);
-  
+
   // Search and filter state
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -242,16 +243,17 @@ const VehicleTransfer = () => {
 
   // Apply search filter whenever searchTerm or allTransfers changes
   useEffect(() => {
-    const filtered = allTransfers.filter(transfer => {
+    const filtered = allTransfers.filter((transfer) => {
       const searchLower = searchTerm.toLowerCase();
       return (
-        (transfer.VehicleBrand?.toLowerCase().includes(searchLower)) ||
-        (transfer.VehicleModel?.toLowerCase().includes(searchLower))||
-        (transfer.Zone_name?.toLowerCase().includes(searchLower)) ||
-        (transfer.Transfer_info?.toLowerCase().includes(searchLower)) ||
-        (transfer.price?.toString().includes(searchTerm)) ||
-        (transfer.extra_price_per_mile?.toString().includes(searchTerm))
-      )});
+        transfer.VehicleBrand?.toLowerCase().includes(searchLower) ||
+        transfer.VehicleModel?.toLowerCase().includes(searchLower) ||
+        transfer.Zone_name?.toLowerCase().includes(searchLower) ||
+        transfer.Transfer_info?.toLowerCase().includes(searchLower) ||
+        transfer.price?.toString().includes(searchTerm) ||
+        transfer.extra_price_per_mile?.toString().includes(searchTerm)
+      );
+    });
     setDisplayedTransfers(filtered);
     setCurrentPage(1);
   }, [searchTerm, allTransfers]);
@@ -263,8 +265,8 @@ const VehicleTransfer = () => {
         const bValue = b[sortConfig.key] || "";
 
         if (
-          sortConfig.key === "price" || 
-          sortConfig.key === "extra_price_per_mile" || 
+          sortConfig.key === "price" ||
+          sortConfig.key === "extra_price_per_mile" ||
           sortConfig.key === "NightTime_Price" ||
           sortConfig.key === "vehicleTax" ||
           sortConfig.key === "parking" ||
@@ -274,12 +276,14 @@ const VehicleTransfer = () => {
         ) {
           const numA = parseFloat(aValue as string) || 0;
           const numB = parseFloat(bValue as string) || 0;
-          return sortConfig.direction === "ascending" ? numA - numB : numB - numA;
+          return sortConfig.direction === "ascending"
+            ? numA - numB
+            : numB - numA;
         }
 
         const strA = String(aValue).toLowerCase();
         const strB = String(bValue).toLowerCase();
-        
+
         if (strA < strB) {
           return sortConfig.direction === "ascending" ? -1 : 1;
         }
@@ -295,14 +299,19 @@ const VehicleTransfer = () => {
   const requestSort = (key: keyof Transfer) => {
     let direction: "ascending" | "descending" = "ascending";
     if (sortConfig?.key === key) {
-      direction = sortConfig.direction === "ascending" ? "descending" : "ascending";
+      direction =
+        sortConfig.direction === "ascending" ? "descending" : "ascending";
     }
     setSortConfig({ key, direction });
   };
 
   const getSortIcon = (key: keyof Transfer) => {
     if (!sortConfig || sortConfig.key !== key) {
-      return <span className="opacity-0"><ChevronUp size={16} /></span>;
+      return (
+        <span className="opacity-0">
+          <ChevronUp size={16} />
+        </span>
+      );
     }
     return sortConfig.direction === "ascending" ? (
       <ChevronUp size={16} />
@@ -314,7 +323,10 @@ const VehicleTransfer = () => {
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = displayedTransfers.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = displayedTransfers.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
   const totalPages = Math.ceil(displayedTransfers.length / itemsPerPage);
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
@@ -361,8 +373,9 @@ const VehicleTransfer = () => {
 
   const handleAddRow = () => {
     const currentRows = form.getValues("rows");
-    const firstRowCurrency = currentRows[0]?.Currency || userData?.Currency || "INR";
-    
+    const firstRowCurrency =
+      currentRows[0]?.Currency || userData?.Currency || "INR";
+
     form.setValue(
       "rows",
       [
@@ -433,12 +446,14 @@ const VehicleTransfer = () => {
     };
 
     form.setValue("rows", updatedRows);
-    document.getElementById("transfer-form")?.scrollIntoView({ behavior: "smooth" });
+    document
+      .getElementById("transfer-form")
+      ?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleDelete = async (id: string, index: number) => {
     const confirmDelete = window.confirm("Are you sure you want to delete?");
-  if (!confirmDelete) return;
+    if (!confirmDelete) return;
     try {
       await fetchWithAuth(`${API_BASE_URL}/supplier/deleteTransfer/${id}`, {
         method: "DELETE",
@@ -475,25 +490,23 @@ const VehicleTransfer = () => {
       });
     }
   };
- 
 
   const handleSubmit = async (data: z.infer<typeof transferSchema>) => {
     setIsSubmitting(true);
     try {
       console.log("Form submission data:", data);
-      const promises = data.rows.map(row => {
+      const promises = data.rows.map((row) => {
         // Transform the tax value if percentage was selected
         const finalTaxValue =
-  row.vehicleTaxType === "percentage" && row.Price
-    ? (parseFloat(row.Price) * parseFloat(row.vehicleTax || "0")) / 100
-    : parseFloat(row.vehicleTax || "0");
+          row.vehicleTaxType === "percentage" && row.Price
+            ? (parseFloat(row.Price) * parseFloat(row.vehicleTax || "0")) / 100
+            : parseFloat(row.vehicleTax || "0");
 
         const transferData = {
           ...row,
           vehicleTax: finalTaxValue,
           Currency: userData?.Currency, // Use user's currency
           supplier_id: userData?.userId,
-          
         };
         console.log("Processed row data:", transferData); // Log each processed row
         if (row.transferId) {
@@ -575,7 +588,6 @@ const VehicleTransfer = () => {
       </DashboardContainer>
     );
   }
-
 
   return (
     <DashboardContainer scrollable>
@@ -690,8 +702,9 @@ const VehicleTransfer = () => {
                             <FormItem>
                               <FormLabel>Transfer Info</FormLabel>
                               <FormControl>
-                                <Input
+                                <Textarea
                                   placeholder="Transfer Info"
+                                  className="resize-none"
                                   {...field}
                                   value={field.value || ""}
                                 />
@@ -758,261 +771,114 @@ const VehicleTransfer = () => {
                           )}
                         />
 
-                        {/* <FormField
+                        <FormField
                           control={form.control}
                           name={`rows.${index}.vehicleTax`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Vehicle Tax (select % or fixed amount)</FormLabel>
-                              <div className="flex flex-col gap-2">
-                                <div className="flex gap-2 items-center">
-                                  <FormControl>
-                                    <div className="flex">
-                                      <span className="bg-secondary px-2 py-1 rounded-l-sm flex items-center">
-                                        {form.watch(`rows.${index}.vehicleTaxType`) === "percentage" 
-                                          ? "%" 
-                                          : userData?.Currency}
-                                      </span>
-                                      <Input
-                                        placeholder={
-                                          form.watch(`rows.${index}.vehicleTaxType`) === "percentage"
-                                            ? "Enter Percentage"
-                                            : "Enter Tax Amount"
-                                        }
-                                        {...field}
-                                        value={field.value || ""}
-                                        type="number"
-                                        className="rounded-l-none"
-                                      />
-                                    </div>
-                                  </FormControl>
-                                  <FormField
-                                    control={form.control}
-                                    name={`rows.${index}.vehicleTaxType`}
-                                    render={({ field }) => (
-                                      <FormItem className="flex items-center space-x-3 space-y-0">
-                                        <FormControl>
-                                          <RadioGroup
-                                            onValueChange={field.onChange}
-                                            value={field.value}
-                                            className="flex space-x-2"
-                                          >
-                                            <div className="flex items-center space-x-1">
-                                              <RadioGroupItem value="fixed" id={`fixed-${index}`} />
-                                              <Label htmlFor={`fixed-${index}`}>Fixed</Label>
-                                            </div>
-                                            <div className="flex items-center space-x-1">
-                                              <RadioGroupItem value="percentage" id={`percentage-${index}`} />
-                                              <Label htmlFor={`percentage-${index}`}>%</Label>
-                                            </div>
-                                          </RadioGroup>
-                                        </FormControl>
-                                      </FormItem>
-                                    )}
-                                  />
-                                </div>
-                                {form.watch(`rows.${index}.vehicleTaxType`) === "percentage" && (
-                                  <div className="text-sm text-muted-foreground">
-                                    Calculated Tax: {userData?.Currency}{" "}
-                                    {calculateVehicleTax({
-                                      vehicleTaxType: form.watch(`rows.${index}.vehicleTaxType`),
-                                      vehicleTax: form.watch(`rows.${index}.vehicleTax`),
-                                      Price: form.watch(`rows.${index}.Price`)
-                                    }).toFixed(2)}
+                          render={({ field }) => {
+                            const price = form.watch(`rows.${index}.Price`);
+                            const taxType = form.watch(
+                              `rows.${index}.vehicleTaxType`
+                            );
+                            const taxValue = form.watch(
+                              `rows.${index}.vehicleTax`
+                            );
+
+                            // Calculate tax only for display purposes
+                            const calculatedTax =
+                              taxType === "percentage" && price
+                                ? parseFloat(price) *
+                                  (parseFloat(taxValue || "0") / 100)
+                                : parseFloat(taxValue || "0");
+
+                            return (
+                              <FormItem>
+                                <FormLabel>Vehicle Tax</FormLabel>
+                                <div className="flex flex-col gap-2">
+                                  <div className="flex gap-2 items-center">
+                                    <FormControl>
+                                      <div className="flex">
+                                        <span className="bg-secondary px-2 py-1 rounded-l-sm flex items-center">
+                                          {taxType === "percentage"
+                                            ? "%"
+                                            : userData?.Currency}
+                                        </span>
+                                        <Input
+                                          placeholder={
+                                            taxType === "percentage"
+                                              ? "Enter Percentage"
+                                              : "Enter Tax Amount"
+                                          }
+                                          {...field}
+                                          value={field.value || ""}
+                                          type="number"
+                                          className="rounded-l-none"
+                                          disabled={!price}
+                                          min="0"
+                                        />
+                                      </div>
+                                    </FormControl>
+                                    <FormField
+                                      control={form.control}
+                                      name={`rows.${index}.vehicleTaxType`}
+                                      render={({ field: taxTypeField }) => (
+                                        <FormItem className="flex items-center space-x-3 space-y-0">
+                                          <FormControl>
+                                            <RadioGroup
+                                              onValueChange={
+                                                taxTypeField.onChange
+                                              }
+                                              value={taxTypeField.value}
+                                              className="flex space-x-2"
+                                            >
+                                              <div className="flex items-center space-x-1">
+                                                <RadioGroupItem
+                                                  value="fixed"
+                                                  id={`fixed-${index}`}
+                                                  disabled={!price}
+                                                />
+                                                <Label
+                                                  htmlFor={`fixed-${index}`}
+                                                >
+                                                  Fixed
+                                                </Label>
+                                              </div>
+                                              <div className="flex items-center space-x-1">
+                                                <RadioGroupItem
+                                                  value="percentage"
+                                                  id={`percentage-${index}`}
+                                                  disabled={!price}
+                                                />
+                                                <Label
+                                                  htmlFor={`percentage-${index}`}
+                                                >
+                                                  %
+                                                </Label>
+                                              </div>
+                                            </RadioGroup>
+                                          </FormControl>
+                                        </FormItem>
+                                      )}
+                                    />
                                   </div>
-                                )}
-                              </div>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        /> */}
-
-{/* <FormField
-  control={form.control}
-  name={`rows.${index}.vehicleTax`}
-  render={({ field }) => {
-    const price = form.watch(`rows.${index}.Price`);
-    const taxType = form.watch(`rows.${index}.vehicleTaxType`);
-    const taxValue = form.watch(`rows.${index}.vehicleTax`);
-    const calculatedTax = calculateVehicleTax({
-      vehicleTaxType: taxType,
-      vehicleTax: taxValue,
-      Price: price
-    });
-
-    // Update the vehicleTaxAmount field when calculation changes
-    useEffect(() => {
-      form.setValue(
-        `rows.${index}.vehicleTaxAmount`,
-        calculatedTax.toString()
-      );
-    }, [calculatedTax, form, index]);
-
-    return (
-      <FormItem>
-        <FormLabel>Vehicle Tax (select % or fixed amount)</FormLabel>
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-2 items-center">
-            <FormControl>
-              <div className="flex">
-                <span className="bg-secondary px-2 py-1 rounded-l-sm flex items-center">
-                  {taxType === "percentage" ? "%" : userData?.Currency}
-                </span>
-                <Input
-                  placeholder={
-                    taxType === "percentage"
-                      ? "Enter Percentage"
-                      : "Enter Tax Amount"
-                  }
-                  {...field}
-                  value={field.value || ""}
-                  type="number"
-                  className="rounded-l-none"
-                  disabled={!price} // Disable if no price
-                />
-              </div>
-            </FormControl>
-            <FormField
-              control={form.control}
-              name={`rows.${index}.vehicleTaxType`}
-              render={({ field: taxTypeField }) => (
-                <FormItem className="flex items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={taxTypeField.onChange}
-                      value={taxTypeField.value}
-                      className="flex space-x-2"
-                    >
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem 
-                          value="fixed" 
-                          id={`fixed-${index}`} 
-                          disabled={!price} // Disable if no price
+                                  {taxType === "percentage" && price && (
+                                    <div className="text-sm text-muted-foreground">
+                                      Calculated Tax: {userData?.Currency}{" "}
+                                      {calculatedTax.toFixed(2)}
+                                    </div>
+                                  )}
+                                  {!price && (
+                                    <div className="text-sm text-muted-foreground">
+                                      Enter price first to calculate tax
+                                    </div>
+                                  )}
+                                </div>
+                                <FormMessage />
+                              </FormItem>
+                            );
+                          }}
                         />
-                        <Label htmlFor={`fixed-${index}`}>Fixed</Label>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem 
-                          value="percentage" 
-                          id={`percentage-${index}`} 
-                          disabled={!price} // Disable if no price
-                        />
-                        <Label htmlFor={`percentage-${index}`}>%</Label>
-                      </div>
-                    </RadioGroup>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-          {taxType === "percentage" && price && (
-            <div className="text-sm text-muted-foreground">
-              Calculated Tax: {userData?.Currency} {calculatedTax.toFixed(2)}
-            </div>
-          )}
-          {!price && (
-            <div className="text-sm text-muted-foreground">
-              Enter price first to calculate tax
-            </div>
-          )}
-        </div>
-        <FormMessage />
-      </FormItem>
-    );
-  }}
-/> */}
 
-<FormField
-  control={form.control}
-  name={`rows.${index}.vehicleTax`}
-  render={({ field }) => {
-    const price = form.watch(`rows.${index}.Price`);
-    const taxType = form.watch(`rows.${index}.vehicleTaxType`);
-    const taxValue = form.watch(`rows.${index}.vehicleTax`);
-    
-    // Calculate tax only for display purposes
-    const calculatedTax = taxType === "percentage" && price
-    ? parseFloat(price) * (parseFloat(taxValue || "0") / 100)
-    : parseFloat(taxValue || "0");
-
-    return (
-      <FormItem>
-        <FormLabel>Vehicle Tax</FormLabel>
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-2 items-center">
-            <FormControl>
-              <div className="flex">
-                <span className="bg-secondary px-2 py-1 rounded-l-sm flex items-center">
-                  {taxType === "percentage" ? "%" : userData?.Currency}
-                </span>
-                <Input
-                  placeholder={
-                    taxType === "percentage"
-                      ? "Enter Percentage"
-                      : "Enter Tax Amount"
-                  }
-                  {...field}
-                  value={field.value || ""}
-                  type="number"
-                  className="rounded-l-none"
-                  disabled={!price}
-                  min="0"
-                />
-              </div>
-            </FormControl>
-            <FormField
-              control={form.control}
-              name={`rows.${index}.vehicleTaxType`}
-              render={({ field: taxTypeField }) => (
-                <FormItem className="flex items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={taxTypeField.onChange}
-                      value={taxTypeField.value}
-                      className="flex space-x-2"
-                    >
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem 
-                          value="fixed" 
-                          id={`fixed-${index}`} 
-                          disabled={!price}
-                        />
-                        <Label htmlFor={`fixed-${index}`}>Fixed</Label>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem 
-                          value="percentage" 
-                          id={`percentage-${index}`} 
-                          disabled={!price}
-                        />
-                        <Label htmlFor={`percentage-${index}`}>%</Label>
-                      </div>
-                    </RadioGroup>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-          {taxType === "percentage" && price && (
-            <div className="text-sm text-muted-foreground">
-              Calculated Tax: {userData?.Currency} {calculatedTax.toFixed(2)}
-            </div>
-          )}
-          {!price && (
-            <div className="text-sm text-muted-foreground">
-              Enter price first to calculate tax
-            </div>
-          )}
-        </div>
-        <FormMessage />
-      </FormItem>
-    );
-  }}
-/>
-
-
-
-<FormField
+                        <FormField
                           control={form.control}
                           name={`rows.${index}.parking`}
                           render={({ field }) => (
@@ -1023,7 +889,7 @@ const VehicleTransfer = () => {
                                   <span className="bg-secondary px-2 py-1 rounded-l-sm flex items-center">
                                     {/* {form.watch(`rows.${index}.Currency`) ||
                                       "N/A"} */}
-                                     { userData?.Currency}
+                                    {userData?.Currency}
                                   </span>
                                   <Input
                                     placeholder="Enter Parking Charge"
@@ -1050,7 +916,7 @@ const VehicleTransfer = () => {
                                   <span className="bg-secondary px-2 py-1 rounded-l-sm flex items-center">
                                     {/* {form.watch(`rows.${index}.Currency`) ||
                                       "N/A"} */}
-                                     { userData?.Currency}
+                                    {userData?.Currency}
                                   </span>
                                   <Input
                                     placeholder="Enter Toll Tax"
@@ -1077,7 +943,7 @@ const VehicleTransfer = () => {
                                   <span className="bg-secondary px-2 py-1 rounded-l-sm flex items-center">
                                     {/* {form.watch(`rows.${index}.Currency`) ||
                                       "N/A"} */}
-                                      {userData?.Currency}
+                                    {userData?.Currency}
                                   </span>
                                   <Input
                                     placeholder="Enter Driver Charge"
@@ -1104,7 +970,7 @@ const VehicleTransfer = () => {
                                   <span className="bg-secondary px-2 py-1 rounded-l-sm flex items-center">
                                     {/* {form.watch(`rows.${index}.Currency`) ||
                                       "N/A"} */}
-                                      {userData?.Currency}
+                                    {userData?.Currency}
                                   </span>
                                   <Input
                                     placeholder="Enter Price"
@@ -1171,7 +1037,7 @@ const VehicleTransfer = () => {
                                       <span className="bg-secondary px-2 py-1 rounded-l-sm flex items-center">
                                         {/* {form.watch(`rows.${index}.Currency`) ||
                                           "N/A"} */}
-                                          {userData?.Currency}
+                                        {userData?.Currency}
                                       </span>
                                       <Input
                                         placeholder="Night Time Price"
@@ -1188,8 +1054,7 @@ const VehicleTransfer = () => {
                               )}
                             />
                           )}
-                        </div> 
-
+                        </div>
                       </div>
                       <div className="flex justify-end">
                         <Button
@@ -1226,7 +1091,7 @@ const VehicleTransfer = () => {
             <div className="mt-8">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                 <h3 className="text-lg font-medium">Existing Transfers</h3>
-                
+
                 <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                   <div className="relative w-full">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -1237,7 +1102,7 @@ const VehicleTransfer = () => {
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
-                  
+
                   <Select
                     value={itemsPerPage.toString()}
                     onValueChange={(value) => {
@@ -1263,7 +1128,7 @@ const VehicleTransfer = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead 
+                      <TableHead
                         className="cursor-pointer hover:bg-accent"
                         onClick={() => requestSort("VehicleBrand")}
                       >
@@ -1271,7 +1136,7 @@ const VehicleTransfer = () => {
                           Vehicle {getSortIcon("VehicleBrand")}
                         </div>
                       </TableHead>
-                      <TableHead 
+                      <TableHead
                         className="cursor-pointer hover:bg-accent"
                         onClick={() => requestSort("Zone_name")}
                       >
@@ -1279,7 +1144,7 @@ const VehicleTransfer = () => {
                           Zone {getSortIcon("Zone_name")}
                         </div>
                       </TableHead>
-                      <TableHead 
+                      <TableHead
                         className="cursor-pointer hover:bg-accent"
                         onClick={() => requestSort("Transfer_info")}
                       >
@@ -1287,7 +1152,7 @@ const VehicleTransfer = () => {
                           Transfer Info {getSortIcon("Transfer_info")}
                         </div>
                       </TableHead>
-                      <TableHead 
+                      <TableHead
                         className="cursor-pointer hover:bg-accent"
                         onClick={() => requestSort("price")}
                       >
@@ -1295,7 +1160,7 @@ const VehicleTransfer = () => {
                           Price {getSortIcon("price")}
                         </div>
                       </TableHead>
-                      <TableHead 
+                      <TableHead
                         className="cursor-pointer hover:bg-accent"
                         onClick={() => requestSort("extra_price_per_mile")}
                       >
@@ -1303,7 +1168,7 @@ const VehicleTransfer = () => {
                           Extra Price/Mile {getSortIcon("extra_price_per_mile")}
                         </div>
                       </TableHead>
-                      <TableHead 
+                      <TableHead
                         className="cursor-pointer hover:bg-accent"
                         onClick={() => requestSort("NightTime")}
                       >
@@ -1348,24 +1213,40 @@ const VehicleTransfer = () => {
                               : "No"}
                           </TableCell>
                           <TableCell>
-          <div className="flex flex-col gap-1">
-            <span className="text-sm">
-              <span className="font-medium text-muted-foreground">Tax:</span> {transfer.Currency} {transfer.vehicleTax || "0"}
-            </span>
-            <span className="text-sm">
-              <span className="font-medium text-muted-foreground">Parking:</span> {transfer.Currency} {transfer.parking || "0"}
-            </span>
-            <span className="text-sm">
-              <span className="font-medium text-muted-foreground">Toll:</span> {transfer.Currency} {transfer.tollTax || "0"}
-            </span>
-            <span className="text-sm">
-              <span className="font-medium text-muted-foreground">Driver:</span> {transfer.Currency} {transfer.driverCharge || "0"}
-            </span>
-            <span className="text-sm">
-              <span className="font-medium text-muted-foreground">Tips:</span> {transfer.Currency} {transfer.driverTips || "0"}
-            </span>
-          </div>
-        </TableCell>
+                            <div className="flex flex-col gap-1">
+                              <span className="text-sm">
+                                <span className="font-medium text-muted-foreground">
+                                  Tax:
+                                </span>{" "}
+                                {transfer.Currency} {transfer.vehicleTax || "0"}
+                              </span>
+                              <span className="text-sm">
+                                <span className="font-medium text-muted-foreground">
+                                  Parking:
+                                </span>{" "}
+                                {transfer.Currency} {transfer.parking || "0"}
+                              </span>
+                              <span className="text-sm">
+                                <span className="font-medium text-muted-foreground">
+                                  Toll:
+                                </span>{" "}
+                                {transfer.Currency} {transfer.tollTax || "0"}
+                              </span>
+                              <span className="text-sm">
+                                <span className="font-medium text-muted-foreground">
+                                  Driver:
+                                </span>{" "}
+                                {transfer.Currency}{" "}
+                                {transfer.driverCharge || "0"}
+                              </span>
+                              <span className="text-sm">
+                                <span className="font-medium text-muted-foreground">
+                                  Tips:
+                                </span>{" "}
+                                {transfer.Currency} {transfer.driverTips || "0"}
+                              </span>
+                            </div>
+                          </TableCell>
                           <TableCell>
                             <div className="flex gap-2">
                               <Button
@@ -1403,28 +1284,33 @@ const VehicleTransfer = () => {
                       Previous
                     </Button>
                     <div className="flex items-center gap-1">
-                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                        let pageNum;
-                        if (totalPages <= 5) {
-                          pageNum = i + 1;
-                        } else if (currentPage <= 3) {
-                          pageNum = i + 1;
-                        } else if (currentPage >= totalPages - 2) {
-                          pageNum = totalPages - 4 + i;
-                        } else {
-                          pageNum = currentPage - 2 + i;
+                      {Array.from(
+                        { length: Math.min(5, totalPages) },
+                        (_, i) => {
+                          let pageNum;
+                          if (totalPages <= 5) {
+                            pageNum = i + 1;
+                          } else if (currentPage <= 3) {
+                            pageNum = i + 1;
+                          } else if (currentPage >= totalPages - 2) {
+                            pageNum = totalPages - 4 + i;
+                          } else {
+                            pageNum = currentPage - 2 + i;
+                          }
+                          return (
+                            <Button
+                              key={pageNum}
+                              variant={
+                                currentPage === pageNum ? "default" : "outline"
+                              }
+                              size="sm"
+                              onClick={() => paginate(pageNum)}
+                            >
+                              {pageNum}
+                            </Button>
+                          );
                         }
-                        return (
-                          <Button
-                            key={pageNum}
-                            variant={currentPage === pageNum ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => paginate(pageNum)}
-                          >
-                            {pageNum}
-                          </Button>
-                        );
-                      })}
+                      )}
                       {totalPages > 5 && currentPage < totalPages - 2 && (
                         <>
                           <span className="px-2">...</span>
@@ -1441,7 +1327,9 @@ const VehicleTransfer = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
+                      onClick={() =>
+                        paginate(Math.min(totalPages, currentPage + 1))
+                      }
                       disabled={currentPage === totalPages}
                     >
                       Next
@@ -1531,25 +1419,42 @@ const VehicleTransfer = () => {
                           </div>
                         </div>
                         <div className="col-span-2 space-y-2">
-    <div className="text-sm font-medium text-gray-500">Extra Charges</div>
-    <div className="grid grid-cols-2 gap-2 text-sm">
-      <div>
-        <span className="text-muted-foreground">Tax:</span> {transfer.Currency} {transfer.vehicleTax || "0"}
-      </div>
-      <div>
-        <span className="text-muted-foreground">Parking:</span> {transfer.Currency} {transfer.parking || "0"}
-      </div>
-      <div>
-        <span className="text-muted-foreground">Toll:</span> {transfer.Currency} {transfer.tollTax || "0"}
-      </div>
-      <div>
-        <span className="text-muted-foreground">Driver:</span> {transfer.Currency} {transfer.driverCharge || "0"}
-      </div>
-      <div>
-        <span className="text-muted-foreground">Tips:</span> {transfer.Currency} {transfer.driverTips || "0"}
-      </div>
-    </div>
-  </div>
+                          <div className="text-sm font-medium text-gray-500">
+                            Extra Charges
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div>
+                              <span className="text-muted-foreground">
+                                Tax:
+                              </span>{" "}
+                              {transfer.Currency} {transfer.vehicleTax || "0"}
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">
+                                Parking:
+                              </span>{" "}
+                              {transfer.Currency} {transfer.parking || "0"}
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">
+                                Toll:
+                              </span>{" "}
+                              {transfer.Currency} {transfer.tollTax || "0"}
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">
+                                Driver:
+                              </span>{" "}
+                              {transfer.Currency} {transfer.driverCharge || "0"}
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">
+                                Tips:
+                              </span>{" "}
+                              {transfer.Currency} {transfer.driverTips || "0"}
+                            </div>
+                          </div>
+                        </div>
                       </CardContent>
                     </Card>
                   );
@@ -1572,7 +1477,9 @@ const VehicleTransfer = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
+                      onClick={() =>
+                        paginate(Math.min(totalPages, currentPage + 1))
+                      }
                       disabled={currentPage === totalPages}
                     >
                       Next

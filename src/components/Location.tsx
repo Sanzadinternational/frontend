@@ -173,13 +173,74 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
 };
 
 
+// const DateInput = ({ value, onChange, ...props }) => {
+//   const inputRef = useRef(null);
+
+//   const handleClick = () => {
+//     if (inputRef.current) {
+//       inputRef.current.showPicker(); // This triggers the native picker
+//     }
+//   };
+
+//   return (
+//     <div className="relative" onClick={handleClick}>
+//       <input
+//         ref={inputRef}
+//         type="date"
+//         value={value}
+//         onChange={(e) => onChange(e.target.value)}
+//         className="w-full bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-2 appearance-none cursor-pointer"
+//         {...props}
+//       />
+//       {/* <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-300 pointer-events-none" /> */}
+//     </div>
+//   );
+// };
+
+// const TimeInput = ({ value, onChange, ...props }) => {
+//   const inputRef = useRef(null);
+
+//   const handleClick = () => {
+//     if (inputRef.current) {
+//       inputRef.current.showPicker(); // This triggers the native picker
+//     }
+//   };
+
+//   return (
+//     <div className="relative" onClick={handleClick}>
+//       <input
+//         ref={inputRef}
+//         type="time"
+//         value={value}
+//         onChange={(e) => onChange(e.target.value)}
+//         className="w-full bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-2 appearance-none cursor-pointer"
+//         {...props}
+//       />
+//       {/* <ClockIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-300 pointer-events-none" /> */}
+//     </div>
+//   );
+// };
+
+
+// Define the validation schema with date and time fields
+
 const DateInput = ({ value, onChange, ...props }) => {
   const inputRef = useRef(null);
+  const [showPlaceholder, setShowPlaceholder] = useState(!value);
 
   const handleClick = () => {
     if (inputRef.current) {
-      inputRef.current.showPicker(); // This triggers the native picker
+      inputRef.current.showPicker();
     }
+  };
+
+  const handleChange = (e) => {
+    onChange(e.target.value);
+    setShowPlaceholder(!e.target.value);
+  };
+
+  const handleBlur = () => {
+    setShowPlaceholder(!inputRef.current?.value);
   };
 
   return (
@@ -188,10 +249,18 @@ const DateInput = ({ value, onChange, ...props }) => {
         ref={inputRef}
         type="date"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-2 appearance-none cursor-pointer"
+        onChange={handleChange}
+        onBlur={handleBlur}
+        className={`w-full bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-2 appearance-none cursor-pointer ${
+          showPlaceholder ? "text-transparent" : ""
+        }`}
         {...props}
       />
+      {showPlaceholder && (
+        <div className="absolute inset-0 flex items-center px-2 pointer-events-none text-gray-400 dark:text-gray-300">
+          DD-MM-YYYY
+        </div>
+      )}
       {/* <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-300 pointer-events-none" /> */}
     </div>
   );
@@ -199,11 +268,21 @@ const DateInput = ({ value, onChange, ...props }) => {
 
 const TimeInput = ({ value, onChange, ...props }) => {
   const inputRef = useRef(null);
+  const [showPlaceholder, setShowPlaceholder] = useState(!value);
 
   const handleClick = () => {
     if (inputRef.current) {
-      inputRef.current.showPicker(); // This triggers the native picker
+      inputRef.current.showPicker();
     }
+  };
+
+  const handleChange = (e) => {
+    onChange(e.target.value);
+    setShowPlaceholder(!e.target.value);
+  };
+
+  const handleBlur = () => {
+    setShowPlaceholder(!inputRef.current?.value);
   };
 
   return (
@@ -212,17 +291,24 @@ const TimeInput = ({ value, onChange, ...props }) => {
         ref={inputRef}
         type="time"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-2 appearance-none cursor-pointer"
+        onChange={handleChange}
+        onBlur={handleBlur}
+        className={`w-full bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-2 appearance-none cursor-pointer ${
+          showPlaceholder ? "text-transparent" : ""
+        }`}
         {...props}
       />
+      {showPlaceholder && (
+        <div className="absolute inset-0 flex items-center px-2 pointer-events-none text-gray-400 dark:text-gray-300">
+          HH:MM
+        </div>
+      )}
       {/* <ClockIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-300 pointer-events-none" /> */}
     </div>
   );
 };
 
 
-// Define the validation schema with date and time fields
 const formSchema = z.object({
   pickup: z.string().min(1, { message: "Pick Up is Required" }),
   dropoff: z.string().min(1, { message: "Drop Off is Required" }),

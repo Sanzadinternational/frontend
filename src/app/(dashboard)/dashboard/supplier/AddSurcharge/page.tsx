@@ -90,7 +90,7 @@ const Surcharge = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [userCurrency, setUserCurrency] = useState<string>('USD');
-  
+ 
   // Search and filter state
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState<{ 
@@ -403,7 +403,7 @@ const Surcharge = () => {
     <DashboardContainer scrollable>
       <div className="space-y-4">
         <Card>
-          <CardHeader className="flex flex-row justify-between items-center">
+          {/* <CardHeader className="flex flex-row justify-between items-center">
             <div>
               <CardTitle>Surcharge Management</CardTitle>
               <CardDescription>
@@ -438,11 +438,50 @@ const Surcharge = () => {
                 <Plus className="mr-2 h-4 w-4" /> Add Surcharge
               </Button>
             </div>
-          </CardHeader>
-
+          </CardHeader> */}
+<CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+  <div>
+    <CardTitle className="text-lg md:text-xl">Surcharge Management</CardTitle>
+    <CardDescription className="text-xs md:text-sm">
+      {filteredSurcharges.length} surcharge{filteredSurcharges.length !== 1 ? 's' : ''} found
+    </CardDescription>
+  </div>
+  <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full">
+    <div className="relative w-full">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <Input
+        placeholder="Search..."
+        className="pl-9 w-full"
+        value={searchTerm}
+        onChange={(e) => {
+          setSearchTerm(e.target.value);
+          setCurrentPage(1);
+        }}
+      />
+    </div>
+    <Button
+      onClick={() => {
+        setEditingId(null);
+        form.reset({
+          uniqueId: "",
+          SurgeChargePrice: "",
+          DateRange: { from: null, to: null },
+          currency: userCurrency,
+        });
+        setShowForm(true);
+      }}
+      className="w-full md:w-auto"
+      size="sm"
+    >
+      <Plus className="mr-2 h-4 w-4" /> Add
+    </Button>
+  </div>
+</CardHeader>
           <CardContent>
             {showForm || editingId ? (
-              <div className="mb-6 p-4 border rounded-lg bg-muted/50 relative">
+              // <div className="mb-6 p-4 border rounded-lg bg-muted/50 relative">
+              <div className="mb-6 p-2 sm:p-4 border rounded-lg bg-muted/50 relative w-full overflow-hidden">
+
                 {isSubmitting && (
                   <div className="absolute inset-0 bg-background/50 flex items-center justify-center rounded-lg">
                     <Loader2 className="h-8 w-8 animate-spin" />
