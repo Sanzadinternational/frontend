@@ -163,6 +163,7 @@ const VehicleTransfer = () => {
           NightTime: "no",
           NightTime_Price: "",
           vehicleTax: "",
+          vehicleTaxType: "fixed",
           parking: "",
           tollTax: "",
           driverCharge: "",
@@ -422,34 +423,71 @@ const VehicleTransfer = () => {
     }
   };
 
-  const handleEditTransfer = (transfer: Transfer) => {
-    setEditingTransferId(transfer.id);
-    setIsEditing(true);
+  // const handleEditTransfer = (transfer: Transfer) => {
+  //   setEditingTransferId(transfer.id);
+  //   setIsEditing(true);
 
-    const currentRows = form.getValues("rows");
-    const updatedRows = [...currentRows];
-    updatedRows[0] = {
-      uniqueId: transfer.vehicle_id,
-      SelectZone: transfer.zone_id,
-      Price: transfer.price,
-      Extra_Price: transfer.extra_price_per_mile,
-      Currency: transfer.Currency,
-      TransferInfo: transfer.Transfer_info || "",
-      NightTime: transfer.NightTime,
-      NightTime_Price: transfer.NightTime_Price || "",
-      transferId: transfer.id,
-      vehicleTax: transfer.vehicleTax,
-      parking: transfer.parking,
-      tollTax: transfer.tollTax,
-      driverCharge: transfer.driverCharge,
-      driverTips: transfer.driverTips,
-    };
+  //   const currentRows = form.getValues("rows");
+  //   const updatedRows = [...currentRows];
+  //   updatedRows[0] = {
+  //     uniqueId: transfer.vehicle_id,
+  //     SelectZone: transfer.zone_id,
+  //     Price: transfer.price,
+  //     Extra_Price: transfer.extra_price_per_mile,
+  //     Currency: transfer.Currency,
+  //     TransferInfo: transfer.Transfer_info || "",
+  //     NightTime: transfer.NightTime,
+  //     NightTime_Price: transfer.NightTime_Price || "",
+  //     transferId: transfer.id,
+  //     vehicleTax: transfer.vehicleTax,
+  //     vehicleTaxType: transfer.vehicleTaxType || "fixed",
+  //     parking: transfer.parking,
+  //     tollTax: transfer.tollTax,
+  //     driverCharge: transfer.driverCharge,
+  //     driverTips: transfer.driverTips,
+  //   };
 
-    form.setValue("rows", updatedRows);
-    document
-      .getElementById("transfer-form")
-      ?.scrollIntoView({ behavior: "smooth" });
+  //   form.setValue("rows", updatedRows);
+  //   document
+  //     .getElementById("transfer-form")
+  //     ?.scrollIntoView({ behavior: "smooth" });
+  // };
+
+const handleEditTransfer = (transfer: Transfer) => {
+  setEditingTransferId(transfer.id);
+  setIsEditing(true);
+
+  // Calculate back the percentage if tax type was percentage
+  let displayTaxValue = transfer.vehicleTax || "";
+  if (transfer.vehicleTaxType === "percentage" && transfer.price && transfer.vehicleTax) {
+    const price = parseFloat(transfer.price);
+    const taxValue = parseFloat(transfer.vehicleTax);
+    displayTaxValue = ((taxValue / price) * 100).toString();
+  }
+
+  const currentRows = form.getValues("rows");
+  const updatedRows = [...currentRows];
+  updatedRows[0] = {
+    uniqueId: transfer.vehicle_id,
+    SelectZone: transfer.zone_id,
+    Price: transfer.price,
+    Extra_Price: transfer.extra_price_per_mile,
+    Currency: transfer.Currency,
+    TransferInfo: transfer.Transfer_info || "",
+    NightTime: transfer.NightTime,
+    NightTime_Price: transfer.NightTime_Price || "",
+    transferId: transfer.id,
+    vehicleTax: displayTaxValue, // Use the calculated display value
+    vehicleTaxType: transfer.vehicleTaxType || "fixed",
+    parking: transfer.parking,
+    tollTax: transfer.tollTax,
+    driverCharge: transfer.driverCharge,
+    driverTips: transfer.driverTips,
   };
+
+  form.setValue("rows", updatedRows);
+  document.getElementById("transfer-form")?.scrollIntoView({ behavior: "smooth" });
+};
 
   const handleDelete = async (id: string, index: number) => {
     const confirmDelete = window.confirm("Are you sure you want to delete?");

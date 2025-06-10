@@ -376,12 +376,27 @@ const SearchResult = ({
                   return (
                   <Card key={index} className="">
                     <CardHeader>
+                      <div className="flex justify-between items-center">
+                      <div>
                       <CardTitle>{vehicle.brand}</CardTitle>
                       <CardDescription>{vehicle.vehicalType}</CardDescription>
+                      </div>
+                      <div>
+                        <HoverCard>
+                              <HoverCardTrigger className="flex items-center text-blue-500 cursor-pointer">
+                                <BadgeInfo width={15} height={15} />
+                                Transfer Info
+                              </HoverCardTrigger>
+                              <HoverCardContent className="w-80 text-wrap">
+                                {vehicle.transferInfo || "No Info Available"}
+                              </HoverCardContent>
+                            </HoverCard>
+                      </div>
+                      </div>
                     </CardHeader>
                     <CardContent>
                       <div className="flex flex-col gap-5 md:flex-row justify-between">
-                        <div className="w-auto md:w-[75%] flex flex-col md:flex-row md:justify-between">
+                        <div className="w-auto md:w-[75%] flex flex-col md:justify-between">
                           <Image
                             src={
                               vehicle.image ||
@@ -392,9 +407,9 @@ const SearchResult = ({
                             alt={vehicle.brand}
                             className="rounded-sm"
                           />
-                          <div className="flex flex-col md:items-end justify-between">
-                            <dl className="px-2 py-1 text-sm">
-                              <div className="flex md:justify-end items-center gap-1">
+                          <div className="flex flex-col md:flex-row md:items-center justify-between">
+                            <dl className="flex gap-3 px-2 py-1 text-sm">
+                              <div className="flex items-center gap-1">
                                 <dt>Passengers</dt>
                                 <dd>{vehicle.passengers}</dd>
                                 <Users width={15} height={15} />
@@ -410,7 +425,7 @@ const SearchResult = ({
                                 <Luggage width={15} height={15} />
                               </div>
                             </dl>
-                            <HoverCard>
+                            {/* <HoverCard>
                               <HoverCardTrigger className="flex items-center text-blue-500 cursor-pointer">
                                 <BadgeInfo width={15} height={15} />
                                 Transfer Info
@@ -418,7 +433,7 @@ const SearchResult = ({
                               <HoverCardContent className="w-80 text-wrap">
                                 {vehicle.transferInfo || "No Info Available"}
                               </HoverCardContent>
-                            </HoverCard>
+                            </HoverCard> */}
                           </div>
                         </div>
                         <div className="w-1/2 md:w-[25%] bg-slate-50 dark:bg-slate-800 rounded-sm px-2 py-1 flex flex-col justify-between">
