@@ -57,12 +57,12 @@ const transferSchema = z.object({
       NightTime: z.enum(["yes", "no"]).optional(),
       NightTime_Price: z.string().optional(),
       transferId: z.string().optional(),
-      vehicleTax: z.string().optional(),
+      vehicleTax: z.string().default("0"),
       vehicleTaxType: z.enum(["fixed", "percentage"]).default("fixed"),
-      parking: z.string().optional(),
-      tollTax: z.string().optional(),
-      driverCharge: z.string().optional(),
-      driverTips: z.string().optional(),
+      parking: z.string().default("0"),
+      tollTax: z.string().default("0"),
+      driverCharge: z.string().default("0"),
+      driverTips: z.string().default("0"),
     })
   ),
 });
@@ -219,11 +219,11 @@ const VehicleTransfer = () => {
               TransferInfo: "",
               NightTime: "no",
               NightTime_Price: "",
-              vehicleTax: "",
-              parking: "",
-              tollTax: "",
-              driverCharge: "",
-              driverTips: "",
+              vehicleTax: "0",
+              parking: "0",
+              tollTax: "0",
+              driverCharge: "0",
+              driverTips: "0",
             },
           ],
         });
@@ -545,7 +545,12 @@ const handleEditTransfer = (transfer: Transfer) => {
           vehicleTax: finalTaxValue,
           Currency: userData?.Currency, // Use user's currency
           supplier_id: userData?.userId,
+          parking: row.parking || "0",
+    tollTax: row.tollTax || "0",
+    driverCharge: row.driverCharge || "0",
+    driverTips: row.driverTips || "0",
         };
+        
         console.log("Processed row data:", transferData); // Log each processed row
         if (row.transferId) {
           return fetchWithAuth(
@@ -587,11 +592,11 @@ const handleEditTransfer = (transfer: Transfer) => {
             TransferInfo: "",
             NightTime: "no",
             NightTime_Price: "",
-            vehicleTax: "",
-            parking: "",
-            tollTax: "",
-            driverCharge: "",
-            driverTips: "",
+            vehicleTax: "0",
+            parking: "0",
+            tollTax: "0",
+            driverCharge: "0",
+            driverTips: "0",
           },
         ],
       });
@@ -1252,32 +1257,32 @@ const handleEditTransfer = (transfer: Transfer) => {
                           </TableCell>
                           <TableCell>
                             <div className="flex flex-col gap-1">
-                              <span className="text-sm">
+                              <span className="text-sm flex flex-col">
                                 <span className="font-medium text-muted-foreground">
                                   Tax:
                                 </span>{" "}
                                 {transfer.Currency} {transfer.vehicleTax || "0"}
                               </span>
-                              <span className="text-sm">
+                              <span className="text-sm flex flex-col">
                                 <span className="font-medium text-muted-foreground">
                                   Parking:
                                 </span>{" "}
                                 {transfer.Currency} {transfer.parking || "0"}
                               </span>
-                              <span className="text-sm">
+                              <span className="text-sm flex flex-col">
                                 <span className="font-medium text-muted-foreground">
                                   Toll:
                                 </span>{" "}
                                 {transfer.Currency} {transfer.tollTax || "0"}
                               </span>
-                              <span className="text-sm">
+                              <span className="text-sm flex flex-col">
                                 <span className="font-medium text-muted-foreground">
                                   Driver:
                                 </span>{" "}
                                 {transfer.Currency}{" "}
                                 {transfer.driverCharge || "0"}
                               </span>
-                              <span className="text-sm">
+                              <span className="text-sm flex flex-col">
                                 <span className="font-medium text-muted-foreground">
                                   Tips:
                                 </span>{" "}
