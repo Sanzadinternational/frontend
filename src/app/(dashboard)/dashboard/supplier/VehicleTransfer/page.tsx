@@ -550,7 +550,6 @@ const handleEditTransfer = (transfer: Transfer) => {
     driverCharge: row.driverCharge || "0",
     driverTips: row.driverTips || "0",
         };
-        
         console.log("Processed row data:", transferData); // Log each processed row
         if (row.transferId) {
           return fetchWithAuth(
