@@ -336,7 +336,7 @@ export default function Location() {
     defaultValues: {
       pickup: "",
       dropoff: "",
-      pax: "",
+      pax: "1",
       date: "",
       time: "",
       returnDate: "",
@@ -482,7 +482,7 @@ export default function Location() {
                   )}
                 /> */}
 
-                  <FormField
+                  {/* <FormField
   control={form.control}
   name="pax"
   render={({ field }) => (
@@ -498,6 +498,39 @@ export default function Location() {
           >
             {Array.from({ length: 50 }, (_, i) => i + 1).map((num) => (
               <option key={num} value={num}>
+                {num} {num === 1 ? 'Passenger' : 'Passengers'}
+              </option>
+            ))}
+          </select>
+          <span className="absolute right-3 text-xl text-gray-500 w-6 h-6 flex items-center justify-center pointer-events-none">
+            <UsersRound className="w-5 h-5 text-gray-500 dark:text-gray-300" />
+          </span>
+        </div>
+      </FormControl>
+      <FormMessage>
+        {form.formState.errors.pax?.message}
+      </FormMessage>
+    </FormItem>
+  )}
+/> */}
+
+<FormField
+  control={form.control}
+  name="pax"
+  render={({ field }) => (
+    <FormItem className="flex flex-col">
+      <FormLabel className="uppercase text-xs font-bold text-blue-400 dark:text-white">
+        Number of Passengers
+      </FormLabel>
+      <FormControl>
+        <div className="relative flex items-center">
+          <select
+            {...field}
+            value={field.value || "1"} // Ensure a value is always set
+            className="w-full bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-2 appearance-none"
+          >
+            {Array.from({ length: 50 }, (_, i) => i + 1).map((num) => (
+              <option key={num} value={num.toString()}> {/* Convert to string */}
                 {num} {num === 1 ? 'Passenger' : 'Passengers'}
               </option>
             ))}
