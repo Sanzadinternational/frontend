@@ -780,7 +780,13 @@ import { Textarea } from "@/components/ui/textarea";
 import CountryCityAPI from "../api/CountryCityAPI";
 import { useToast } from "@/hooks/use-toast";
 import { ChooseCurrency } from "../constants/currency";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 interface Country {
   name: string;
   flag: string;
@@ -827,6 +833,7 @@ const AgentRegistration: React.FC = () => {
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const router = useRouter();
 
   const form = useForm<FormData>({
@@ -1001,11 +1008,12 @@ const AgentRegistration: React.FC = () => {
         );
 
         if (registrationResponse.ok) {
-          toast({
-            title: "User Registration",
-            description: "Registered Successfully!",
-          });
-          router.push("/login");
+          setIsSuccessDialogOpen(true);
+          // toast({
+          //   title: "User Registration",
+          //   description: "Registered Successfully!",
+          // });
+          // router.push("/login");
         } else {
           const errorData = await registrationResponse.json();
           toast({
@@ -1458,6 +1466,49 @@ const AgentRegistration: React.FC = () => {
           </Form>
         </CardContent>
       </Card>
+
+          <Dialog 
+              open={isSuccessDialogOpen} 
+              onOpenChange={(open) => {
+                if (!open) {
+                  // When dialog is closed (by any means)
+                  form.reset(); // Reset the form
+                  router.push("/"); // Redirect to login
+                }
+              }}
+            >
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Registration Successful!</DialogTitle>
+            <DialogDescription>
+              {form.getValues("Company_name")} is successfully registered
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <p>
+              Email will be received with credentials once approved by Sanzad International
+            </p>
+            
+            <ul className="list-disc pl-6 space-y-2">
+              <li>This process will be completed in next 2 hours</li>
+              <li>Thereafter website can browsed from your end and we are happy to take your bookings</li>
+              <li>Happy Selling</li>
+            </ul>
+            
+            <div className="flex justify-end pt-4">
+              <Button 
+                onClick={() => {
+                  setIsSuccessDialogOpen(false);
+                  router.push("/");
+                }}
+              >
+                Continue
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

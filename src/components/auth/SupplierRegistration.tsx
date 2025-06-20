@@ -220,15 +220,13 @@
 //     }
 //     formData.append("Gst_Tax_Certificate", fileInput.files[0]);
 
-  
-
 //     if (isOtpVerified) {
 //       try {
 //         const registrationResponse = await fetch(
 //           `${API_BASE_URL}/supplier/registration`,
 //           {
 //             method: "POST",
-//             body: formData, 
+//             body: formData,
 //           }
 //         );
 
@@ -259,10 +257,6 @@
 //     }
 //   };
 
- 
-
- 
- 
 //   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 //     const selectedFile = e.target.files?.[0];
 //     if (selectedFile) {
@@ -275,7 +269,7 @@
 //         });
 //         return;
 //       }
-      
+
 //       setFile(selectedFile);
 //       setPreview(URL.createObjectURL(selectedFile));
 //       form.setValue("Gst_Tax_Certificate", selectedFile);
@@ -286,15 +280,14 @@
 //     const country = countries.find((country) => country.name === value);
 //     if (country) {
 //       setSelectedCountry(value);
-//       setSelectedDialCode(country.dialCode); 
-//       setSelectedFlag(country.flag); 
+//       setSelectedDialCode(country.dialCode);
+//       setSelectedFlag(country.flag);
 //       form.setValue("Country", value);
 //       form.trigger("Country");
 //       form.setValue("City", "");
-      
+
 //     }
 //   };
-
 
 //   const handleCurrencyChange = (value: string) => {
 //     setSelectedCurrency(value);
@@ -322,13 +315,13 @@
 //               render={({ field }) => (
 //                 <FormItem>
 //                   <FormLabel
-                  
+
 //                   >
 //                     Company Name <span className="text-red-500">*</span>
 //                   </FormLabel>
 //                   <FormControl>
 //                     <Input
-                      
+
 //                       placeholder="Enter Company Name"
 //                       {...field}
 //                     />
@@ -348,7 +341,7 @@
 //                   <FormControl>
 //                     <Input
 //                       type="text"
-                      
+
 //                       placeholder="Enter Owner Name"
 //                       {...field}
 //                     />
@@ -368,7 +361,7 @@
 //                   <FormControl>
 //                     <Textarea
 //                       placeholder="Enter Your Address"
-                      
+
 //                       {...field}
 //                     />
 //                   </FormControl>
@@ -419,10 +412,10 @@
 //                     City <span className="text-red-500">*</span>
 //                   </FormLabel>
 //                   <FormControl>
-                    
+
 //                     <Input
 //                       type="text"
-                     
+
 //                       placeholder="Enter Your City"
 //                       {...field}
 //                     />
@@ -443,7 +436,7 @@
 //                   <FormControl>
 //                     <Input
 //                       type="text"
-                    
+
 //                       placeholder="Enter Zip Code"
 //                       {...field}
 //                     />
@@ -469,7 +462,7 @@
 //                           alt="flag"
 //                           width={30}
 //                           height={30}
-//                         /> 
+//                         />
 //                       )}
 //                       {selectedDialCode && (
 //                         <span className=" px-1 py-1">
@@ -483,7 +476,7 @@
 //                         {...field}
 //                       />
 //                     </div>
-                   
+
 //                   </FormControl>
 //                   <FormMessage />
 //                 </FormItem>
@@ -584,7 +577,7 @@
 //                       </FormLabel>
 //                       <FormControl>
 //                         <Input
-                          
+
 //                           type="password"
 //                           placeholder="Enter Password"
 //                           {...field}
@@ -603,7 +596,7 @@
 //                       <FormControl>
 //                         <Input
 //                           type="text"
-                         
+
 //                           placeholder="Contact Person"
 //                           {...field}
 //                         />
@@ -629,7 +622,7 @@
 //                               alt="flag"
 //                               width={30}
 //                               height={30}
-//                             /> 
+//                             />
 //                           )}
 //                           {selectedDialCode && (
 //                             <span className="bg-gray-100 border border-gray-300 px-1 py-1">
@@ -642,7 +635,7 @@
 //                             {...field}
 //                           />
 //                         </div>
-                      
+
 //                       </FormControl>
 //                       <FormMessage />
 //                     </FormItem>
@@ -657,7 +650,7 @@
 //                       <FormControl>
 //                         <Input
 //                           type="text"
-                         
+
 //                           placeholder="Enter GST/VAT/TAX Number"
 //                           {...field}
 //                         />
@@ -675,7 +668,7 @@
 //                       <FormControl>
 //                         <Input
 //                           type="text"
-                         
+
 //                           placeholder="Enter PAN Number"
 //                           {...field}
 //                         />
@@ -702,7 +695,7 @@
 //                             <SelectValue placeholder="Select Currency" />
 //                           </SelectTrigger>
 //                           <SelectContent>
-                           
+
 //                             {chooseCurrency?.map((cur) => (
 //                               <SelectItem
 //                                 key={cur.value}
@@ -746,7 +739,7 @@
 //                       <FormControl>
 //                         <Input
 //                           type="file"
-//                           accept=".pdf,application/pdf" 
+//                           accept=".pdf,application/pdf"
 //                           onChange={handleFileChange}
 //                         />
 //                       </FormControl>
@@ -781,9 +774,6 @@
 
 // export default SupplierRegistration;
 
-
-
-
 "use client";
 
 import * as z from "zod";
@@ -817,6 +807,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -870,6 +867,7 @@ const SupplierRegistration: React.FC = () => {
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const router = useRouter();
 
   const form = useForm<FormData>({
@@ -889,7 +887,7 @@ const SupplierRegistration: React.FC = () => {
       Contact_Person: "",
     },
   });
-  
+
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const { toast } = useToast();
@@ -959,7 +957,6 @@ const SupplierRegistration: React.FC = () => {
       }
     }
   };
-
 
   const handleVerifyOtp = async () => {
     const email = form.getValues("Email");
@@ -1042,11 +1039,12 @@ const SupplierRegistration: React.FC = () => {
         );
 
         if (registrationResponse.ok) {
-          toast({
-            title: "User Registration",
-            description: "Registered Successfully!",
-          });
-          router.push("/login");
+          setIsSuccessDialogOpen(true);
+          // toast({
+          //   title: "User Registration",
+          //   description: "Registered Successfully!",
+          // });
+          // router.push("/");
         } else {
           const errorData = await registrationResponse.json();
           toast({
@@ -1070,7 +1068,10 @@ const SupplierRegistration: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      if (selectedFile.type !== "application/pdf" && !selectedFile.name.endsWith('.pdf')) {
+      if (
+        selectedFile.type !== "application/pdf" &&
+        !selectedFile.name.endsWith(".pdf")
+      ) {
         toast({
           title: "Invalid File Type",
           description: "Please upload a PDF file only.",
@@ -1078,7 +1079,7 @@ const SupplierRegistration: React.FC = () => {
         });
         return;
       }
-      
+
       setFile(selectedFile);
       setPreview(URL.createObjectURL(selectedFile));
       form.setValue("Gst_Tax_Certificate", selectedFile);
@@ -1103,7 +1104,7 @@ const SupplierRegistration: React.FC = () => {
     form.setValue("Currency", value);
   };
 
-   return (
+  return (
     <div className="container mx-auto px-10 md:px-4 py-8 max-w-6xl">
       <Card className="shadow-lg">
         <CountryCityAPI onDataFetched={setCountries} />
@@ -1115,7 +1116,10 @@ const SupplierRegistration: React.FC = () => {
         </CardHeader>
         <CardContent className="p-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="space-y-6"
+            >
               {/* Basic Information Section */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
@@ -1123,7 +1127,9 @@ const SupplierRegistration: React.FC = () => {
                   name="Company_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Company Name <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>
+                        Company Name <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input placeholder="Enter Company Name" {...field} />
                       </FormControl>
@@ -1137,7 +1143,9 @@ const SupplierRegistration: React.FC = () => {
                   name="Owner"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Owner Name <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>
+                        Owner Name <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input placeholder="Enter Owner Name" {...field} />
                       </FormControl>
@@ -1152,7 +1160,9 @@ const SupplierRegistration: React.FC = () => {
                 name="Address"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Address <span className="text-red-500">*</span></FormLabel>
+                    <FormLabel>
+                      Address <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Textarea placeholder="Enter Your Address" {...field} />
                     </FormControl>
@@ -1168,7 +1178,9 @@ const SupplierRegistration: React.FC = () => {
                   name="Country"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Country <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>
+                        Country <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Select
                           {...field}
@@ -1183,7 +1195,10 @@ const SupplierRegistration: React.FC = () => {
                               .slice()
                               .sort((a, b) => a.name.localeCompare(b.name))
                               .map((country) => (
-                                <SelectItem key={country.name} value={country.name}>
+                                <SelectItem
+                                  key={country.name}
+                                  value={country.name}
+                                >
                                   {country.name}
                                 </SelectItem>
                               ))}
@@ -1200,7 +1215,9 @@ const SupplierRegistration: React.FC = () => {
                   name="City"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>City <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>
+                        City <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input placeholder="Enter Your City" {...field} />
                       </FormControl>
@@ -1214,7 +1231,9 @@ const SupplierRegistration: React.FC = () => {
                   name="Zip_code"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Zip Code <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>
+                        Zip Code <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input placeholder="Enter Zip Code" {...field} />
                       </FormControl>
@@ -1231,7 +1250,9 @@ const SupplierRegistration: React.FC = () => {
                   name="Office_number"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Office Number <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>
+                        Office Number <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <div className="flex gap-2 items-center">
                           {selectedFlag && (
@@ -1283,10 +1304,16 @@ const SupplierRegistration: React.FC = () => {
                   name="Email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel>
+                        Email <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <div className="flex gap-2">
-                          <Input type="email" placeholder="Enter Email" {...field} />
+                          <Input
+                            type="email"
+                            placeholder="Enter Email"
+                            {...field}
+                          />
                           <Button
                             type="button"
                             onClick={handleSendOtp}
@@ -1312,7 +1339,9 @@ const SupplierRegistration: React.FC = () => {
                     name="Otp"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>OTP <span className="text-red-500">*</span></FormLabel>
+                        <FormLabel>
+                          OTP <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <div className="flex gap-2">
                             <Input
@@ -1351,9 +1380,16 @@ const SupplierRegistration: React.FC = () => {
                       name="Password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Create Password <span className="text-red-500">*</span></FormLabel>
+                          <FormLabel>
+                            Create Password{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
                           <FormControl>
-                            <Input type="password" placeholder="Enter Password" {...field} />
+                            <Input
+                              type="password"
+                              placeholder="Enter Password"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -1365,7 +1401,10 @@ const SupplierRegistration: React.FC = () => {
                       name="Mobile_number"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Mobile Number <span className="text-red-500">*</span></FormLabel>
+                          <FormLabel>
+                            Mobile Number{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
                           <FormControl>
                             <div className="flex gap-2 items-center">
                               {selectedFlag && (
@@ -1405,7 +1444,10 @@ const SupplierRegistration: React.FC = () => {
                         <FormItem>
                           <FormLabel>GST/VAT/TAX Number</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter GST/VAT/TAX Number" {...field} />
+                            <Input
+                              placeholder="Enter GST/VAT/TAX Number"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -1432,7 +1474,9 @@ const SupplierRegistration: React.FC = () => {
                     name="Currency"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Currency <span className="text-red-500">*</span></FormLabel>
+                        <FormLabel>
+                          Currency <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Select
                             {...field}
@@ -1444,7 +1488,10 @@ const SupplierRegistration: React.FC = () => {
                             </SelectTrigger>
                             <SelectContent>
                               {chooseCurrency?.map((cur) => (
-                                <SelectItem key={cur.value} value={`${cur.value}`}>
+                                <SelectItem
+                                  key={cur.value}
+                                  value={`${cur.value}`}
+                                >
                                   {cur.name}
                                 </SelectItem>
                               ))}
@@ -1466,7 +1513,9 @@ const SupplierRegistration: React.FC = () => {
                         {tags.map((tag, index) => (
                           <div key={index}>
                             <div className="text-sm">{tag}</div>
-                            {index < tags.length - 1 && <Separator className="my-2" />}
+                            {index < tags.length - 1 && (
+                              <Separator className="my-2" />
+                            )}
                           </div>
                         ))}
                       </div>
@@ -1478,7 +1527,8 @@ const SupplierRegistration: React.FC = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            Upload Tax Certificate (PDF) <span className="text-red-500">*</span>
+                            Upload Tax Certificate (PDF){" "}
+                            <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -1505,7 +1555,11 @@ const SupplierRegistration: React.FC = () => {
                     />
                   </div>
 
-                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
                     {isSubmitting ? "Processing..." : "Complete Registration"}
                   </Button>
                 </>
@@ -1514,6 +1568,55 @@ const SupplierRegistration: React.FC = () => {
           </Form>
         </CardContent>
       </Card>
+
+      <Dialog
+        open={isSuccessDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            // When dialog is closed (by any means)
+            form.reset(); // Reset the form
+            router.push("/"); // Redirect to login
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">
+              Registration Successful!
+            </DialogTitle>
+            <DialogDescription>
+              {form.getValues("Company_name")} is successfully registered
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <p>
+              Email will be received with credentials once approved by Sanzad
+              International
+            </p>
+
+            <ul className="list-disc pl-6 space-y-2">
+              <li>This process will be completed in next 2 hours</li>
+              <li>
+                Thereafter website can browsed from your end and we are happy to
+                take your bookings
+              </li>
+              <li>Happy Selling</li>
+            </ul>
+
+            <div className="flex justify-end pt-4">
+              <Button
+                onClick={() => {
+                  setIsSuccessDialogOpen(false);
+                  router.push("/");
+                }}
+              >
+                Continue
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

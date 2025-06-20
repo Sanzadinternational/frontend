@@ -51,7 +51,7 @@ const SearchResult = ({
   const [displayForm, setDisplayForm] = useState(false);
   const [map, setMap] = useState(false);
   const [isLoadingOneWay, setIsLoadingOneWay] = useState(false);
-  const [isLoadingRoundTrip, setIsLoadingRoundTrip] = useState(false);
+  // const [isLoadingRoundTrip, setIsLoadingRoundTrip] = useState(false);
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   useEffect(() => {
     const fetchUserData = async () => {
