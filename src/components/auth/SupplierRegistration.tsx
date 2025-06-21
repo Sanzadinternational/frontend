@@ -944,11 +944,31 @@ const SupplierRegistration: React.FC = () => {
           body: JSON.stringify({ email }),
         });
 
-        if (response.ok) {
+      //   if (response.ok) {
+      //     setOtpSent(true);
+      //     toast({
+      //       title: "Sending OTP",
+      //       description: "OTP sent to email",
+      //     });
+      //   } else {
+      //     toast({
+      //       title: "Error",
+      //       description: "Failed to send OTP.",
+      //       variant: "destructive",
+      //     });
+      //   }
+      // } 
+       if (response.ok) {
           setOtpSent(true);
           toast({
             title: "Sending OTP",
             description: "OTP sent to email",
+          });
+        } else if (response.status === 406) {
+          toast({
+            title: "Error",
+            description: "This Email is already registered.",
+            variant: "destructive",
           });
         } else {
           toast({
@@ -957,7 +977,8 @@ const SupplierRegistration: React.FC = () => {
             variant: "destructive",
           });
         }
-      } catch (error) {
+      }
+      catch (error) {
         toast({
           title: "Error",
           description: (error as Error).message,
