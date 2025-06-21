@@ -70,12 +70,12 @@ export default function Home() {
             </Card>
             </div>
           </div>
-          <div className="md:w-1/3 relative">
-            <Image src='/Kaizad Gazdar & Riya Gazdar-Founder Sanzad International.svg' alt="Founders" width={400} height={400} className="md:absolute bottom-0 right-0 md:scale-[1.2] md:bottom-[40px] md:right-[40px]"/>
+          <div className="w-1/3 relative">
+            <Image src='/Sanzad International-Logo.svg' alt="Sanzad International Logo" width={200} height={200} className="absolute md:scale-[1.5] md:bottom-[60px] md:right-[50px]"/>
           </div>
-        <Image src='/point-to-point-transfer.svg'alt="point-to-point-transfer" width={80} height={80} className="absolute bottom-1 left-1 opacity-50"/>
+        <Image src='/point-to-point-transfer.svg'alt="point-to-point-transfer" width={80} height={80} className="absolute bottom-1 left-1 opacity-50 hidden md:block"/>
         <Image src='/traveling-cap.svg'alt="traveling-cap" width={80} height={80} className="absolute top-1 right-1 md:left-1"/>
-        <Image src='/navigation.svg'alt="navigation" width={150} height={150} className="absolute bottom-60 left-5 md:top-1 md:left-[650px] opacity-50"/>
+        <Image src='/navigation.svg'alt="navigation" width={150} height={150} className="hidden md:block absolute bottom-60 left-5 md:top-1 md:left-[700px] opacity-50"/>
         </div>
         
       </div>

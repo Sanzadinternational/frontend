@@ -840,6 +840,7 @@ const formSchema = z.object({
   Zip_code: z.string().min(1, { message: "Zipcode is Required" }),
   Owner: z.string().min(1, { message: "Owner Name is required" }),
   Country: z.string().min(1, { message: "Country is required" }),
+  State: z.string().min(1, { message: "State is required" }),
   City: z.string().min(1, { message: "City is required" }),
   Gst_Vat_Tax_number: z.string(),
   PAN_number: z.string(),
@@ -851,6 +852,10 @@ const formSchema = z.object({
   Gst_Tax_Certificate: z.any().refine((file) => file instanceof File, {
     message: "Upload document is required",
   }),
+  Alternate_email: z.string().email({ message: "Please enter valid email" }).optional(),
+  Legal_company: z.string().optional(),
+  Alternate_phone: z.string().optional(),
+  Designation: z.string().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -878,6 +883,7 @@ const SupplierRegistration: React.FC = () => {
       Email: "",
       Password: "",
       Country: "",
+      State:"",
       City: "",
       Zip_code: "",
       Owner: "",
@@ -885,6 +891,10 @@ const SupplierRegistration: React.FC = () => {
       PAN_number: "",
       Otp: "",
       Contact_Person: "",
+      Alternate_email: "",
+      Legal_company:"",
+    Alternate_phone: "",
+    Designation: "",
     },
   });
 
@@ -900,6 +910,7 @@ const SupplierRegistration: React.FC = () => {
       "Email",
       "Owner",
       "Country",
+      "State",
       "City",
       "Zip_code",
       "Office_number",
@@ -995,18 +1006,25 @@ const SupplierRegistration: React.FC = () => {
 
   const handleSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmitting(true);
-
+     const contactPerson = data.Designation 
+      ? `${data.Contact_Person} (${data.Designation})`
+      : data.Contact_Person;
+      const alternatePhoneWithDialCode = data.Alternate_phone 
+      ? `${selectedDialCode}${data.Alternate_phone}`
+      : "";
     const officeNumberWithDialCode = `${selectedDialCode}${data.Office_number}`;
     const mobileNumberWithDialCode = `${selectedDialCode}${data.Mobile_number}`;
 
     const formData = new FormData();
     formData.append("Company_name", data.Company_name);
+    formData.append("Legal_company", data.Legal_company);
     formData.append("Address", data.Address);
     formData.append("Email", data.Email);
     formData.append("Password", data.Password);
     formData.append("Zip_code", data.Zip_code);
     formData.append("Owner", data.Owner);
     formData.append("Country", data.Country);
+    formData.append("State", data.State);
     formData.append("City", data.City);
     formData.append("Gst_Vat_Tax_number", data.Gst_Vat_Tax_number);
     formData.append("Contact_Person", data.Contact_Person);
@@ -1014,7 +1032,8 @@ const SupplierRegistration: React.FC = () => {
     formData.append("Mobile_number", mobileNumberWithDialCode);
     formData.append("Currency", data.Currency);
     formData.append("PAN_number", data.PAN_number);
-
+    formData.append("Alternate_email", data.Alternate_email || "");
+    formData.append("Alternate_phone", alternatePhoneWithDialCode);
     const fileInput = document.querySelector(
       'input[type="file"]'
     ) as HTMLInputElement;
@@ -1121,7 +1140,7 @@ const SupplierRegistration: React.FC = () => {
               className="space-y-6"
             >
               {/* Basic Information Section */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FormField
                   control={form.control}
                   name="Company_name"
@@ -1137,7 +1156,22 @@ const SupplierRegistration: React.FC = () => {
                     </FormItem>
                   )}
                 />
-
+<FormField
+                  control={form.control}
+                  name="Legal_company"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Legal Company Name 
+                        {/* <span className="text-red-500">*</span> */}
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter Legal Company Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="Owner"
@@ -1155,22 +1189,7 @@ const SupplierRegistration: React.FC = () => {
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="Address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Address <span className="text-red-500">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Enter Your Address" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
+             
               {/* Location Information */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FormField
@@ -1209,6 +1228,23 @@ const SupplierRegistration: React.FC = () => {
                     </FormItem>
                   )}
                 />
+                
+
+                  <FormField
+                  control={form.control}
+                  name="State"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        State <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter Your State" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}
@@ -1226,25 +1262,10 @@ const SupplierRegistration: React.FC = () => {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="Zip_code"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Zip Code <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter Zip Code" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
 
               {/* Contact Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FormField
                   control={form.control}
                   name="Office_number"
@@ -1281,7 +1302,23 @@ const SupplierRegistration: React.FC = () => {
                     </FormItem>
                   )}
                 />
-
+                <FormField
+  control={form.control}
+  name="Designation"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Designation</FormLabel>
+      <FormControl>
+        <Input
+          type="text"
+          placeholder="Enter Designation"
+          {...field}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
                 <FormField
                   control={form.control}
                   name="Contact_Person"
@@ -1296,6 +1333,39 @@ const SupplierRegistration: React.FC = () => {
                   )}
                 />
               </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                control={form.control}
+                name="Address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Address <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Enter Your Address" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                  control={form.control}
+                  name="Zip_code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Zip Code <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter Zip Code" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                  </div>
 
               {/* Email and OTP Section */}
               <div className="space-y-6">
@@ -1434,7 +1504,60 @@ const SupplierRegistration: React.FC = () => {
                       )}
                     />
                   </div>
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField
+                        control={form.control}
+                        name="Alternate_email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Alternate Email</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="email"
+                                placeholder="Enter Alternate Email"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
+                      <FormField
+                        control={form.control}
+                        name="Alternate_phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Alternate Phone</FormLabel>
+                            <FormControl>
+                              <div className="flex gap-2 items-center">
+                                {selectedFlag && (
+                                  <Image
+                                    src={selectedFlag}
+                                    alt="flag"
+                                    width={24}
+                                    height={24}
+                                    className="h-6 w-auto"
+                                  />
+                                )}
+                                {selectedDialCode && (
+                                  <span className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm">
+                                    {selectedDialCode}
+                                  </span>
+                                )}
+                                <Input
+                                  type="number"
+                                  placeholder="Enter Alternate Phone"
+                                  className="flex-1"
+                                  {...field}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   {/* Tax and Identification */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
