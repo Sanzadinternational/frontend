@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import {
@@ -9,12 +10,37 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Location from "@/components/Location";
 import Link from "next/link";
 import { features } from "@/components/constants/features";
+import { useState,useEffect } from "react";
 export default function Home() {
+  const [isOpen, setIsOpen] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsOpen(false);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
   return (
     <>
+    {/* Launching Soon Dialog */}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Launching Soon!</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-lg">We&apos;re excited to announce that Sanzad International will be launching soon!</p>
+            <p className="mt-2">Stay tuned for our official launch date.</p>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={() => setIsOpen(false)}>Got It</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="grid grid-cols-1 md:grid-cols-2 py-2 px-5 mx-10 my-4 z-[-1] rounded-md bg-slate-100 dark:bg-primary dark:text-black">
         <div className="py-4 px-5">
           <h1 className="">Sanzad International</h1>
