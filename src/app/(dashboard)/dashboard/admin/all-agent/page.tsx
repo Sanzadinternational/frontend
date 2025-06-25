@@ -470,7 +470,7 @@ export default function AgentManagementPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [rejectionDialogOpen, setRejectionDialogOpen] = useState(false);
-  const [rejectionReason, setRejectionReason] = useState("");
+  const [RejectionReason, setRejectionReason] = useState("");
   const [pendingRejectionEmail, setPendingRejectionEmail] = useState("");
 
   // Search state for mobile view
@@ -910,12 +910,12 @@ export default function AgentManagementPage() {
               </AlertDescription>
             </Alert>
             <div className="grid gap-2">
-              <label htmlFor="rejectionReason" className="text-sm font-medium">
+              <label htmlFor="RejectionReason" className="text-sm font-medium">
                 Rejection Reason
               </label>
               <Textarea
-                id="rejectionReason"
-                value={rejectionReason}
+                id="RejectionReason"
+                value={RejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
                 placeholder="Enter the reason for rejection..."
                 className="min-h-[100px]"
@@ -929,8 +929,8 @@ export default function AgentManagementPage() {
             </DialogClose>
             <Button
               variant="destructive"
-              onClick={() => handleAction(pendingRejectionEmail, 2, rejectionReason)}
-              disabled={!rejectionReason || loadingActions[pendingRejectionEmail]}
+              onClick={() => handleAction(pendingRejectionEmail, 2, RejectionReason)}
+              disabled={!RejectionReason || loadingActions[pendingRejectionEmail]}
             >
               {loadingActions[pendingRejectionEmail] ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
