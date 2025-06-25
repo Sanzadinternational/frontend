@@ -746,7 +746,7 @@
 
 import * as z from "zod";
 import { useState } from "react";
-import Image from "next/image";
+// import Image from "next/image";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -787,12 +787,21 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-interface Country {
+// interface Country {
+//   name: string;
+//   flag: string;
+//   dialCode: string;
+// }
+
+interface FormattedCountry {
   name: string;
   flag: string;
   dialCode: string;
+  states: {
+    name: string;
+    cities: string[];
+  }[];
 }
-
 const tags = ["GST", "Adhar", "PAN", "Passport"];
 const chooseCurrency = ChooseCurrency;
 
@@ -807,7 +816,9 @@ const formSchema = z.object({
   Zip_code: z.string().min(1, { message: "Zipcode is Required" }),
   IATA_Code: z.string().optional(),
   Country: z.string().min(1, { message: "Country is required" }),
-  City: z.string().min(1, { message: "City is required" }),
+  // City: z.string().min(1, { message: "City is required" }),
+  State: z.string().min(1, { message: "State is required" }),
+   City: z.string().optional(),
   Gst_Vat_Tax_number: z.string().min(1, { message: "Tax Number is required" }),
   Contact_Person: z.string(),
   Otp: z.string(),
@@ -817,13 +828,28 @@ const formSchema = z.object({
   Gst_Tax_Certificate: z.any().refine((file) => file instanceof File, {
     message: "Upload document is required",
   }),
+}).superRefine((data, ctx) => {
+  // Custom validation - City is required only if cities are available
+  const selectedState = states.find(state => state.name === data.State);
+  if (selectedState?.cities.length > 0 && !data.City) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "City is required",
+      path: ["City"]
+    });
+  }
 });
 
 type FormData = z.infer<typeof formSchema>;
 
 const AgentRegistration: React.FC = () => {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-  const [countries, setCountries] = useState<Country[]>([]);
+  // const [countries, setCountries] = useState<Country[]>([]);
+const [countries, setCountries] = useState<FormattedCountry[]>([]);
+const [states, setStates] = useState<{name: string; cities: string[]}[]>([]);
+const [cities, setCities] = useState<string[]>([]);
+
+
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCurrency, setSelectedCurrency] = useState<string>("");
   const [selectedDialCode, setSelectedDialCode] = useState<string>("");
@@ -844,6 +870,7 @@ const AgentRegistration: React.FC = () => {
       Email: "",
       Password: "",
       Country: "",
+      State:"",
       City: "",
       Zip_code: "",
       IATA_Code: "",
@@ -864,6 +891,7 @@ const AgentRegistration: React.FC = () => {
       "Address",
       "Email",
       "Country",
+      "State",
       "City",
       "Zip_code",
       "Gst_Vat_Tax_number",
@@ -966,6 +994,18 @@ const AgentRegistration: React.FC = () => {
   const handleSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmitting(true);
 
+const selectedState = states.find(state => state.name === data.State);
+  
+  // If cities are available but none selected, show error
+  if (selectedState?.cities.length > 0 && !data.City) {
+    form.setError("City", {
+      type: "manual",
+      message: "Please select a city"
+    });
+    return;
+  }
+
+
     const officeNumberWithDialCode = `${selectedDialCode}${data.Office_number}`;
     const mobileNumberWithDialCode = `${selectedDialCode}${data.Mobile_number}`;
 
@@ -1053,16 +1093,52 @@ const AgentRegistration: React.FC = () => {
     }
   };
 
-  const handleCountryChange = (value: string) => {
-    const selected = countries.find((country) => country.name === value);
-    if (selected) {
-      setSelectedCountry(value);
-      setSelectedDialCode(selected.dialCode); 
-      setSelectedFlag(selected.flag); 
-      form.setValue("Country", value);
-      form.setValue("City", "");
+  // const handleCountryChange = (value: string) => {
+  //   const selected = countries.find((country) => country.name === value);
+  //   if (selected) {
+  //     setSelectedCountry(value);
+  //     setSelectedDialCode(selected.dialCode); 
+  //     setSelectedFlag(selected.flag); 
+  //     form.setValue("Country", value);
+  //     form.setValue("City", "");
+  //   }
+  // };
+
+ const handleCountryChange = (value: string) => {
+  const country = countries.find((country) => country.name === value);
+  if (country) {
+    setSelectedCountry(value);
+    setSelectedDialCode(country.dialCode);
+    setSelectedFlag(country.flag);
+    setStates(country.states);
+    setCities([]); // Reset cities when country changes
+    form.setValue("Country", value);
+    form.setValue("State", "");
+    form.setValue("City", "");
+    form.trigger("Country");
+  }
+};
+
+const handleStateChange = (value: string) => {
+  const state = states.find((state) => state.name === value);
+  if (state) {
+    setCities(state.cities);
+    form.setValue("State", value);
+    form.setValue("City", "");
+    form.trigger("State");
+    
+    // If no cities available, clear any city validation errors
+    if (state.cities.length === 0) {
+      form.clearErrors("City");
     }
-  };
+  }
+};
+const handleCityChange = (value: string) => {
+  form.setValue("City", value);
+  form.trigger("City");
+};
+
+
 
   const handleCurrencyChange = (value: string) => {
     setSelectedCurrency(value);
@@ -1113,20 +1189,7 @@ const AgentRegistration: React.FC = () => {
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="Address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Address <span className="text-red-500">*</span></FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Enter Your Address" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
+              
               {/* Location Information */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FormField
@@ -1161,7 +1224,38 @@ const AgentRegistration: React.FC = () => {
                   )}
                 />
 
-                <FormField
+ <FormField
+  control={form.control}
+  name="State"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>
+        State <span className="text-red-500">*</span>
+      </FormLabel>
+      <FormControl>
+        <Select
+          {...field}
+          onValueChange={handleStateChange}
+          disabled={!selectedCountry}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select a state" />
+          </SelectTrigger>
+          <SelectContent>
+            {states.map((state) => (
+              <SelectItem key={state.name} value={state.name}>
+                {state.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
+                {/* <FormField
                   control={form.control}
                   name="City"
                   render={({ field }) => (
@@ -1173,9 +1267,68 @@ const AgentRegistration: React.FC = () => {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
 
-                <FormField
+<FormField
+  control={form.control}
+  name="City"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>
+        City {cities.length > 0 && <span className="text-red-500">*</span>}
+      </FormLabel>
+      <FormControl>
+        {cities.length > 0 ? (
+          <Select
+            {...field}
+            onValueChange={handleCityChange}
+            disabled={!form.getValues("State")}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select a city" />
+            </SelectTrigger>
+            <SelectContent>
+              {cities.map((city) => (
+                <SelectItem key={city} value={city}>
+                  {city}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <Input
+            {...field}
+            placeholder="No cities available - enter manually"
+            disabled={!form.getValues("State")}
+          />
+        )}
+      </FormControl>
+      {/* {cities.length === 0 && <FormDescription>
+        This state doesn&apos;t have predefined cities - please enter manually
+        </FormDescription>} */}
+      <FormMessage />
+    </FormItem>
+  )}
+/>             
+              </div>
+
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+<FormField
+                control={form.control}
+                name="Address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Address <span className="text-red-500">*</span></FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Enter Your Address" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+<FormField
                   control={form.control}
                   name="Zip_code"
                   render={({ field }) => (
@@ -1188,10 +1341,12 @@ const AgentRegistration: React.FC = () => {
                     </FormItem>
                   )}
                 />
-              </div>
+</div>
 
               {/* Tax and Identification */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+
                 <FormField
                   control={form.control}
                   name="Gst_Vat_Tax_number"
@@ -1345,7 +1500,7 @@ const AgentRegistration: React.FC = () => {
                           <FormLabel>Office Number <span className="text-red-500">*</span></FormLabel>
                           <FormControl>
                             <div className="flex gap-2 items-center">
-                              {selectedFlag && (
+                              {/* {selectedFlag && (
                                 <Image
                                   src={selectedFlag}
                                   alt="flag"
@@ -1353,7 +1508,10 @@ const AgentRegistration: React.FC = () => {
                                   height={24}
                                   className="h-6 w-auto"
                                 />
-                              )}
+                              )} */}
+                                {selectedFlag && (
+            <span className="text-2xl">{selectedFlag}</span>
+          )}
                               {selectedDialCode && (
                                 <span className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm">
                                   {selectedDialCode}
@@ -1380,7 +1538,7 @@ const AgentRegistration: React.FC = () => {
                           <FormLabel>Mobile Number <span className="text-red-500">*</span></FormLabel>
                           <FormControl>
                             <div className="flex gap-2 items-center">
-                              {selectedFlag && (
+                              {/* {selectedFlag && (
                                 <Image
                                   src={selectedFlag}
                                   alt="flag"
@@ -1388,7 +1546,10 @@ const AgentRegistration: React.FC = () => {
                                   height={24}
                                   className="h-6 w-auto"
                                 />
-                              )}
+                              )} */}
+                                {selectedFlag && (
+            <span className="text-2xl">{selectedFlag}</span>
+          )}
                               {selectedDialCode && (
                                 <span className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm">
                                   {selectedDialCode}

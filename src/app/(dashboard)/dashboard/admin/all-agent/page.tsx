@@ -516,7 +516,7 @@ export default function AgentManagementPage() {
           },
           body: JSON.stringify({ 
             isApproved: status,
-            RejectionReason: reason || null
+            RejectionReason: reason || null,
           }),
         }
       );

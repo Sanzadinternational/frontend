@@ -777,7 +777,7 @@
 "use client";
 
 import * as z from "zod";
-import Image from "next/image";
+// import Image from "next/image";
 import { useState } from "react";
 import { ChooseCurrency } from "../constants/currency";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -820,11 +820,23 @@ import { Textarea } from "@/components/ui/textarea";
 import CountryCityAPI from "../api/CountryCityAPI";
 import { useToast } from "@/hooks/use-toast";
 
-interface Country {
+// interface Country {
+//   name: string;
+//   flag: string;
+//   dialCode: string;
+// }
+
+interface FormattedCountry {
   name: string;
   flag: string;
   dialCode: string;
+  states: {
+    name: string;
+    cities: string[];
+  }[];
 }
+
+
 
 const tags = ["GST", "Adhar", "PAN", "Passport"];
 const chooseCurrency = ChooseCurrency;
@@ -841,7 +853,8 @@ const formSchema = z.object({
   Owner: z.string().min(1, { message: "Owner Name is required" }),
   Country: z.string().min(1, { message: "Country is required" }),
   State: z.string().min(1, { message: "State is required" }),
-  City: z.string().min(1, { message: "City is required" }),
+  // City: z.string().min(1, { message: "City is required" }),
+  City: z.string().optional(),
   Gst_Vat_Tax_number: z.string(),
   PAN_number: z.string(),
   Contact_Person: z.string(),
@@ -856,13 +869,29 @@ const formSchema = z.object({
   Legal_company: z.string().optional(),
   Alternate_phone: z.string().optional(),
   Designation: z.string().optional(),
+}).superRefine((data, ctx) => {
+  // Custom validation - City is required only if cities are available
+  const selectedState = states.find(state => state.name === data.State);
+  if (selectedState?.cities.length > 0 && !data.City) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "City is required",
+      path: ["City"]
+    });
+  }
 });
 
 type FormData = z.infer<typeof formSchema>;
 
 const SupplierRegistration: React.FC = () => {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-  const [countries, setCountries] = useState<Country[]>([]);
+  // const [countries, setCountries] = useState<Country[]>([]);
+const [countries, setCountries] = useState<FormattedCountry[]>([]);
+const [states, setStates] = useState<{name: string; cities: string[]}[]>([]);
+const [cities, setCities] = useState<string[]>([]);
+
+
+
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCurrency, setSelectedCurrency] = useState<string>("");
   const [selectedDialCode, setSelectedDialCode] = useState<string>("");
@@ -944,20 +973,7 @@ const SupplierRegistration: React.FC = () => {
           body: JSON.stringify({ email }),
         });
 
-      //   if (response.ok) {
-      //     setOtpSent(true);
-      //     toast({
-      //       title: "Sending OTP",
-      //       description: "OTP sent to email",
-      //     });
-      //   } else {
-      //     toast({
-      //       title: "Error",
-      //       description: "Failed to send OTP.",
-      //       variant: "destructive",
-      //     });
-      //   }
-      // } 
+     
        if (response.ok) {
           setOtpSent(true);
           toast({
@@ -1027,6 +1043,19 @@ const SupplierRegistration: React.FC = () => {
 
   const handleSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmitting(true);
+
+const selectedState = states.find(state => state.name === data.State);
+  
+  // If cities are available but none selected, show error
+  if (selectedState?.cities.length > 0 && !data.City) {
+    form.setError("City", {
+      type: "manual",
+      message: "Please select a city"
+    });
+    return;
+  }
+
+
      const contactPerson = data.Designation 
       ? `${data.Contact_Person} (${data.Designation})`
       : data.Contact_Person;
@@ -1048,7 +1077,7 @@ const SupplierRegistration: React.FC = () => {
     formData.append("State", data.State);
     formData.append("City", data.City);
     formData.append("Gst_Vat_Tax_number", data.Gst_Vat_Tax_number);
-    formData.append("Contact_Person", data.Contact_Person);
+    formData.append("Contact_Person", contactPerson);
     formData.append("Office_number", officeNumberWithDialCode);
     formData.append("Mobile_number", mobileNumberWithDialCode);
     formData.append("Currency", data.Currency);
@@ -1127,17 +1156,66 @@ const SupplierRegistration: React.FC = () => {
     }
   };
 
+  // const handleCountryChange = (value: string) => {
+  //   const country = countries.find((country) => country.name === value);
+  //   if (country) {
+  //     setSelectedCountry(value);
+  //     setSelectedDialCode(country.dialCode);
+  //     setSelectedFlag(country.flag);
+  //     form.setValue("Country", value);
+  //     form.trigger("Country");
+  //     form.setValue("City", "");
+  //   }
+  // };
+
   const handleCountryChange = (value: string) => {
-    const country = countries.find((country) => country.name === value);
-    if (country) {
-      setSelectedCountry(value);
-      setSelectedDialCode(country.dialCode);
-      setSelectedFlag(country.flag);
-      form.setValue("Country", value);
-      form.trigger("Country");
-      form.setValue("City", "");
+  const country = countries.find((country) => country.name === value);
+  if (country) {
+    setSelectedCountry(value);
+    setSelectedDialCode(country.dialCode);
+    setSelectedFlag(country.flag);
+    setStates(country.states);
+    setCities([]); // Reset cities when country changes
+    form.setValue("Country", value);
+    form.setValue("State", "");
+    form.setValue("City", "");
+    form.trigger("Country");
+  }
+};
+
+// const handleStateChange = (value: string) => {
+//   const state = states.find((state) => state.name === value);
+//   if (state) {
+//     setCities(state.cities);
+//     form.setValue("State", value);
+//     form.setValue("City", "");
+//     form.trigger("State");
+//   }
+// };
+const handleStateChange = (value: string) => {
+  const state = states.find((state) => state.name === value);
+  if (state) {
+    setCities(state.cities);
+    form.setValue("State", value);
+    form.setValue("City", "");
+    form.trigger("State");
+    
+    // If no cities available, clear any city validation errors
+    if (state.cities.length === 0) {
+      form.clearErrors("City");
     }
-  };
+  }
+};
+
+const handleCityChange = (value: string) => {
+  form.setValue("City", value);
+  form.trigger("City");
+};
+
+
+
+
+
 
   const handleCurrencyChange = (value: string) => {
     setSelectedCurrency(value);
@@ -1251,7 +1329,7 @@ const SupplierRegistration: React.FC = () => {
                 />
                 
 
-                  <FormField
+                  {/* <FormField
                   control={form.control}
                   name="State"
                   render={({ field }) => (
@@ -1265,9 +1343,41 @@ const SupplierRegistration: React.FC = () => {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
+                  <FormField
+  control={form.control}
+  name="State"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>
+        State <span className="text-red-500">*</span>
+      </FormLabel>
+      <FormControl>
+        <Select
+          {...field}
+          onValueChange={handleStateChange}
+          disabled={!selectedCountry}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select a state" />
+          </SelectTrigger>
+          <SelectContent>
+            {states.map((state) => (
+              <SelectItem key={state.name} value={state.name}>
+                {state.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
 
-                <FormField
+
+
+                {/* <FormField
                   control={form.control}
                   name="City"
                   render={({ field }) => (
@@ -1281,7 +1391,80 @@ const SupplierRegistration: React.FC = () => {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
+
+                  {/* <FormField
+  control={form.control}
+  name="City"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>
+        City <span className="text-red-500">*</span>
+      </FormLabel>
+      <FormControl>
+        <Select
+          {...field}
+          onValueChange={handleCityChange}
+          disabled={!form.getValues("State")}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select a city" />
+          </SelectTrigger>
+          <SelectContent>
+            {cities.map((city) => (
+              <SelectItem key={city} value={city}>
+                {city}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>   */}
+<FormField
+  control={form.control}
+  name="City"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>
+        City {cities.length > 0 && <span className="text-red-500">*</span>}
+      </FormLabel>
+      <FormControl>
+        {cities.length > 0 ? (
+          <Select
+            {...field}
+            onValueChange={handleCityChange}
+            disabled={!form.getValues("State")}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select a city" />
+            </SelectTrigger>
+            <SelectContent>
+              {cities.map((city) => (
+                <SelectItem key={city} value={city}>
+                  {city}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <Input
+            {...field}
+            placeholder="No cities available - enter manually"
+            disabled={!form.getValues("State")}
+          />
+        )}
+      </FormControl>
+      {/* {cities.length === 0 && <FormDescription>
+        This state doesn&apos;t have predefined cities - please enter manually
+        </FormDescription>} */}
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
 
               </div>
 
@@ -1297,7 +1480,7 @@ const SupplierRegistration: React.FC = () => {
                       </FormLabel>
                       <FormControl>
                         <div className="flex gap-2 items-center">
-                          {selectedFlag && (
+                          {/* {selectedFlag && (
                             <Image
                               src={selectedFlag}
                               alt="flag"
@@ -1305,7 +1488,10 @@ const SupplierRegistration: React.FC = () => {
                               height={24}
                               className="h-6 w-auto"
                             />
-                          )}
+                          )} */}
+                          {selectedFlag && (
+            <span className="text-2xl">{selectedFlag}</span>
+          )}
                           {selectedDialCode && (
                             <span className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm">
                               {selectedDialCode}
@@ -1323,7 +1509,21 @@ const SupplierRegistration: React.FC = () => {
                     </FormItem>
                   )}
                 />
+  
                 <FormField
+                  control={form.control}
+                  name="Contact_Person"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Contact Person</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Contact Person" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                              <FormField
   control={form.control}
   name="Designation"
   render={({ field }) => (
@@ -1340,19 +1540,6 @@ const SupplierRegistration: React.FC = () => {
     </FormItem>
   )}
 />
-                <FormField
-                  control={form.control}
-                  name="Contact_Person"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Contact Person</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Contact Person" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1498,7 +1685,7 @@ const SupplierRegistration: React.FC = () => {
                           </FormLabel>
                           <FormControl>
                             <div className="flex gap-2 items-center">
-                              {selectedFlag && (
+                              {/* {selectedFlag && (
                                 <Image
                                   src={selectedFlag}
                                   alt="flag"
@@ -1506,7 +1693,10 @@ const SupplierRegistration: React.FC = () => {
                                   height={24}
                                   className="h-6 w-auto"
                                 />
-                              )}
+                              )} */}
+                              {selectedFlag && (
+            <span className="text-2xl">{selectedFlag}</span>
+          )}
                               {selectedDialCode && (
                                 <span className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm">
                                   {selectedDialCode}
@@ -1552,7 +1742,7 @@ const SupplierRegistration: React.FC = () => {
                             <FormLabel>Alternate Phone</FormLabel>
                             <FormControl>
                               <div className="flex gap-2 items-center">
-                                {selectedFlag && (
+                                {/* {selectedFlag && (
                                   <Image
                                     src={selectedFlag}
                                     alt="flag"
@@ -1560,7 +1750,10 @@ const SupplierRegistration: React.FC = () => {
                                     height={24}
                                     className="h-6 w-auto"
                                   />
-                                )}
+                                )} */}
+                                {selectedFlag && (
+            <span className="text-2xl">{selectedFlag}</span>
+          )}
                                 {selectedDialCode && (
                                   <span className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm">
                                     {selectedDialCode}
