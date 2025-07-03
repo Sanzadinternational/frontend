@@ -841,6 +841,70 @@ interface FormattedCountry {
 const tags = ["GST", "Adhar", "PAN", "Passport"];
 const chooseCurrency = ChooseCurrency;
 
+// const formSchema = z.object({
+//   Company_name: z.string().min(1, { message: "Company Name is Required" }),
+//   Address: z.string().min(1, { message: "Address is Required" }),
+//   Email: z
+//     .string()
+//     .min(1, { message: "Email is Required" })
+//     .email({ message: "Please enter valid email" }),
+//   Password: z.string().min(1, { message: "Password is Required" }),
+//   Zip_code: z.string().min(1, { message: "Zipcode is Required" }),
+//   Owner: z.string().min(1, { message: "Owner Name is required" }),
+//   Country: z.string().min(1, { message: "Country is required" }),
+//   State: z.string().min(1, { message: "State is required" }),
+//   // City: z.string().min(1, { message: "City is required" }),
+//   City: z.string().optional(),
+//   Gst_Vat_Tax_number: z.string(),
+//   PAN_number: z.string(),
+//   Contact_Person: z.string(),
+//   Otp: z.string(),
+//   Office_number: z.string().min(1, { message: "Office No. is required" }),
+//   Mobile_number: z.string().min(1, { message: "Mobile No. is required" }),
+//   Currency: z.string().min(1, { message: "Currency is required" }),
+//   Gst_Tax_Certificate: z.any().refine((file) => file instanceof File, {
+//     message: "Upload document is required",
+//   }),
+//   Alternate_email: z.string().email({ message: "Please enter valid email" }).optional(),
+//   Legal_company: z.string().optional(),
+//   Alternate_phone: z.string().optional(),
+//   Designation: z.string().optional(),
+// }).superRefine((data, ctx) => {
+//   // Custom validation - City is required only if cities are available
+//   const selectedState = states.find(state => state.name === data.State);
+//   if (selectedState?.cities.length > 0 && !data.City) {
+//     ctx.addIssue({
+//       code: z.ZodIssueCode.custom,
+//       message: "City is required",
+//       path: ["City"]
+//     });
+//   }
+// });
+
+// type FormData = z.infer<typeof formSchema>;
+
+const SupplierRegistration: React.FC = () => {
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  // const [countries, setCountries] = useState<Country[]>([]);
+const [countries, setCountries] = useState<FormattedCountry[]>([]);
+const [states, setStates] = useState<{name: string; cities: string[]}[]>([]);
+const [cities, setCities] = useState<string[]>([]);
+
+
+
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const [selectedCurrency, setSelectedCurrency] = useState<string>("");
+  const [selectedDialCode, setSelectedDialCode] = useState<string>("");
+  const [selectedFlag, setSelectedFlag] = useState<string>("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [isOtpVerified, setIsOtpVerified] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
+  const router = useRouter();
+
+
 const formSchema = z.object({
   Company_name: z.string().min(1, { message: "Company Name is Required" }),
   Address: z.string().min(1, { message: "Address is Required" }),
@@ -882,27 +946,6 @@ const formSchema = z.object({
 });
 
 type FormData = z.infer<typeof formSchema>;
-
-const SupplierRegistration: React.FC = () => {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-  // const [countries, setCountries] = useState<Country[]>([]);
-const [countries, setCountries] = useState<FormattedCountry[]>([]);
-const [states, setStates] = useState<{name: string; cities: string[]}[]>([]);
-const [cities, setCities] = useState<string[]>([]);
-
-
-
-  const [selectedCountry, setSelectedCountry] = useState<string>("");
-  const [selectedCurrency, setSelectedCurrency] = useState<string>("");
-  const [selectedDialCode, setSelectedDialCode] = useState<string>("");
-  const [selectedFlag, setSelectedFlag] = useState<string>("");
-  const [otpSent, setOtpSent] = useState(false);
-  const [isOtpVerified, setIsOtpVerified] = useState(false);
-  const [isSendingOtp, setIsSendingOtp] = useState(false);
-  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
-  const router = useRouter();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
