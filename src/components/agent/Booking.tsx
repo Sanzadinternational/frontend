@@ -495,28 +495,51 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
       if (!response.ok) throw new Error("Failed to submit booking");
       const result = await response.json();
 
-      if (result.url && result.access_code && result.encRequest) {
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = result.url;
+      // if (result.url && result.access_code && result.encRequest) {
+      //   const form = document.createElement("form");
+      //   form.method = "POST";
+      //   form.action = result.url;
 
-        const accessCodeInput = document.createElement("input");
-        accessCodeInput.type = "hidden";
-        accessCodeInput.name = "access_code";
-        accessCodeInput.value = result.access_code;
+      //   const accessCodeInput = document.createElement("input");
+      //   accessCodeInput.type = "hidden";
+      //   accessCodeInput.name = "access_code";
+      //   accessCodeInput.value = result.access_code;
 
-        const encRequestInput = document.createElement("input");
-        encRequestInput.type = "hidden";
-        encRequestInput.name = "encRequest";
-        encRequestInput.value = result.encRequest;
+      //   const encRequestInput = document.createElement("input");
+      //   encRequestInput.type = "hidden";
+      //   encRequestInput.name = "encRequest";
+      //   encRequestInput.value = result.encRequest;
 
-        form.appendChild(accessCodeInput);
-        form.appendChild(encRequestInput);
-        document.body.appendChild(form);
-        form.submit();
-      } else {
-        console.error("Invalid response from the server");
-      }
+      //   form.appendChild(accessCodeInput);
+      //   form.appendChild(encRequestInput);
+      //   document.body.appendChild(form);
+      //   form.submit();
+      // } else {
+      //   console.error("Invalid response from the server");
+      // }
+
+      if (result && result.paymentUrl && result.formData) {
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = result.paymentUrl;
+
+    // Add form fields returned from backend
+    Object.entries(result.formData).forEach(([key, value]) => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = value;
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+  } else {
+    console.error("Invalid response from the server");
+  }
+
+
+
 
       toast({
         title: "Booking Confirmed",
