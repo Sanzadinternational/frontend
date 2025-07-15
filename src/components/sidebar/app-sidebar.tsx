@@ -1,4 +1,3 @@
-
 "use client";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -102,17 +101,17 @@ export default function AppSidebar({
   }, []);
   useEffect(() => {
     if (openMobile && window.innerWidth < 768) {
-      setOpenMobile(false); 
+      setOpenMobile(false);
     }
   }, [pathname]);
   if (error) return <p>Error: {error}</p>;
   if (!userData) return <p>Loading...</p>;
 
   const rolename = userData?.role;
-  
+
   // Filter sidebar items based on role and permissions
   let roleData = sideBarItems.filter((name) => name.role === rolename);
-  
+
   // Special handling for admin role to filter based on permissions
 
   if (rolename === 'admin') {
@@ -128,7 +127,7 @@ export default function AppSidebar({
             }
             return true;
           });
-          
+
           // Only return the item if it has filtered sub-items
           if (filteredItems.length > 0) {
             return {
@@ -163,7 +162,11 @@ export default function AppSidebar({
         </SidebarHeader>
         <SidebarContent className="overflow-x-hidden bg-white dark:bg-black">
           <SidebarGroup>
-            <SidebarGroupLabel>Overview</SidebarGroupLabel>
+            <SidebarGroupLabel>
+            <Link href="/" className="mr-1">Home
+            </Link>
+            <Car width={20} height={20}/>
+            </SidebarGroupLabel>
             <SidebarMenu>
               {roleData.map((item) =>
                 item.roleItems.map((data) => {
