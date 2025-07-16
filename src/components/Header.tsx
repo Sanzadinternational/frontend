@@ -83,7 +83,12 @@ const Header = () => {
         {user && (
           <Link
             className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
-            href={`/dashboard/${user?.role}`}
+            // href={`/dashboard/${user?.role}`}
+            href={
+                          user?.role === "superadmin"
+                            ? `/dashboard/admin`
+                            : `/dashboard/${user?.role}`
+                        }
           >
             Dashboard
           </Link>
@@ -105,7 +110,14 @@ const Header = () => {
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <Link href={`/dashboard/${user?.role}`}>
+                <Link 
+                // href={`/dashboard/${user?.role}`}
+                href={
+                          user?.role === "superadmin"
+                            ? `/dashboard/admin`
+                            : `/dashboard/${user?.role}`
+                        }
+                >
                   <DropdownMenuItem>Dashboard</DropdownMenuItem>
                 </Link>
                 <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
@@ -144,7 +156,14 @@ const Header = () => {
                 <DropdownMenuItem>Features</DropdownMenuItem>
               </Link>
               {user && (
-                <Link href={`/dashboard/${user?.role}`}>
+                <Link 
+                // href={`/dashboard/${user?.role}`}
+                href={
+                          user?.role === "superadmin"
+                            ? `/dashboard/admin`
+                            : `/dashboard/${user?.role}`
+                        }
+                >
                   <DropdownMenuItem>Dashboard</DropdownMenuItem>
                 </Link>
               )}
