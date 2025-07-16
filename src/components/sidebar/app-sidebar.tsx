@@ -80,7 +80,7 @@ export default function AppSidebar({
       console.error("Failed to navigate:", error);
     }
   };
-
+const { state } = useSidebar();
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -150,22 +150,31 @@ export default function AppSidebar({
             {/* <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <company.logo className="size-4" />
             </div> */}
-            <div className="flex aspect-square size-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground dark:bg-gray-600">
   <Link href="/">
   <Image src="/sanzad-logo.png" alt="Company Logo" width={40} height={40} /></Link>
 </div>
-            <div className="relative text-left">
+            {/* <div className="relative text-left">
               <span className="truncate font-semibold text-lg absolute bottom-3">{company.name}</span>
               <span className="truncate text-sm absolute bottom-0">{company.plan}</span>
-            </div>
+            </div> */}
+            <div
+  className={`flex flex-col gap-0 justify-end overflow-hidden transition-all duration-300 ${
+    state==="collapsed" ? 'max-w-0 opacity-0' : 'max-w-xs opacity-100'
+  }`}
+>
+  <span className="truncate font-semibold text-xl mb-[-10px]">{company.name}</span>
+  <span className="truncate text-sm">{company.plan}</span>
+</div>
           </div>
         </SidebarHeader>
         <SidebarContent className="overflow-x-hidden bg-white dark:bg-black">
           <SidebarGroup>
             <SidebarGroupLabel>
-            <Link href="/" className="mr-1">Home
-            </Link>
-            <Car width={20} height={20}/>
+            {/* <Link href="/" className="mr-1">Home
+            </Link> */}
+            {/* <Car width={20} height={20}/> */}
+            overview
             </SidebarGroupLabel>
             <SidebarMenu>
               {roleData.map((item) =>
@@ -333,9 +342,10 @@ export default function AppSidebar({
                           rolename === "superadmin"
                             ? `/dashboard/admin`
                             : `/dashboard/${rolename}`
-                        }>
+                        } className="rounded-full px-4 py-1 bg-secondary text-secondary-foreground">
             Dashboard
             </Link>
+            <Link href="/" className="rounded-full px-4 py-1 bg-primary text-primary-foreground">Home</Link>
           </div>
           <div className="flex items-center gap-2 px-4">
             <UserNav />

@@ -24,35 +24,23 @@ export const sideBarItems: Role[] = [
     role: 'agent',
     roleItems: [
       {
+        title: 'Book Vehicle',
+        url: '/',
+        icon: 'car',
+        isActive: false
+      },
+      {
         title: 'Agent-Dashboard',
         url: '/dashboard/agent',
         icon: 'dashboard',
         isActive: false
       },
       {
-        title: 'Booking',
+        title: 'All Booking',
         url: '/dashboard/agent/booking',
         icon: 'booking',
         isActive: false
       },
-      // {
-      //   title: 'Voucher',
-      //   url: '#',
-      //   icon: 'page',
-      //   isActive: false
-      // },
-      // {
-      //   title: 'Invoice',
-      //   url: '#',
-      //   icon: 'billing',
-      //   isActive: false
-      // },
-      // {
-      //   title: 'Reports',
-      //   url: '#',
-      //   icon: 'reports',
-      //   isActive: false
-      // }
     ]      
   },
   {
@@ -68,7 +56,7 @@ export const sideBarItems: Role[] = [
         title: 'Vehicles',
         url: '#',
         icon: 'car',
-        isActive: true,
+        isActive: false,
         items: [
           {
             title: 'Add Vehicle',
@@ -99,29 +87,11 @@ export const sideBarItems: Role[] = [
         ]
       },
       {
-        title: 'Booking',
+        title: 'All Booking',
         url: '/dashboard/supplier/booking',
         icon: 'booking',
         isActive: false
       },
-      // {
-      //   title: 'Voucher',
-      //   url: '#',
-      //   icon: 'page',
-      //   isActive: false
-      // },
-      // {
-      //   title: 'Invoice',
-      //   url: '#',
-      //   icon: 'billing',
-      //   isActive: false
-      // },
-      // {
-      //   title: 'Reports',
-      //   url: '#',
-      //   icon: 'reports',
-      //   isActive: false
-      // }
     ]      
   },
   {

@@ -1,3 +1,4 @@
+
 "use client";
 import Image from "next/image";
 import Link from "next/link";
@@ -79,6 +80,14 @@ const Header = () => {
         >
           Features
         </Link>
+        {user && (
+          <Link
+            className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
+            href={`/dashboard/${user?.role}`}
+          >
+            Dashboard
+          </Link>
+        )}
       </div>
 
       <div className="flex items-center justify-between">
@@ -96,6 +105,9 @@ const Header = () => {
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
+                <Link href={`/dashboard/${user?.role}`}>
+                  <DropdownMenuItem>Dashboard</DropdownMenuItem>
+                </Link>
                 <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -120,25 +132,22 @@ const Header = () => {
               <DropdownMenuLabel>Menu</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <Link href="/">
-              <DropdownMenuItem>
-               Home
-              </DropdownMenuItem>
+                <DropdownMenuItem>Home</DropdownMenuItem>
               </Link>
               <Link href="/#about">
-              <DropdownMenuItem>
-                About
-              </DropdownMenuItem>
+                <DropdownMenuItem>About</DropdownMenuItem>
               </Link>
               <Link href="/contact">
-              <DropdownMenuItem>
-                Contact
-              </DropdownMenuItem>
+                <DropdownMenuItem>Contact</DropdownMenuItem>
               </Link>
               <Link href="/#features">
-              <DropdownMenuItem >
-               Features
-              </DropdownMenuItem>
+                <DropdownMenuItem>Features</DropdownMenuItem>
               </Link>
+              {user && (
+                <Link href={`/dashboard/${user?.role}`}>
+                  <DropdownMenuItem>Dashboard</DropdownMenuItem>
+                </Link>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
