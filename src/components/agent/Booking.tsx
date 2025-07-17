@@ -450,6 +450,7 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
       vehicle_id: bookingInfo?.vehicle?.vehicle_id,
       vehicleName: `${bookingInfo?.vehicle?.brand} (${bookingInfo?.vehicle?.vehicalType})`,
       agent_id: bookingInfo?.agent_id,
+      agent_email: bookingInfo?.agent_email,
       pickup_location: bookingInfo?.pickup,
       drop_location: bookingInfo?.dropoff,
       // passenger:bookingInfo?.pax,
