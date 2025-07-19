@@ -943,7 +943,6 @@ const SupplierBookingsTable = () => {
                                   </p>
                                 </div>
                               )}
-
                               {item.booking.status?.toLowerCase() !==
                                 "approved" &&
                                 item.payments?.payment_status?.toLowerCase() ===
