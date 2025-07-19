@@ -770,6 +770,7 @@ const handleCityChange = (value: string) => {
                             placeholder="Enter Office Number"
                             className="flex-1"
                             {...field}
+                            min="0"
                           />
                         </div>
                       </FormControl>
@@ -975,6 +976,7 @@ const handleCityChange = (value: string) => {
                                 placeholder="Enter Mobile Number"
                                 className="flex-1"
                                 {...field}
+                                min="0"
                               />
                             </div>
                           </FormControl>
@@ -1032,6 +1034,7 @@ const handleCityChange = (value: string) => {
                                   placeholder="Enter Alternate Phone"
                                   className="flex-1"
                                   {...field}
+                                  min="0"
                                 />
                               </div>
                             </FormControl>

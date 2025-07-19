@@ -679,7 +679,7 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
                       <FormItem>
                         <FormLabel>Contact Number</FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Input type="number" {...field} min="0"/>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
