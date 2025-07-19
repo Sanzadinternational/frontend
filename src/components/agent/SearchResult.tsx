@@ -264,6 +264,15 @@ const handleEmailQuote = async (vehicle) => {
       ? text.substring(0, maxLength) + "..."
       : text;
   };
+
+
+  const sortedVehicles = [...vehicles].sort((a, b) => {
+  // Get prices for comparison (accounting for round trip if needed)
+  const priceA = returnDate && returnTime ? Number(a.price) * 2 : Number(a.price);
+  const priceB = returnDate && returnTime ? Number(b.price) * 2 : Number(b.price);
+  
+  return priceA - priceB;
+});
   return (
     <>
       {displayForm && (
@@ -364,8 +373,9 @@ const handleEmailQuote = async (vehicle) => {
             </div>
           ) : (
             <div className="flex flex-col gap-5 p-4 md:h-96">
-              {vehicles.length > 0 ? (
-                vehicles.map((vehicle, index) =>{
+              
+              {sortedVehicles.length > 0 ? (
+                sortedVehicles.map((vehicle, index) =>{
                   return (
                   <Card key={index} className="">
                     <CardHeader>
