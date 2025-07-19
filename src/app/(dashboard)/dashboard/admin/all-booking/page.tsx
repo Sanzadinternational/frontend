@@ -699,7 +699,7 @@ const BookingTable = () => {
                                           </Button>
                                         </>
                                       )}
-                                      {item.payments?.payment_status?.toLowerCase() !==
+                                      {/* {item.payments?.payment_status?.toLowerCase() !==
                                         "completed" && (
                                         <Button
                                           size="sm"
@@ -715,9 +715,31 @@ const BookingTable = () => {
                                           <Check className="h-4 w-4 mr-1" />
                                           Approve Payment
                                         </Button>
-                                      )}
+                                      )} */}
+
                                       {item.payments?.payment_status?.toLowerCase() !==
-                                        "failed" && (
+                                        "completed" &&
+                                        item.payments?.payment_method?.toLowerCase() ===
+                                          "Reference" && (
+                                          <Button
+                                            size="sm"
+                                            onClick={() =>
+                                              updatePaymentStatus(
+                                                item.booking?.id || null,
+                                                "completed"
+                                              )
+                                            }
+                                            className="h-8"
+                                            disabled={!item.payments}
+                                          >
+                                            <Check className="h-4 w-4 mr-1" />
+                                            Approve Payment
+                                          </Button>
+                                        )}
+                                      {item.payments?.payment_status?.toLowerCase() !==
+                                        "failed" && 
+                                        item.payments?.payment_method?.toLowerCase() ===
+                                    "Reference" && (
                                         <Button
                                           variant="destructive"
                                           size="sm"
@@ -897,7 +919,7 @@ const BookingTable = () => {
                                     </Button>
                                   </>
                                 )}
-                                {item.payments?.payment_status?.toLowerCase() !==
+                                {/* {item.payments?.payment_status?.toLowerCase() !==
                                   "completed" && (
                                   <Button
                                     size="sm"
@@ -913,9 +935,31 @@ const BookingTable = () => {
                                     <Check className="h-4 w-4 mr-1" />
                                     Approve Payment
                                   </Button>
-                                )}
+                                )} */}
+
                                 {item.payments?.payment_status?.toLowerCase() !==
-                                  "failed" && (
+                                  "completed" &&
+                                  item.payments?.payment_method?.toLowerCase() ===
+                                    "Reference" && (
+                                    <Button
+                                      size="sm"
+                                      onClick={() =>
+                                        updatePaymentStatus(
+                                          item.booking?.id || null,
+                                          "completed"
+                                        )
+                                      }
+                                      className="flex-1"
+                                      disabled={!item.payments}
+                                    >
+                                      <Check className="h-4 w-4 mr-1" />
+                                      Approve Payment
+                                    </Button>
+                                  )}
+                                {item.payments?.payment_status?.toLowerCase() !==
+                                  "failed" && 
+                                  item.payments?.payment_method?.toLowerCase() ===
+                                    "Reference" && (
                                   <Button
                                     variant="destructive"
                                     size="sm"

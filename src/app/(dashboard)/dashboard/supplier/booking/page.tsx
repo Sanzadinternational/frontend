@@ -699,7 +699,9 @@ const SupplierBookingsTable = () => {
                                     </div>
 
                                     {item.booking.status?.toLowerCase() !==
-                                      "approved" && (
+                                      "approved" &&
+                                      item.payments?.payment_status?.toLowerCase() ===
+                                        "completed" && (
                                       <div className="col-span-2">
                                         <h4 className="text-sm font-medium text-gray-500 mb-1">
                                           Assign Driver
@@ -753,7 +755,9 @@ const SupplierBookingsTable = () => {
                                       </div>
                                 )}
                                       {item.booking.status?.toLowerCase() !==
-                                        "approved" && (
+                                        "approved" &&
+                                        item.payments?.payment_status?.toLowerCase() ===
+                                        "completed" && (
                                         <Button
                                           size="sm"
                                           onClick={() => {
@@ -778,7 +782,9 @@ const SupplierBookingsTable = () => {
                                         </Button>
                                       )}
                                       {item.booking.status?.toLowerCase() !==
-                                        "rejected" && (
+                                        "rejected" && 
+                                        item.payments?.payment_status?.toLowerCase() ===
+                                        "completed" && (
                                         <Button
                                           variant="destructive"
                                           size="sm"
@@ -939,7 +945,9 @@ const SupplierBookingsTable = () => {
                               )}
 
                               {item.booking.status?.toLowerCase() !==
-                                "approved" && (
+                                "approved" &&
+                                item.payments?.payment_status?.toLowerCase() ===
+                                        "completed" && (
                                 <div>
                                   <h4 className="text-sm font-medium text-gray-500">
                                     Assign Driver
@@ -985,7 +993,9 @@ const SupplierBookingsTable = () => {
                                 </div>
                               )}
                                 {item.booking.status?.toLowerCase() !==
-                                  "approved" && (
+                                  "approved" && 
+                                  item.payments?.payment_status?.toLowerCase() ===
+                                        "completed" && (
                                   <Button
                                     size="sm"
                                     onClick={() => {
@@ -1010,7 +1020,9 @@ const SupplierBookingsTable = () => {
                                   </Button>
                                 )}
                                 {item.booking.status?.toLowerCase() !==
-                                  "rejected" && (
+                                  "rejected" && 
+                                  item.payments?.payment_status?.toLowerCase() ===
+                                        "completed" && (
                                   <Button
                                     variant="destructive"
                                     size="sm"
