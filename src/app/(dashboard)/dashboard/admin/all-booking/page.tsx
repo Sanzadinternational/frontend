@@ -720,7 +720,7 @@ const BookingTable = () => {
                                       {item.payments?.payment_status?.toLowerCase() !==
                                         "completed" &&
                                         item.payments?.payment_method?.toLowerCase() ===
-                                          "Reference" && (
+                                          "reference" && (
                                           <Button
                                             size="sm"
                                             onClick={() =>
@@ -739,7 +739,7 @@ const BookingTable = () => {
                                       {item.payments?.payment_status?.toLowerCase() !==
                                         "failed" && 
                                         item.payments?.payment_method?.toLowerCase() ===
-                                    "Reference" && (
+                                    "reference" && (
                                         <Button
                                           variant="destructive"
                                           size="sm"
@@ -940,7 +940,7 @@ const BookingTable = () => {
                                 {item.payments?.payment_status?.toLowerCase() !==
                                   "completed" &&
                                   item.payments?.payment_method?.toLowerCase() ===
-                                    "Reference" && (
+                                    "reference" && (
                                     <Button
                                       size="sm"
                                       onClick={() =>
@@ -959,7 +959,7 @@ const BookingTable = () => {
                                 {item.payments?.payment_status?.toLowerCase() !==
                                   "failed" && 
                                   item.payments?.payment_method?.toLowerCase() ===
-                                    "Reference" && (
+                                    "reference" && (
                                   <Button
                                     variant="destructive"
                                     size="sm"
