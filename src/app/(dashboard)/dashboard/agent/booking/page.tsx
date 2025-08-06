@@ -227,7 +227,7 @@ const AgentBookingsTable = () => {
     try {
       setDownloadingVoucher(bookingId);
       const response = await fetch(
-        `${API_BASE_URL}/payment/vouchers/${bookingId}/download`,
+        `${API_BASE_URL}/payment/Voucher/${bookingId}/download`,
         {
           method: "GET",
           headers: {

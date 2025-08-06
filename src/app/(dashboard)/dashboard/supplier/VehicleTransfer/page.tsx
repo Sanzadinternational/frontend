@@ -423,8 +423,6 @@
 //     }
 //   };
 
-
-
 // const handleEditTransfer = (transfer: Transfer) => {
 //   setEditingTransferId(transfer.id);
 //   setIsEditing(true);
@@ -1511,12 +1509,6 @@
 
 // export default VehicleTransfer;
 
-
-
-
-
-
-
 "use client";
 import React from "react";
 import { useState, useEffect } from "react";
@@ -1645,10 +1637,8 @@ const calculateVehicleTax = (row: TaxCalculationRow): number => {
     : taxValue;
 };
 
-
-
 const VehicleTransfer = () => {
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
@@ -1684,7 +1674,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
     setShowExistingTransfers(!showExistingTransfers);
   };
 
-// Search and filter state
+  // Search and filter state
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -1966,71 +1956,77 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
     }
   };
 
+  const handleEditTransfer = (transfer: Transfer) => {
+    setEditingTransferId(transfer.id);
+    setIsEditing(true);
 
-const handleEditTransfer = (transfer: Transfer) => {
-  setEditingTransferId(transfer.id);
-  setIsEditing(true);
+    // Calculate back the percentage if tax type was percentage
+    let displayTaxValue = transfer.vehicleTax || "";
+    if (
+      transfer.vehicleTaxType === "percentage" &&
+      transfer.price &&
+      transfer.vehicleTax
+    ) {
+      const price = parseFloat(transfer.price);
+      const taxValue = parseFloat(transfer.vehicleTax);
+      displayTaxValue = ((taxValue / price) * 100).toString();
+    }
 
-  // Calculate back the percentage if tax type was percentage
-  let displayTaxValue = transfer.vehicleTax || "";
-  if (transfer.vehicleTaxType === "percentage" && transfer.price && transfer.vehicleTax) {
-    const price = parseFloat(transfer.price);
-    const taxValue = parseFloat(transfer.vehicleTax);
-    displayTaxValue = ((taxValue / price) * 100).toString();
-  }
+    const currentRows = form.getValues("rows");
+    const updatedRows = [...currentRows];
+    updatedRows[0] = {
+      uniqueId: transfer.vehicle_id,
+      SelectZone: transfer.zone_id,
+      Price: transfer.price,
+      Extra_Price: transfer.extra_price_per_mile,
+      Currency: transfer.Currency,
+      TransferInfo: transfer.Transfer_info || "",
+      NightTime: transfer.NightTime,
+      NightTime_Price: transfer.NightTime_Price || "",
+      transferId: transfer.id,
+      vehicleTax: displayTaxValue, // Use the calculated display value
+      vehicleTaxType: transfer.vehicleTaxType || "fixed",
+      parking: transfer.parking,
+      tollTax: transfer.tollTax,
+      driverCharge: transfer.driverCharge,
+      driverTips: transfer.driverTips,
+    };
 
-  const currentRows = form.getValues("rows");
-  const updatedRows = [...currentRows];
-  updatedRows[0] = {
-    uniqueId: transfer.vehicle_id,
-    SelectZone: transfer.zone_id,
-    Price: transfer.price,
-    Extra_Price: transfer.extra_price_per_mile,
-    Currency: transfer.Currency,
-    TransferInfo: transfer.Transfer_info || "",
-    NightTime: transfer.NightTime,
-    NightTime_Price: transfer.NightTime_Price || "",
-    transferId: transfer.id,
-    vehicleTax: displayTaxValue, // Use the calculated display value
-    vehicleTaxType: transfer.vehicleTaxType || "fixed",
-    parking: transfer.parking,
-    tollTax: transfer.tollTax,
-    driverCharge: transfer.driverCharge,
-    driverTips: transfer.driverTips,
+    form.setValue("rows", updatedRows);
+    document
+      .getElementById("transfer-form")
+      ?.scrollIntoView({ behavior: "smooth" });
   };
 
-  form.setValue("rows", updatedRows);
-  document.getElementById("transfer-form")?.scrollIntoView({ behavior: "smooth" });
-};
+  const handleDelete = async (id: string) => {
+    // Removed index parameter
+    const confirmDelete = window.confirm("Are you sure you want to delete?");
+    if (!confirmDelete) return;
+    try {
+      await fetchWithAuth(`${API_BASE_URL}/supplier/deleteTransfer/${id}`, {
+        method: "DELETE",
+      });
 
-const handleDelete = async (id: string) => {  // Removed index parameter
-  const confirmDelete = window.confirm("Are you sure you want to delete?");
-  if (!confirmDelete) return;
-  try {
-    await fetchWithAuth(`${API_BASE_URL}/supplier/deleteTransfer/${id}`, {
-      method: "DELETE",
-    });
+      const updatedTransfers = await fetchWithAuth(
+        `${API_BASE_URL}/supplier/getTransferBySupplierId/${userData?.userId}`
+      );
 
-    const updatedTransfers = await fetchWithAuth(
-      `${API_BASE_URL}/supplier/getTransferBySupplierId/${userData?.userId}`
-    );
+      setAllTransfers(updatedTransfers);
+      setDisplayedTransfers(updatedTransfers);
 
-    setAllTransfers(updatedTransfers);
-    setDisplayedTransfers(updatedTransfers);
-
-    toast({
-      title: "Success",
-      description: "Transfer deleted successfully",
-    });
-  } catch (err: any) {
-    console.error("Error deleting transfer:", err);
-    toast({
-      title: "Error",
-      description: err.message || "Failed to delete transfer",
-      variant: "destructive",
-    });
-  }
-};
+      toast({
+        title: "Success",
+        description: "Transfer deleted successfully",
+      });
+    } catch (err: any) {
+      console.error("Error deleting transfer:", err);
+      toast({
+        title: "Error",
+        description: err.message || "Failed to delete transfer",
+        variant: "destructive",
+      });
+    }
+  };
   const handleSubmit = async (data: z.infer<typeof transferSchema>) => {
     setIsSubmitting(true);
     try {
@@ -2048,9 +2044,9 @@ const handleDelete = async (id: string) => {  // Removed index parameter
           Currency: userData?.Currency, // Use user's currency
           supplier_id: userData?.userId,
           parking: row.parking || "0",
-    tollTax: row.tollTax || "0",
-    driverCharge: row.driverCharge || "0",
-    driverTips: row.driverTips || "0",
+          tollTax: row.tollTax || "0",
+          driverCharge: row.driverCharge || "0",
+          driverTips: row.driverTips || "0",
         };
         // console.log("Processed row data:", transferData); // Log each processed row
         if (row.transferId) {
@@ -2113,7 +2109,7 @@ const handleDelete = async (id: string) => {  // Removed index parameter
     }
   };
 
-if (loading) {
+  if (loading) {
     return (
       <DashboardContainer>
         <div className="space-y-4">
@@ -2139,8 +2135,8 @@ if (loading) {
         <CardHeader className="flex flex-row justify-between items-center">
           <CardTitle>Vehicle Transfers</CardTitle>
           <div className="flex gap-2">
-            <Button onClick={toggleExistingTransfers} >
-              {showExistingTransfers ? 'Hide' : 'Show'} Existing Transfers
+            <Button onClick={toggleExistingTransfers}>
+              {showExistingTransfers ? "Hide" : "Show"} Existing Transfers
             </Button>
             <Button onClick={handleAddRow} variant="outline">
               <Plus className="mr-2 h-4 w-4" /> Add Row
@@ -2154,7 +2150,7 @@ if (loading) {
               className="space-y-6"
               id="transfer-form"
             >
-               <div className="space-y-4">
+              <div className="space-y-4">
                 {form.watch("rows").map((row, index) => {
                   const nightTime = form.watch(`rows.${index}.NightTime`);
                   return (
@@ -2638,42 +2634,39 @@ if (loading) {
 
           {allTransfers.length > 0 && showExistingTransfers && (
             <div className="mt-8">
-              {/* ... (keep your existing search and filter controls) */}
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+                <h3 className="text-lg font-medium">Existing Transfers</h3>
 
+                <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                  <div className="relative w-full">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="Search transfers..."
+                      className="pl-10 w-full"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
 
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
-                            <h3 className="text-lg font-medium">Existing Transfers</h3>
-            
-                            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-                              <div className="relative w-full">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                <Input
-                                  placeholder="Search transfers..."
-                                  className="pl-10 w-full"
-                                  value={searchTerm}
-                                  onChange={(e) => setSearchTerm(e.target.value)}
-                                />
-                              </div>
-            
-                              <Select
-                                value={itemsPerPage.toString()}
-                                onValueChange={(value) => {
-                                  setItemsPerPage(Number(value));
-                                  setCurrentPage(1);
-                                }}
-                              >
-                                <SelectTrigger className="w-[120px]">
-                                  <SelectValue placeholder="Items per page" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="5">5 per page</SelectItem>
-                                  <SelectItem value="10">10 per page</SelectItem>
-                                  <SelectItem value="20">20 per page</SelectItem>
-                                  <SelectItem value="50">50 per page</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
+                  <Select
+                    value={itemsPerPage.toString()}
+                    onValueChange={(value) => {
+                      setItemsPerPage(Number(value));
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue placeholder="Items per page" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="5">5 per page</SelectItem>
+                      <SelectItem value="10">10 per page</SelectItem>
+                      <SelectItem value="20">20 per page</SelectItem>
+                      <SelectItem value="50">50 per page</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
               {/* Desktop Table */}
               <div className="hidden md:block">
                 <Table>
@@ -2731,7 +2724,7 @@ if (loading) {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {currentItems.map((transfer,index) => {
+                    {currentItems.map((transfer, index) => {
                       const vehicle = vehicles.find(
                         (v) => v.id === transfer.vehicle_id
                       );
@@ -2752,12 +2745,15 @@ if (loading) {
                               {transfer.Zone_name ||
                                 (zone ? zone.name : "Unknown Zone")}
                             </TableCell>
-                            <TableCell>{transfer.Transfer_info || "-"}</TableCell>
+                            <TableCell>
+                              {transfer.Transfer_info || "-"}
+                            </TableCell>
                             <TableCell>
                               {transfer.Currency} {transfer.price}
                             </TableCell>
                             <TableCell>
-                              {transfer.Currency} {transfer.extra_price_per_mile}
+                              {transfer.Currency}{" "}
+                              {transfer.extra_price_per_mile}
                             </TableCell>
                             <TableCell>
                               {transfer.NightTime === "yes"
@@ -2784,7 +2780,9 @@ if (loading) {
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  onClick={() => toggleRowExpansion(transfer.id)}
+                                  onClick={() =>
+                                    toggleRowExpansion(transfer.id)
+                                  }
                                 >
                                   {isExpanded ? (
                                     <ChevronUp className="h-4 w-4" />
@@ -2804,7 +2802,8 @@ if (loading) {
                                       Vehicle Tax
                                     </h4>
                                     <p className="text-sm">
-                                      {transfer.Currency} {transfer.vehicleTax || "0"}
+                                      {transfer.Currency}{" "}
+                                      {transfer.vehicleTax || "0"}
                                     </p>
                                   </div>
                                   <div className="space-y-2">
@@ -2812,7 +2811,8 @@ if (loading) {
                                       Parking Charge
                                     </h4>
                                     <p className="text-sm">
-                                      {transfer.Currency} {transfer.parking || "0"}
+                                      {transfer.Currency}{" "}
+                                      {transfer.parking || "0"}
                                     </p>
                                   </div>
                                   <div className="space-y-2">
@@ -2820,7 +2820,8 @@ if (loading) {
                                       Toll Tax
                                     </h4>
                                     <p className="text-sm">
-                                      {transfer.Currency} {transfer.tollTax || "0"}
+                                      {transfer.Currency}{" "}
+                                      {transfer.tollTax || "0"}
                                     </p>
                                   </div>
                                   <div className="space-y-2">
@@ -2828,7 +2829,8 @@ if (loading) {
                                       Driver Charge
                                     </h4>
                                     <p className="text-sm">
-                                      {transfer.Currency} {transfer.driverCharge || "0"}
+                                      {transfer.Currency}{" "}
+                                      {transfer.driverCharge || "0"}
                                     </p>
                                   </div>
                                   <div className="space-y-2">
@@ -2836,7 +2838,8 @@ if (loading) {
                                       Driver Tips
                                     </h4>
                                     <p className="text-sm">
-                                      {transfer.Currency} {transfer.driverTips || "0"}
+                                      {transfer.Currency}{" "}
+                                      {transfer.driverTips || "0"}
                                     </p>
                                   </div>
                                 </div>
@@ -2849,77 +2852,75 @@ if (loading) {
                   </TableBody>
                 </Table>
 
-                {/* ... (keep your existing pagination controls) */}
-
-                 {/* Pagination controls */}
-                                {totalPages > 1 && (
-                                  <div className="flex items-center justify-end space-x-2 py-4">
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => paginate(Math.max(1, currentPage - 1))}
-                                      disabled={currentPage === 1}
-                                    >
-                                      Previous
-                                    </Button>
-                                    <div className="flex items-center gap-1">
-                                      {Array.from(
-                                        { length: Math.min(5, totalPages) },
-                                        (_, i) => {
-                                          let pageNum;
-                                          if (totalPages <= 5) {
-                                            pageNum = i + 1;
-                                          } else if (currentPage <= 3) {
-                                            pageNum = i + 1;
-                                          } else if (currentPage >= totalPages - 2) {
-                                            pageNum = totalPages - 4 + i;
-                                          } else {
-                                            pageNum = currentPage - 2 + i;
-                                          }
-                                          return (
-                                            <Button
-                                              key={pageNum}
-                                              variant={
-                                                currentPage === pageNum ? "default" : "outline"
-                                              }
-                                              size="sm"
-                                              onClick={() => paginate(pageNum)}
-                                            >
-                                              {pageNum}
-                                            </Button>
-                                          );
-                                        }
-                                      )}
-                                      {totalPages > 5 && currentPage < totalPages - 2 && (
-                                        <>
-                                          <span className="px-2">...</span>
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => paginate(totalPages)}
-                                          >
-                                            {totalPages}
-                                          </Button>
-                                        </>
-                                      )}
-                                    </div>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() =>
-                                        paginate(Math.min(totalPages, currentPage + 1))
-                                      }
-                                      disabled={currentPage === totalPages}
-                                    >
-                                      Next
-                                    </Button>
-                                  </div>
-                                )}
+                {/* Pagination controls */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-end space-x-2 py-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => paginate(Math.max(1, currentPage - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </Button>
+                    <div className="flex items-center gap-1">
+                      {Array.from(
+                        { length: Math.min(5, totalPages) },
+                        (_, i) => {
+                          let pageNum;
+                          if (totalPages <= 5) {
+                            pageNum = i + 1;
+                          } else if (currentPage <= 3) {
+                            pageNum = i + 1;
+                          } else if (currentPage >= totalPages - 2) {
+                            pageNum = totalPages - 4 + i;
+                          } else {
+                            pageNum = currentPage - 2 + i;
+                          }
+                          return (
+                            <Button
+                              key={pageNum}
+                              variant={
+                                currentPage === pageNum ? "default" : "outline"
+                              }
+                              size="sm"
+                              onClick={() => paginate(pageNum)}
+                            >
+                              {pageNum}
+                            </Button>
+                          );
+                        }
+                      )}
+                      {totalPages > 5 && currentPage < totalPages - 2 && (
+                        <>
+                          <span className="px-2">...</span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => paginate(totalPages)}
+                          >
+                            {totalPages}
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        paginate(Math.min(totalPages, currentPage + 1))
+                      }
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
               </div>
 
               {/* Mobile Cards */}
               <div className="md:hidden space-y-4">
-                {currentItems.map((transfer,index) => {
+                {currentItems.map((transfer, index) => {
                   const vehicle = vehicles.find(
                     (v) => v.id === transfer.vehicle_id
                   );
@@ -3041,7 +3042,8 @@ if (loading) {
                                 Driver Charge
                               </div>
                               <div className="text-sm">
-                                {transfer.Currency} {transfer.driverCharge || "0"}
+                                {transfer.Currency}{" "}
+                                {transfer.driverCharge || "0"}
                               </div>
                             </div>
                             <div className="space-y-2">
@@ -3058,36 +3060,32 @@ if (loading) {
                     </Card>
                   );
                 })}
-
-                {/* ... (keep your existing mobile pagination) */}
-
-
-                 {/* Mobile pagination */}
-                                {totalPages > 1 && (
-                                  <div className="flex items-center justify-between mt-4">
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => paginate(Math.max(1, currentPage - 1))}
-                                      disabled={currentPage === 1}
-                                    >
-                                      Previous
-                                    </Button>
-                                    <span className="text-sm">
-                                      Page {currentPage} of {totalPages}
-                                    </span>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() =>
-                                        paginate(Math.min(totalPages, currentPage + 1))
-                                      }
-                                      disabled={currentPage === totalPages}
-                                    >
-                                      Next
-                                    </Button>
-                                  </div>
-                                )}
+                {/* Mobile pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-between mt-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => paginate(Math.max(1, currentPage - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </Button>
+                    <span className="text-sm">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        paginate(Math.min(totalPages, currentPage + 1))
+                      }
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           )}
