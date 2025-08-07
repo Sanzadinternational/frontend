@@ -421,7 +421,7 @@ const AddMargin = () => {
                               onClick={() => requestSort('MarginPrice')}
                               className="p-0 hover:bg-transparent"
                             >
-                              Margin Price
+                              Margin Price(%)
                               <ArrowUpDown className="ml-2 h-4 w-4" />
                             </Button>
                           </TableHead>

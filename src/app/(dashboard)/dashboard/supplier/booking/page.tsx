@@ -420,10 +420,11 @@ const SupplierBookingsTable = () => {
       // Payment status
       switch (statusText) {
         case "completed":
+          case "successful":
           return (
             <Badge className="bg-green-500 hover:bg-green-600">
               <Check className="h-3 w-3 mr-1" />
-              Completed
+              {statusText === "successful" ? "Successful" : "Completed"}
             </Badge>
           );
         case "pending":
@@ -701,7 +702,8 @@ const SupplierBookingsTable = () => {
                                     {item.booking.status?.toLowerCase() !==
                                       "approved" &&
                                       item.payments?.payment_status?.toLowerCase() ===
-                                        "completed" && (
+                                        "completed" || 
+item.payments?.payment_status?.toLowerCase() === "successful" && (
                                       <div className="col-span-2">
                                         <h4 className="text-sm font-medium text-gray-500 mb-1">
                                           Assign Driver
@@ -757,7 +759,8 @@ const SupplierBookingsTable = () => {
                                       {item.booking.status?.toLowerCase() !==
                                         "approved" &&
                                         item.payments?.payment_status?.toLowerCase() ===
-                                        "completed" && (
+                                        "completed" || 
+item.payments?.payment_status?.toLowerCase() === "successful" && (
                                         <Button
                                           size="sm"
                                           onClick={() => {
@@ -784,7 +787,8 @@ const SupplierBookingsTable = () => {
                                       {item.booking.status?.toLowerCase() !==
                                         "rejected" && 
                                         item.payments?.payment_status?.toLowerCase() ===
-                                        "completed" && (
+                                        "completed" || 
+item.payments?.payment_status?.toLowerCase() === "successful" && (
                                         <Button
                                           variant="destructive"
                                           size="sm"
@@ -946,7 +950,8 @@ const SupplierBookingsTable = () => {
                               {item.booking.status?.toLowerCase() !==
                                 "approved" &&
                                 item.payments?.payment_status?.toLowerCase() ===
-                                        "completed" && (
+                                        "completed" || 
+item.payments?.payment_status?.toLowerCase() === "successful" && (
                                 <div>
                                   <h4 className="text-sm font-medium text-gray-500">
                                     Assign Driver
@@ -994,7 +999,8 @@ const SupplierBookingsTable = () => {
                                 {item.booking.status?.toLowerCase() !==
                                   "approved" && 
                                   item.payments?.payment_status?.toLowerCase() ===
-                                        "completed" && (
+                                        "completed" || 
+item.payments?.payment_status?.toLowerCase() === "successful" && (
                                   <Button
                                     size="sm"
                                     onClick={() => {
@@ -1021,7 +1027,8 @@ const SupplierBookingsTable = () => {
                                 {item.booking.status?.toLowerCase() !==
                                   "rejected" && 
                                   item.payments?.payment_status?.toLowerCase() ===
-                                        "completed" && (
+                                        "completed" || 
+item.payments?.payment_status?.toLowerCase() === "successful" && (
                                   <Button
                                     variant="destructive"
                                     size="sm"
