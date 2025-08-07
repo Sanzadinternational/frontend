@@ -433,10 +433,11 @@ const BookingTable = () => {
       // Payment status
       switch (statusText) {
         case "completed":
+          case "successful":
           return (
             <Badge className="bg-green-500 hover:bg-green-600">
               <Check className="h-3 w-3 mr-1" />
-              Completed
+              {statusText === "successful" ? "Successful" : "Completed"}
             </Badge>
           );
         case "pending":
@@ -656,8 +657,9 @@ const BookingTable = () => {
                                       </div>
                                     </div>
                                     <div className="flex justify-end gap-2">
-                                      {item.payments?.payment_status?.toLowerCase() ===
-                                        "completed" && (
+                                      {(item.payments?.payment_status?.toLowerCase() ===
+                                        "completed" || 
+item.payments?.payment_status?.toLowerCase() === "successful") && (
                                         <>
                                           <Button
                                             variant="outline"
@@ -678,7 +680,7 @@ const BookingTable = () => {
                                             )}
                                             Invoice
                                           </Button>
-                                          <Button
+                                          {/* <Button
                                             variant="outline"
                                             size="sm"
                                             onClick={() =>
@@ -696,7 +698,23 @@ const BookingTable = () => {
                                               <Download className="h-4 w-4 mr-1" />
                                             )}
                                             Voucher
-                                          </Button>
+                                          </Button> */}
+
+                                          {item.booking.status?.toLowerCase() === "approved" && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => downloadVoucher(item.booking.id)}
+                  disabled={downloadingVoucher === item.booking.id}
+                >
+                  {downloadingVoucher === item.booking.id ? (
+                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                  ) : (
+                    <Download className="h-4 w-4 mr-1" />
+                  )}
+                  Voucher
+                </Button>
+              )}
                                         </>
                                       )}
                                       {/* {item.payments?.payment_status?.toLowerCase() !==
@@ -876,8 +894,9 @@ const BookingTable = () => {
                                 </p>
                               </div>
                               <div className="flex flex-wrap gap-2 pt-2">
-                                {item.payments?.payment_status?.toLowerCase() ===
-                                  "completed" && (
+                                {(item.payments?.payment_status?.toLowerCase() ===
+                                        "completed" || 
+item.payments?.payment_status?.toLowerCase() === "successful") && (
                                   <>
                                     <Button
                                       variant="outline"
@@ -898,7 +917,7 @@ const BookingTable = () => {
                                       )}
                                       Invoice
                                     </Button>
-                                    <Button
+                                    {/* <Button
                                       variant="outline"
                                       size="sm"
                                       onClick={() =>
@@ -916,7 +935,22 @@ const BookingTable = () => {
                                         <Download className="h-4 w-4 mr-1" />
                                       )}
                                       Voucher
-                                    </Button>
+                                    </Button> */}
+                                    {item.booking.status?.toLowerCase() === "approved" && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => downloadVoucher(item.booking.id)}
+                  disabled={downloadingVoucher === item.booking.id}
+                >
+                  {downloadingVoucher === item.booking.id ? (
+                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                  ) : (
+                    <Download className="h-4 w-4 mr-1" />
+                  )}
+                  Voucher
+                </Button>
+              )}
                                   </>
                                 )}
                                 {/* {item.payments?.payment_status?.toLowerCase() !==

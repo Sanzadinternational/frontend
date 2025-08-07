@@ -699,11 +699,11 @@ const SupplierBookingsTable = () => {
                                       )} */}
                                     </div>
 
-                                    {item.booking.status?.toLowerCase() !==
+                                    {/* {item.booking.status?.toLowerCase() !==
                                       "approved" &&
-                                      item.payments?.payment_status?.toLowerCase() ===
+                                      (item.payments?.payment_status?.toLowerCase() ===
                                         "completed" || 
-item.payments?.payment_status?.toLowerCase() === "successful" && (
+item.payments?.payment_status?.toLowerCase() === "successful") && (
                                       <div className="col-span-2">
                                         <h4 className="text-sm font-medium text-gray-500 mb-1">
                                           Assign Driver
@@ -804,7 +804,88 @@ item.payments?.payment_status?.toLowerCase() === "successful" && (
                                           Reject
                                         </Button>
                                       )}
-                                    </div>
+                                    </div> */}
+
+
+
+
+
+                                      {/* Updated driver selection and buttons */}
+        {item.booking.status?.toLowerCase() === "pending" && 
+         (item.payments?.payment_status?.toLowerCase() === "completed" || 
+          item.payments?.payment_status?.toLowerCase() === "successful") && (
+          <>
+            <div className="col-span-2">
+              <h4 className="text-sm font-medium text-gray-500">
+                Assign Driver
+              </h4>
+              <select
+                className="w-full p-2 border rounded"
+                value={selectedDriver || ""}
+                onChange={(e) => setSelectedDriver(e.target.value)}
+              >
+                <option value="">Select a driver</option>
+                {drivers.map((driver) => (
+                  <option key={driver.id} value={driver.id}>
+                    {driver.DriverName} ({driver.DriverContact})
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="flex justify-end gap-2">
+              <Button
+                size="sm"
+                onClick={() => {
+                  if (!selectedDriver) {
+                    toast({
+                      title: "Warning",
+                      description: "Please select a driver before approving",
+                      variant: "destructive",
+                    });
+                    return;
+                  }
+                  updateBookingStatus(item.booking.id, "approved");
+                }}
+                className="h-8"
+              >
+                <Check className="h-4 w-4 mr-1" />
+                Approve Booking
+              </Button>
+              
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => updateBookingStatus(item.booking.id, "rejected")}
+                className="h-8"
+              >
+                <X className="h-4 w-4 mr-1" />
+                Reject
+              </Button>
+            </div>
+          </>
+        )}
+
+        {/* Voucher download button (show only for approved bookings) */}
+        {item.booking.status?.toLowerCase() === "approved" && (
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => downloadVoucher(item.booking.id)}
+              disabled={downloadingVoucher === item.booking.id}
+              className="h-8"
+            >
+              {downloadingVoucher === item.booking.id ? (
+                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4 mr-1" />
+              )}
+              Voucher
+            </Button>
+          </div>
+        )}
+
                                   </div>
                                 </TableCell>
                               </TableRow>
@@ -947,7 +1028,7 @@ item.payments?.payment_status?.toLowerCase() === "successful" && (
                                   </p>
                                 </div>
                               )}
-                              {item.booking.status?.toLowerCase() !==
+                              {/* {item.booking.status?.toLowerCase() !==
                                 "approved" &&
                                 item.payments?.payment_status?.toLowerCase() ===
                                         "completed" || 
@@ -1044,7 +1125,89 @@ item.payments?.payment_status?.toLowerCase() === "successful" && (
                                     Reject
                                   </Button>
                                 )}
-                              </div>
+                              </div> */}
+
+
+
+
+
+
+                                {/* Updated driver selection and buttons */}
+      {item.booking.status?.toLowerCase() === "pending" && 
+       (item.payments?.payment_status?.toLowerCase() === "completed" || 
+        item.payments?.payment_status?.toLowerCase() === "successful") && (
+        <>
+          <div>
+            <h4 className="text-sm font-medium text-gray-500">
+              Assign Driver
+            </h4>
+            <select
+              className="w-full p-2 border rounded mt-1"
+              value={selectedDriver || ""}
+              onChange={(e) => setSelectedDriver(e.target.value)}
+            >
+              <option value="">Select a driver</option>
+              {drivers.map((driver) => (
+                <option key={driver.id} value={driver.id}>
+                  {driver.DriverName} ({driver.DriverCarInfo})
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="flex gap-2 pt-2">
+            <Button
+              size="sm"
+              onClick={() => {
+                if (!selectedDriver) {
+                  toast({
+                    title: "Warning",
+                    description: "Please select a driver before approving",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+                updateBookingStatus(item.booking.id, "approved");
+              }}
+              className="flex-1"
+            >
+              <Check className="h-4 w-4 mr-1" />
+              Approve Booking
+            </Button>
+            
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => updateBookingStatus(item.booking.id, "rejected")}
+              className="flex-1"
+            >
+              <X className="h-4 w-4 mr-1" />
+              Reject
+            </Button>
+          </div>
+        </>
+      )}
+
+      {/* Voucher download button (show only for approved bookings) */}
+      {item.booking.status?.toLowerCase() === "approved" && (
+        <div className="flex pt-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => downloadVoucher(item.booking.id)}
+            disabled={downloadingVoucher === item.booking.id}
+            className="flex-1"
+          >
+            {downloadingVoucher === item.booking.id ? (
+              <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+            ) : (
+              <Download className="h-4 w-4 mr-1" />
+            )}
+            Voucher
+          </Button>
+        </div>
+      )}
+
                             </div>
                           </CardContent>
                         )}
