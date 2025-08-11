@@ -834,6 +834,8 @@ item.payments?.payment_status?.toLowerCase() === "successful") && (
                                         )}
                                       {item.payments?.payment_status?.toLowerCase() !==
                                         "failed" && 
+                                        item.payments?.payment_status?.toLowerCase() !==
+                                        "completed" &&
                                         item.payments?.payment_method?.toLowerCase() ===
                                     "reference" && (
                                         <Button
