@@ -32,6 +32,7 @@ import { useToast } from "@/hooks/use-toast";
 
 interface Booking {
   id: string;
+  booking_unique_id:string;
   agent_id?: number;
   vehicle_id?: string;
   supplier_id?: number;
@@ -92,6 +93,17 @@ const SupplierBookingsTable = () => {
   });
 
   const [currentPage, setCurrentPage] = useState(1);
+
+
+const [statusFilter, setStatusFilter] = useState<string>("all");
+// Status filter options
+const statusOptions = [
+  { value: "all", label: "All Bookings" },
+  { value: "pending", label: "Pending" },
+  { value: "approved", label: "Upcoming" },
+  { value: "completed", label: "Completed" },
+  { value: "rejected", label: "Rejected" },
+];
 
   const toggleRowExpansion = (bookingId: string) => {
     setExpandedRows((prev) => ({
@@ -233,72 +245,145 @@ const SupplierBookingsTable = () => {
   }, [isAuthenticated]);
 
   // Update booking status
-  const updateBookingStatus = async (bookingId: string, newStatus: string) => {
-    if (newStatus === "approved" && !selectedDriver) {
-      toast({
-        title: "Error",
-        description: "Please select a driver before approving",
-        variant: "destructive",
-      });
-      return;
+  // const updateBookingStatus = async (bookingId: string, newStatus: string) => {
+  //   if (newStatus === "approved" && !selectedDriver) {
+  //     toast({
+  //       title: "Error",
+  //       description: "Please select a driver before approving",
+  //       variant: "destructive",
+  //     });
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await fetch(
+  //       `${API_BASE_URL}/supplier/ChangeBookingStatusByBookingId/${bookingId}`,
+  //       {
+  //         method: "PUT",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           status: newStatus,
+  //           driver_id: newStatus === "approved" ? selectedDriver : null,
+  //         }),
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Failed to update booking status");
+  //     }
+
+  //     toast({
+  //       title: "Success",
+  //       description:
+  //         newStatus === "approved"
+  //           ? "Booking approved and driver assigned"
+  //           : "Booking status updated",
+  //     });
+
+  //     // Update local state
+  //     setBookings((prevBookings) =>
+  //       prevBookings.map((item) =>
+  //         item.booking.id === bookingId
+  //           ? {
+  //               ...item,
+  //               booking: {
+  //                 ...item.booking,
+  //                 status: newStatus,
+  //               },
+  //             }
+  //           : item
+  //       )
+  //     );
+
+  //     // Reset selected driver after approval
+  //     if (newStatus === "approved") {
+  //       setSelectedDriver(null);
+  //     }
+  //   } catch (error: any) {
+  //     console.error("Error updating booking:", error);
+  //     setError(error.message);
+  //     toast({
+  //       title: "Error",
+  //       description: error.message,
+  //       variant: "destructive",
+  //     });
+  //   }
+  // };
+
+
+// In your updateBookingStatus function, add the completed case:
+const updateBookingStatus = async (bookingId: string, newStatus: string) => {
+  if (newStatus === "approved" && !selectedDriver) {
+    toast({
+      title: "Error",
+      description: "Please select a driver before approving",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/supplier/ChangeBookingStatusByBookingId/${bookingId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: newStatus,
+          driver_id: newStatus === "approved" ? selectedDriver : null,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to update booking status");
     }
 
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/supplier/ChangeBookingStatusByBookingId/${bookingId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            status: newStatus,
-            driver_id: newStatus === "approved" ? selectedDriver : null,
-          }),
-        }
-      );
+    toast({
+      title: "Success",
+      description:
+        newStatus === "approved"
+          ? "Booking approved and driver assigned"
+          : newStatus === "completed"
+          ? "Booking marked as completed"
+          : "Booking status updated",
+    });
 
-      if (!response.ok) {
-        throw new Error("Failed to update booking status");
-      }
+    // Update local state
+    setBookings((prevBookings) =>
+      prevBookings.map((item) =>
+        item.booking.id === bookingId
+          ? {
+              ...item,
+              booking: {
+                ...item.booking,
+                status: newStatus,
+                completed_at: newStatus === "completed" ? new Date().toISOString() : item.booking.completed_at,
+              },
+            }
+          : item
+      )
+    );
 
-      toast({
-        title: "Success",
-        description:
-          newStatus === "approved"
-            ? "Booking approved and driver assigned"
-            : "Booking status updated",
-      });
-
-      // Update local state
-      setBookings((prevBookings) =>
-        prevBookings.map((item) =>
-          item.booking.id === bookingId
-            ? {
-                ...item,
-                booking: {
-                  ...item.booking,
-                  status: newStatus,
-                },
-              }
-            : item
-        )
-      );
-
-      // Reset selected driver after approval
-      if (newStatus === "approved") {
-        setSelectedDriver(null);
-      }
-    } catch (error: any) {
-      console.error("Error updating booking:", error);
-      setError(error.message);
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+    // Reset selected driver after approval
+    if (newStatus === "approved") {
+      setSelectedDriver(null);
     }
-  };
+  } catch (error: any) {
+    console.error("Error updating booking:", error);
+    setError(error.message);
+    toast({
+      title: "Error",
+      description: error.message,
+      variant: "destructive",
+    });
+  }
+};
+
 
   // Safe filtering with null checks
 
@@ -319,13 +404,29 @@ const SupplierBookingsTable = () => {
       : "";
     const dateSearch = dateSearchTerm.toLowerCase();
 
+
+ // Status filtering
+  let statusMatch = true;
+  if (statusFilter !== "all") {
+    if (statusFilter === "approved") {
+      // "Upcoming" shows approved but not completed/rejected
+      statusMatch = bookingStatus === "approved";
+    } else if (statusFilter === "upcoming") {
+      // "Upcoming" shows approved but not completed/rejected
+      statusMatch = bookingStatus === "approved";
+    } else {
+      statusMatch = bookingStatus === statusFilter;
+    }
+  }
+
     return (
       (pickup.includes(search) ||
         drop.includes(search) ||
         price.includes(search) ||
         bookingStatus.includes(search) ||
         paymentStatus.includes(search)) &&
-      (dateSearchTerm === "" || bookingDate.includes(dateSearch))
+      (dateSearchTerm === "" || bookingDate.includes(dateSearch))&&
+    statusMatch
     );
   });
 
@@ -390,32 +491,75 @@ const SupplierBookingsTable = () => {
 
     const statusText = status.toLowerCase();
 
-    if (type === "booking") {
-      switch (statusText) {
-        case "approved":
-          return (
-            <Badge className="bg-green-500 hover:bg-green-600">
-              <Check className="h-3 w-3 mr-1" />
-              Approved
-            </Badge>
-          );
-        case "pending":
-          return (
-            <Badge className="bg-yellow-500 hover:bg-yellow-600">
-              <Clock className="h-3 w-3 mr-1" />
-              Pending
-            </Badge>
-          );
-        case "rejected":
-          return (
-            <Badge variant="destructive">
-              <X className="h-3 w-3 mr-1" />
-              Rejected
-            </Badge>
-          );
-        default:
-          return <Badge variant="outline">{statusText}</Badge>;
-      }
+  //   if (type === "booking") {
+  //     switch (statusText) {
+  //       case "approved":
+  //         return (
+  //           <Badge className="bg-green-500 hover:bg-green-600">
+  //             <Check className="h-3 w-3 mr-1" />
+  //             Approved
+  //           </Badge>
+  //         );
+  //         case "completed":
+  // return (
+  //   <Badge className="bg-blue-500 hover:bg-blue-600">
+  //     <Check className="h-3 w-3 mr-1" />
+  //     Completed
+  //   </Badge>
+  // );
+  //       case "pending":
+  //         return (
+  //           <Badge className="bg-yellow-500 hover:bg-yellow-600">
+  //             <Clock className="h-3 w-3 mr-1" />
+  //             Pending
+  //           </Badge>
+  //         );
+  //       case "rejected":
+  //         return (
+  //           <Badge variant="destructive">
+  //             <X className="h-3 w-3 mr-1" />
+  //             Rejected
+  //           </Badge>
+  //         );
+  //       default:
+  //         return <Badge variant="outline">{statusText}</Badge>;
+  //     }
+
+  if (type === "booking") {
+    switch (statusText) {
+      case "approved":
+        return (
+          <Badge className="bg-blue-500 hover:bg-blue-600">
+            <Clock className="h-3 w-3 mr-1" />
+            Upcoming
+          </Badge>
+        );
+      case "pending":
+        return (
+          <Badge className="bg-yellow-500 hover:bg-yellow-600">
+            <Clock className="h-3 w-3 mr-1" />
+            Pending
+          </Badge>
+        );
+      case "completed":
+        return (
+          <Badge className="bg-green-500 hover:bg-green-600">
+            <Check className="h-3 w-3 mr-1" />
+            Completed
+          </Badge>
+        );
+      case "rejected":
+        return (
+          <Badge variant="destructive">
+            <X className="h-3 w-3 mr-1" />
+            Rejected
+          </Badge>
+        );
+      default:
+        return <Badge variant="outline">{statusText}</Badge>;
+    }
+
+
     } else {
       // Payment status
       switch (statusText) {
@@ -491,6 +635,27 @@ const SupplierBookingsTable = () => {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <CardTitle>My Bookings</CardTitle>
               <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+
+
+{/* Status Filter Dropdown */}
+      <div className="relative w-full md:w-48">
+        <select
+          className="w-full p-2 border rounded bg-background text-sm"
+          value={statusFilter}
+          onChange={(e) => {
+            setStatusFilter(e.target.value);
+            setCurrentPage(1);
+          }}
+        >
+          {statusOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+
                 <div className="relative w-full md:w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -646,7 +811,8 @@ const SupplierBookingsTable = () => {
                                         <h4 className="text-sm font-medium text-gray-500">
                                           Booking ID
                                         </h4>
-                                        <p>{item.booking.id}</p>
+                                        {/* <p>{item.booking.id}</p> */}
+                                        <p>{item.booking.booking_unique_id}</p>
                                       </div>
                                       <div>
                                         <h4 className="text-sm font-medium text-gray-500">
@@ -867,7 +1033,8 @@ item.payments?.payment_status?.toLowerCase() === "successful" && (
         )}
 
         {/* Voucher download button (show only for approved bookings) */}
-        {item.booking.status?.toLowerCase() === "approved" && (
+        {(item.booking.status?.toLowerCase() === "approved" ||
+        item.booking.status?.toLowerCase() === "completed") && (
           <div className="flex justify-end">
             <Button
               variant="outline"
@@ -885,6 +1052,22 @@ item.payments?.payment_status?.toLowerCase() === "successful" && (
             </Button>
           </div>
         )}
+
+{/* After the voucher download button in desktop view */}
+{item.booking.status?.toLowerCase() === "approved" && (
+  <div className="flex justify-end mt-2">
+    <Button
+      size="sm"
+      onClick={() => updateBookingStatus(item.booking.id, "completed")}
+      className="h-8 bg-blue-600 hover:bg-blue-700"
+    >
+      <Check className="h-4 w-4 mr-1" />
+      Complete Booking
+    </Button>
+  </div>
+)}
+
+
 
                                   </div>
                                 </TableCell>
@@ -976,7 +1159,8 @@ item.payments?.payment_status?.toLowerCase() === "successful" && (
                                 <h4 className="text-sm font-medium text-gray-500">
                                   Booking ID
                                 </h4>
-                                <p className="text-sm">{item.booking.id}</p>
+                                {/* <p className="text-sm">{item.booking.id}</p> */}
+                                <p className="text-sm">{item.booking.booking_unique_id}</p>
                               </div>
                               <div>
                                 <h4 className="text-sm font-medium text-gray-500">
@@ -1207,6 +1391,20 @@ item.payments?.payment_status?.toLowerCase() === "successful" && (
           </Button>
         </div>
       )}
+
+      {/* After the voucher download button in mobile view */}
+{item.booking.status?.toLowerCase() === "approved" && (
+  <div className="flex pt-2">
+    <Button
+      size="sm"
+      onClick={() => updateBookingStatus(item.booking.id, "completed")}
+      className="flex-1 bg-blue-600 hover:bg-blue-700"
+    >
+      <Check className="h-4 w-4 mr-1" />
+      Complete Booking
+    </Button>
+  </div>
+)}
 
                             </div>
                           </CardContent>

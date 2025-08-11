@@ -30,6 +30,7 @@ import { format } from "date-fns";
 
 interface Booking {
   id: string;
+  booking_unique_id:string;
   pickup_location: string;
   drop_location: string;
   price: string;
@@ -83,6 +84,20 @@ const BookingTable = () => {
       return "";
     }
   };
+
+
+
+const [statusFilter, setStatusFilter] = useState<string>("all");
+
+// Status filter options
+const statusOptions = [
+  { value: "all", label: "All Bookings" },
+  { value: "pending", label: "Pending" },
+  { value: "approved", label: "Upcoming" },
+  { value: "completed", label: "Completed" },
+  { value: "rejected", label: "Rejected" },
+];
+
 
   const [sortConfig, setSortConfig] = useState<{
     key: string;
@@ -242,6 +257,12 @@ const BookingTable = () => {
     const bookingDate = formatDateForSearch(item.booking.booked_at);
     const dateSearch = formatDateForSearch(dateSearchTerm);
 
+  // Status filtering
+  const statusMatch = 
+    statusFilter === "all" || 
+    bookingStatus === statusFilter.toLowerCase();
+
+
     // Check if it matches text search OR date filter (if either is specified)
     const matchesTextSearch =
       pickup.includes(search) ||
@@ -254,7 +275,7 @@ const BookingTable = () => {
     const matchesDateFilter =
       dateSearchTerm === "" || bookingDate.includes(dateSearch);
 
-    return matchesTextSearch && matchesDateFilter;
+    return matchesTextSearch && matchesDateFilter && statusMatch;
   });
 
   // Sort bookings
@@ -403,32 +424,68 @@ const BookingTable = () => {
 
     const statusText = status.toLowerCase();
 
-    if (type === "booking") {
-      switch (statusText) {
-        case "approved":
-          return (
-            <Badge className="bg-green-500 hover:bg-green-600">
-              <Check className="h-3 w-3 mr-1" />
-              Approved
-            </Badge>
-          );
-        case "pending":
-          return (
-            <Badge className="bg-yellow-500 hover:bg-yellow-600">
-              <Clock className="h-3 w-3 mr-1" />
-              Pending
-            </Badge>
-          );
-        case "rejected":
-          return (
-            <Badge variant="destructive">
-              <X className="h-3 w-3 mr-1" />
-              Rejected
-            </Badge>
-          );
-        default:
-          return <Badge variant="outline">{statusText}</Badge>;
-      }
+    // if (type === "booking") {
+    //   switch (statusText) {
+    //     case "approved":
+    //       return (
+    //         <Badge className="bg-green-500 hover:bg-green-600">
+    //           <Check className="h-3 w-3 mr-1" />
+    //           Approved
+    //         </Badge>
+    //       );
+    //     case "pending":
+    //       return (
+    //         <Badge className="bg-yellow-500 hover:bg-yellow-600">
+    //           <Clock className="h-3 w-3 mr-1" />
+    //           Pending
+    //         </Badge>
+    //       );
+    //     case "rejected":
+    //       return (
+    //         <Badge variant="destructive">
+    //           <X className="h-3 w-3 mr-1" />
+    //           Rejected
+    //         </Badge>
+    //       );
+    //     default:
+    //       return <Badge variant="outline">{statusText}</Badge>;
+    //   }
+
+if (type === "booking") {
+    switch (statusText) {
+      case "approved":
+        return (
+          <Badge className="bg-blue-500 hover:bg-blue-600">
+            <Clock className="h-3 w-3 mr-1" />
+            Upcoming
+          </Badge>
+        );
+      case "pending":
+        return (
+          <Badge className="bg-yellow-500 hover:bg-yellow-600">
+            <Clock className="h-3 w-3 mr-1" />
+            Pending
+          </Badge>
+        );
+      case "completed":
+        return (
+          <Badge className="bg-green-500 hover:bg-green-600">
+            <Check className="h-3 w-3 mr-1" />
+            Completed
+          </Badge>
+        );
+      case "rejected":
+        return (
+          <Badge variant="destructive">
+            <X className="h-3 w-3 mr-1" />
+            Rejected
+          </Badge>
+        );
+      default:
+        return <Badge variant="outline">{statusText}</Badge>;
+    }
+
+
     } else {
       // Payment status
       switch (statusText) {
@@ -468,6 +525,26 @@ const BookingTable = () => {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <CardTitle>My Bookings</CardTitle>
               <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+
+{/* Status Filter Dropdown */}
+      <div className="relative w-full md:w-48">
+        <select
+          className="w-full p-2 border rounded bg-background text-sm"
+          value={statusFilter}
+          onChange={(e) => {
+            setStatusFilter(e.target.value);
+            setCurrentPage(1);
+          }}
+        >
+          {statusOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+
                 <div className="relative w-full md:w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -622,7 +699,8 @@ const BookingTable = () => {
                                         <h4 className="text-sm font-medium text-gray-500">
                                           Booking ID
                                         </h4>
-                                        <p>{item.booking.id}</p>
+                                        {/* <p>{item.booking.id}</p> */}
+                                        <p>{item.booking.booking_unique_id}</p>
                                       </div>
                                       <div>
                                         <h4 className="text-sm font-medium text-gray-500">
@@ -700,7 +778,7 @@ item.payments?.payment_status?.toLowerCase() === "successful") && (
                                             Voucher
                                           </Button> */}
 
-                                          {item.booking.status?.toLowerCase() === "approved" && (
+                                          {(item.booking.status?.toLowerCase() === "approved" || item.booking.status?.toLowerCase() === "completed") && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -861,7 +939,8 @@ item.payments?.payment_status?.toLowerCase() === "successful") && (
                                 <h4 className="text-sm font-medium text-gray-500">
                                   Booking ID
                                 </h4>
-                                <p className="text-sm">{item.booking.id}</p>
+                                {/* <p className="text-sm">{item.booking.id}</p> */}
+                                <p className="text-sm">{item.booking.booking_unique_id}</p>
                               </div>
                               <div>
                                 <h4 className="text-sm font-medium text-gray-500">
@@ -936,7 +1015,7 @@ item.payments?.payment_status?.toLowerCase() === "successful") && (
                                       )}
                                       Voucher
                                     </Button> */}
-                                    {item.booking.status?.toLowerCase() === "approved" && (
+                                    {(item.booking.status?.toLowerCase() === "approved" || item.booking.status?.toLowerCase() === "completed") && (
                 <Button
                   variant="outline"
                   size="sm"
