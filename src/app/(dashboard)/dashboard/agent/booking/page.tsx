@@ -47,6 +47,22 @@ interface Booking {
   status?: string;
   booked_at?: string;
   completed_at?: string | null;
+
+
+  customer_name?: string;
+  customer_email?: string;
+  customer_mobile?: string;
+  passengers?: string;
+  booking_time?: string;
+  booking_date?: string;
+  return_trip?: string;
+  return_date?: string | null;
+  return_time?: string | null;
+  pickup_type?: string;
+  planeArrivingFrom?: string | null;
+  flightNumber?: string | null;
+  destinationName?: string | null;
+  destinationAddress?: string | null;
 }
 
 interface Payment {
@@ -124,6 +140,41 @@ const statusOptions = [
       return "Invalid date";
     }
   };
+
+// Add these helper functions near your other utility functions
+const formatTime = (timeString: string | null | undefined) => {
+  if (!timeString) return "N/A";
+  try {
+    const [hours, minutes] = timeString.split(':');
+    const date = new Date();
+    date.setHours(parseInt(hours, 10));
+    date.setMinutes(parseInt(minutes, 10));
+    return format(date, 'h:mm a');
+  } catch {
+    return "Invalid time";
+  }
+};
+
+const getServiceDateTime = (booking: Booking) => {
+  if (!booking.booking_date) return "N/A";
+  const date = safeFormatDate(booking.booking_date).split(',')[0]; // Just get the date part
+  const time = formatTime(booking.booking_time);
+  return `${date} at ${time}`;
+};
+
+const getReturnTripInfo = (booking: Booking) => {
+  if (booking.return_trip?.toLowerCase() !== 'yes') return null;
+  
+  const returnDate = booking.return_date ? safeFormatDate(booking.return_date).split(',')[0] : "N/A";
+  const returnTime = formatTime(booking.return_time);
+  
+  return {
+    date: returnDate,
+    time: returnTime,
+    fullInfo: `Return on ${returnDate} at ${returnTime}`
+  };
+};
+
 
   // Check authentication status
   const isAuthenticated = !!getToken();
@@ -754,6 +805,58 @@ if (type === "booking") {
                                           </p>
                                         </div>
                                       )}
+
+
+<div>
+            <h4 className="text-sm font-medium text-gray-500">
+              Passenger Details
+            </h4>
+            <p>
+              {item.booking.customer_name || 'N/A'} ({item.booking.passengers || 'N/A'} passengers)
+            </p>
+            <p className="text-sm text-gray-600">
+              {item.booking.customer_mobile || 'N/A'}
+            </p>
+            <p className="text-sm text-gray-600">
+              {item.booking.customer_email || 'N/A'}
+            </p>
+          </div>
+          
+          <div>
+            <h4 className="text-sm font-medium text-gray-500">
+              Service Date & Time
+            </h4>
+            <p>{getServiceDateTime(item.booking)}</p>
+            {item.booking.pickup_type && (
+              <p className="text-sm text-gray-600">
+                Pickup from: {item.booking.pickup_type}
+                {item.booking.planeArrivingFrom && ` (${item.booking.planeArrivingFrom})`}
+                {item.booking.flightNumber && ` - Flight ${item.booking.flightNumber}`}
+              </p>
+            )}
+          </div>
+          
+          {getReturnTripInfo(item.booking) && (
+            <div>
+              <h4 className="text-sm font-medium text-gray-500">
+                Return Trip
+              </h4>
+              <p>{getReturnTripInfo(item.booking)?.fullInfo}</p>
+            </div>
+          )}
+          
+          <div>
+            <h4 className="text-sm font-medium text-gray-500">
+              Destination
+            </h4>
+            <p>{item.booking.destinationName || 'N/A'}</p>
+            {item.booking.destinationAddress && (
+              <p className="text-sm text-gray-600">
+                {item.booking.destinationAddress}
+              </p>
+            )}
+          </div>
+
                                       <div className="flex gap-2">
                                         {item.payments?.payment_status?.toLowerCase() === "completed" && (
                                         <Button
@@ -942,6 +1045,54 @@ if (type === "booking") {
                                   </p>
                                 </div>
                               )}
+
+<div>
+        <h4 className="text-sm font-medium text-gray-500">
+          Passenger Details
+        </h4>
+        <p className="text-sm">
+          {item.booking.customer_name || 'N/A'} ({item.booking.passengers || 'N/A'} passengers)
+        </p>
+        <p className="text-xs text-gray-600">
+          {item.booking.customer_mobile || 'N/A'} • {item.booking.customer_email || 'N/A'}
+        </p>
+      </div>
+      
+      <div>
+        <h4 className="text-sm font-medium text-gray-500">
+          Service Date & Time
+        </h4>
+        <p className="text-sm">{getServiceDateTime(item.booking)}</p>
+        {item.booking.pickup_type && (
+          <p className="text-xs text-gray-600">
+            Pickup from: {item.booking.pickup_type}
+            {item.booking.planeArrivingFrom && ` (${item.booking.planeArrivingFrom})`}
+            {item.booking.flightNumber && ` - Flight ${item.booking.flightNumber}`}
+          </p>
+        )}
+      </div>
+      
+      {getReturnTripInfo(item.booking) && (
+        <div>
+          <h4 className="text-sm font-medium text-gray-500">
+            Return Trip
+          </h4>
+          <p className="text-sm">{getReturnTripInfo(item.booking)?.fullInfo}</p>
+        </div>
+      )}
+      
+      <div>
+        <h4 className="text-sm font-medium text-gray-500">
+          Destination
+        </h4>
+        <p className="text-sm">{item.booking.destinationName || 'N/A'}</p>
+        {item.booking.destinationAddress && (
+          <p className="text-xs text-gray-600">
+            {item.booking.destinationAddress}
+          </p>
+        )}
+      </div>
+
                               <div className="flex gap-2">
                                 {item.payments?.payment_status?.toLowerCase() === "completed" && (
                                 <Button
