@@ -41,6 +41,7 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import DashboardContainer from "@/components/layout/DashboardContainer";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface Vehicle {
   id: string;
@@ -473,8 +474,10 @@ const Surcharge = () => {
       className="w-full md:w-auto"
       size="sm"
     >
-      <Plus className="mr-2 h-4 w-4" /> Add
+      <Plus className="mr-2 h-4 w-4" /> Add Surcharge
     </Button>
+    <Button asChild className="w-full md:w-auto"
+          size="sm" variant="outline"><Link href="/dashboard/supplier/AddDriver">Add Driver</Link></Button>
   </div>
 </CardHeader>
           <CardContent>

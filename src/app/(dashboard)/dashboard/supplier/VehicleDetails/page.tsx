@@ -59,6 +59,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Link from "next/link";
 
 const formSchema = z.object({
   VehicleType: z.string().min(1, { message: "Vehicle Type is required" }),
@@ -66,7 +67,7 @@ const formSchema = z.object({
   // ServiceType: z.string().min(1, { message: "Service Type is required" }),
   ServiceType: z.string().optional(),
   VehicleModel: z.string().min(1, { message: "Vehicle Model is required" }),
-  Doors: z.number().min(1, { message: "Doors are required" }),
+  Doors: z.number(),
   Seats: z.number().min(1, { message: "Seats are required" }),
   Cargo: z.string().optional(),
   Passengers: z.number().min(1, { message: "Passengers are required" }),
@@ -586,7 +587,8 @@ const VehicleDetailsForm = () => {
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>
-                                  Doors <span className="text-red-500">*</span>
+                                  Doors 
+                                  {/* <span className="text-red-500">*</span> */}
                                 </FormLabel>
                                 <FormControl>
                                   <Select
@@ -814,7 +816,7 @@ const VehicleDetailsForm = () => {
 
                         <div className="flex justify-end gap-4 pt-4">
                           <Button
-                            variant="outline"
+                            variant="secondary"
                             onClick={() => setIsDialogOpen(false)}
                             type="button"
                           >
@@ -828,12 +830,24 @@ const VehicleDetailsForm = () => {
                               : "Create"}{" "}
                             Vehicle
                           </Button>
+                          
+                            <Button
+                            variant="outline"
+                            type="button"
+                          >
+                            <Link href="/dashboard/supplier/AddZone">
+                            Add Zone
+                             </Link>
+                          </Button>
+                         
                         </div>
                       </form>
                     </Form>
                   </ScrollArea>
                 </DialogContent>
               </Dialog>
+              <Button asChild className="w-full md:w-auto"
+          size="sm" variant="outline"><Link href="/dashboard/supplier/AddZone">Add Zone</Link></Button>
             </div>
           </CardHeader>
 

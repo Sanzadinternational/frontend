@@ -1559,6 +1559,7 @@ import { removeToken } from "@/components/utils/auth";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import Link from "next/link";
 
 // ... (keep all your existing interfaces and schema)
 const transferSchema = z.object({
@@ -2138,9 +2139,10 @@ const VehicleTransfer = () => {
             <Button onClick={toggleExistingTransfers}>
               {showExistingTransfers ? "Hide" : "Show"} Existing Transfers
             </Button>
-            <Button onClick={handleAddRow} variant="outline">
+            {/* <Button onClick={handleAddRow} variant="outline">
               <Plus className="mr-2 h-4 w-4" /> Add Row
-            </Button>
+            </Button> */}
+            <Button asChild className="w-full md:w-auto" variant="outline"><Link href="/dashboard/supplier/AddSurcharge">Add Surcharge</Link></Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -2631,6 +2633,11 @@ const VehicleTransfer = () => {
               </div>
             </form>
           </Form>
+
+
+          <div className="mt-4"><Button variant="secondary" onClick={toggleExistingTransfers}>
+              {showExistingTransfers ? "Hide" : "Show"} Existing Transfers
+            </Button></div>
 
           {allTransfers.length > 0 && showExistingTransfers && (
             <div className="mt-8">

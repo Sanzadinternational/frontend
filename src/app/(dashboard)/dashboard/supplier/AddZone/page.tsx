@@ -45,6 +45,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import ZonePicker from "@/components/ZonePicker";
+import Link from "next/link";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Zone name is required" }),
@@ -401,7 +402,7 @@ const Page = () => {
 
                     <div className="flex justify-end gap-4 pt-4">
                       <Button
-                        variant="outline"
+                        variant="secondary"
                         onClick={() => setIsDialogOpen(false)}
                         type="button"
                       >
@@ -410,11 +411,14 @@ const Page = () => {
                       <Button type="submit" disabled={isLoading}>
                         {isLoading ? "Saving..." : editingId ? "Update" : "Create"} Zone
                       </Button>
+                      <Button variant="outline"><Link href="/dashboard/supplier/VehicleTransfer">Add Transfer</Link></Button>
                     </div>
                     </form>
                   </Form>
                 </DialogContent>
               </Dialog>
+              <Button asChild className="w-full md:w-auto"
+                        size="sm" variant="outline"><Link href="/dashboard/supplier/VehicleTransfer">Add Transfer</Link></Button>
             </div>
           </CardHeader>
 

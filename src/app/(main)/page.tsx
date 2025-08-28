@@ -44,7 +44,7 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-2 py-2 px-5 mx-10 my-4 z-[-1] rounded-md bg-slate-100 dark:bg-primary dark:text-black">
         <div className="py-4 px-5">
           <h1 className="">Sanzad International</h1>
-          <p className="text-3xl md:text-6xl font-bold">
+          <p className="text-xl md:text-6xl font-bold">
             Transfer Rides In All Countries
           </p>
           <Button className="my-2 bg-blue-500 dark:bg-card-foreground">
@@ -69,10 +69,10 @@ export default function Home() {
       >
         <div className="w-full flex flex-col items-center gap-1">
           <h2 className="text-muted-foreground text-xl">About Us</h2>
-          <h3 className="text-2xl md:text-4xl font-semibold text-center">We&apos;re Wholesale Destination <br/>Management Tour Operators</h3>
-          <p className="md:w-1/2 text-muted-foreground text-center">We provide packages for Groups, FITs, Van Tours, MICE & Leisure Tours to Travel Agents for Europe, UK, USA, South America, Central America & Canada.</p>
+          <h3 className="text-2xl md:text-4xl font-semibold text-center">Anytime, Anywhere<br/>Connecting Cities, Airports & Ports-With Ease</h3>
+          <p className="md:w-2/3 text-muted-foreground text-center">We are a trusted global B2B transfer service provider. Our portal enables instant confirmation for seamless Point-to-Point transfers worldwide. Book transfers to/from airports, stations, ports, and cities in just 3 simple steps through our user-friendly platform. In addition, we provide customized services offline Our dedicated team is available 24/7 to ensure on-time assistance and reliable support at every step.</p>
         </div>
-        <div className="w-full flex flex-col md:flex-row justify-between bg-slate-100 dark:bg-primary dark:text-black md:h-[500px] rounded-md bg-[url(/about-background.svg)] bg-cover relative overflow-hidden">
+        {/* <div className="w-full flex flex-col md:flex-row justify-between bg-slate-100 dark:bg-primary dark:text-black md:h-[500px] rounded-md bg-[url(/about-background.svg)] bg-cover relative overflow-hidden">
           <div className="flex flex-col justify-center px-4 md:pl-10 py-10 gap-5 md:w-2/3">
             <h3 className="text-2xl font-semibold">Founders</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -102,17 +102,47 @@ export default function Home() {
         <Image src='/point-to-point-transfer.svg'alt="point-to-point-transfer" width={80} height={80} className="absolute bottom-1 left-1 opacity-50 hidden md:block"/>
         <Image src='/traveling-cap.svg'alt="traveling-cap" width={80} height={80} className="absolute top-1 right-1 md:left-1"/>
         <Image src='/navigation.svg'alt="navigation" width={150} height={150} className="hidden md:block absolute bottom-60 left-5 md:top-1 md:left-[700px] opacity-50"/>
-        </div>
+        </div> */}
         
       </div>
-      <div id="features" className="flex flex-col md:flex-row gap-5 mt-10 mb-20 px-10">
+      <div id="features" className="flex flex-col md:flex-row md:justify-center gap-5 mt-10 mb-20 px-10">
       {features.map((feature, id) => (
             <Card key={id}>
               <CardHeader>
                 <CardTitle>{feature.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>{feature.description}</p>
+                {/* <p>{feature.description}</p> */}
+                 {feature.points ? (
+      <ul className="list-disc">
+ {feature.points.map((point, i) => (
+        <li key={i}>
+          {typeof point === "string" ? (
+            point
+          ) : (
+            <>
+              <a
+                href={`mailto:${point.email}`}
+                className="text-blue-600 underline"
+              >
+                {point.email}
+              </a>{" "}
+              /{" "}
+              <a
+                href={`tel:${point.phone}`}
+                className="text-blue-600 underline"
+              >
+                {point.phone}
+              </a>
+            </>
+          )}
+        </li>
+      ))}
+
+      </ul>
+    ) : (
+      <p>No Data</p>
+    )}
               </CardContent>
             </Card>
           ))}

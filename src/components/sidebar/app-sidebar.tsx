@@ -43,6 +43,7 @@ import {
   CreditCard,
   LogOut,
   Car,
+  ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -54,6 +55,7 @@ import { removeToken } from "@/components/utils/auth";
 import { useRouter } from "next/navigation";
 import { useSidebar } from "@/components/ui/sidebar";
 import Image from "next/image";
+import { Button } from "../ui/button";
 export const company = {
   name: "Sanzad",
   // logo: Car,
@@ -338,6 +340,9 @@ const { state } = useSidebar();
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
+            <Button onClick={() => router.back()} variant="outline" size="sm" className="rounded-full text-sm">
+           <ArrowLeft/>Back
+        </Button>
             <Link href={
                           rolename === "superadmin"
                             ? `/dashboard/admin`
@@ -346,6 +351,7 @@ const { state } = useSidebar();
             Dashboard
             </Link>
             <Link href="/" className="rounded-full px-4 py-1 bg-primary text-primary-foreground">Home</Link>
+            
           </div>
           <div className="flex items-center gap-2 px-4">
             <UserNav />

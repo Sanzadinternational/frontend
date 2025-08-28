@@ -62,24 +62,36 @@ const Header = () => {
         >
           Home
         </Link>
-        <Link
+        {/* <Link
           className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
           href="/#about"
         >
           About
+        </Link> */}
+        <Link
+          className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
+          href="/agent"
+        >
+          Agent Signup
         </Link>
         <Link
+          className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
+          href="/supplier"
+        >
+          Supplier Signup
+        </Link>
+        {/* <Link
           className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
           href="/contact"
         >
           Contact
-        </Link>
-        <Link
+        </Link> */}
+        {/* <Link
           className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
           href="/#features"
         >
           Features
-        </Link>
+        </Link> */}
         {user && (
           <Link
             className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
@@ -110,7 +122,7 @@ const Header = () => {
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <Link 
+                {/* <Link 
                 // href={`/dashboard/${user?.role}`}
                 href={
                           user?.role === "superadmin"
@@ -119,7 +131,7 @@ const Header = () => {
                         }
                 >
                   <DropdownMenuItem>Dashboard</DropdownMenuItem>
-                </Link>
+                </Link> */}
                 <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -146,7 +158,13 @@ const Header = () => {
               <Link href="/">
                 <DropdownMenuItem>Home</DropdownMenuItem>
               </Link>
-              <Link href="/#about">
+              <Link href="/agent">
+                <DropdownMenuItem>Agent Signup</DropdownMenuItem>
+              </Link>
+              <Link href="/supplier">
+                <DropdownMenuItem>Supplier Signup</DropdownMenuItem>
+              </Link>
+              {/* <Link href="/#about">
                 <DropdownMenuItem>About</DropdownMenuItem>
               </Link>
               <Link href="/contact">
@@ -154,7 +172,7 @@ const Header = () => {
               </Link>
               <Link href="/#features">
                 <DropdownMenuItem>Features</DropdownMenuItem>
-              </Link>
+              </Link> */}
               {user && (
                 <Link 
                 // href={`/dashboard/${user?.role}`}
