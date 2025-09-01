@@ -319,7 +319,8 @@ const formSchema = z.object({
   returnTime: z.string().optional(), // Optional return time
 });
 type FormData = z.infer<typeof formSchema>;
-export default function Location() {
+// export default function Location() {
+export default function Location({ onFormSubmit }: { onFormSubmit: () => void }) {
   const [fromCoords, setFromCoords] = useState<{
     lat: number;
     lng: number;
@@ -378,6 +379,11 @@ export default function Location() {
       dropoffLocation: `${toCoords.lat},${toCoords.lng}`,
     }).toString();
   
+
+     // Call the callback to hide the form
+    if (onFormSubmit) {
+      onFormSubmit();
+    }
     // Navigate to the transfer page with query parameters
     router.push(`/transfer?${queryParams}`);
   };

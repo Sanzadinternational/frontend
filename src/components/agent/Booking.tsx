@@ -357,7 +357,7 @@ const formSchema = z.object({
   mobile: z.string().min(1, { message: "Mobile Number is required" }),
   paymentMethod: z.enum(["pay_now", "already_paid"]),
   referenceNumber: z.string().optional(),
-  pickupType: z.enum(["airport", "cruise", "station", "others"]),
+  pickupType: z.enum(["airport", "cruise", "station","hotel", "others"]),
   // Airport fields
   planeArrivingFrom: z.string().optional(),
   airlineName: z.string().optional(),
@@ -368,9 +368,11 @@ const formSchema = z.object({
   trainArrivingFrom: z.string().optional(),
   trainName: z.string().optional(),
   trainOperator: z.string().optional(),
-  // Others fields
+  // Hotel fields
   hotelName: z.string().optional(),
   pickupAddress: z.string().optional(),
+  //Other fields
+  venueAddress:z.string().optional(),
   // Dropoff fields
   destinationName: z.string().optional(),
   destinationAddress: z.string().optional(),
@@ -400,6 +402,7 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
       trainOperator: "",
       hotelName: "",
       pickupAddress: "",
+      venueAddress:"",
       destinationName: "",
       destinationAddress: "",
     },
@@ -436,12 +439,18 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
           trainOperator: data.trainOperator,
         };
         break;
+      case "hotel":
+        pickupDetails = {
+          pickupType: "hotel",
+          hotelName: data.hotelName,
+          pickupAddress: data.pickupAddress,
+        };
+        break;
       case "others":
         default:
         pickupDetails = {
           pickupType: "others",
-          hotelName: data.hotelName,
-          pickupAddress: data.pickupAddress,
+          venueAddress:data.venueAddress,
         };
     }
 
@@ -706,25 +715,31 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
                           }}
                           className="grid grid-cols-2 gap-4"
                         >
-                          <FormItem className="flex items-center space-x-2">
+                          <FormItem className="flex items-end space-x-2">
                             <FormControl>
                               <RadioGroupItem value="airport" id="airport" />
                             </FormControl>
-                            <FormLabel htmlFor="airport">Airport</FormLabel>
+                            <FormLabel htmlFor="airport" className="">Airport</FormLabel>
                           </FormItem>
-                          <FormItem className="flex items-center space-x-2">
+                          <FormItem className="flex items-end space-x-2">
                             <FormControl>
                               <RadioGroupItem value="cruise" id="cruise" />
                             </FormControl>
                             <FormLabel htmlFor="cruise">Cruise</FormLabel>
                           </FormItem>
-                          <FormItem className="flex items-center space-x-2">
+                          <FormItem className="flex items-end space-x-2">
                             <FormControl>
                               <RadioGroupItem value="station" id="station" />
                             </FormControl>
                             <FormLabel htmlFor="station">Station</FormLabel>
                           </FormItem>
-                          <FormItem className="flex items-center space-x-2">
+                          <FormItem className="flex items-end space-x-2">
+                            <FormControl>
+                              <RadioGroupItem value="hotel" id="hotel" />
+                            </FormControl>
+                            <FormLabel htmlFor="station">Hotel</FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-end space-x-2">
                             <FormControl>
                               <RadioGroupItem value="others" id="others" />
                             </FormControl>
@@ -844,8 +859,8 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
                     </div>
                   )}
 
-                  {/* Others Fields */}
-                  {pickupType === "others" && (
+                  {/* Hotel Fields */}
+                  {pickupType === "hotel" && (
                     <div className="space-y-4">
                       <FormField
                         control={form.control}
@@ -866,6 +881,26 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Address</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
+
+                  {/* Others Fields */}
+                  {pickupType === "others" && (
+                    <div className="space-y-4">
+                      
+                      <FormField
+                        control={form.control}
+                        name="venueAddress"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Venue Address</FormLabel>
                             <FormControl>
                               <Input {...field} />
                             </FormControl>
