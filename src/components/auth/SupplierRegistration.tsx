@@ -154,7 +154,12 @@ const formSchema = z.object({
   Gst_Tax_Certificate: z.any().refine((file) => file instanceof File, {
     message: "Upload document is required",
   }),
-  Alternate_email: z.string().email({ message: "Please enter valid email" }).optional(),
+  // Alternate_email: z.string().email({ message: "Please enter valid email" }).optional(),
+  Alternate_email: z
+  .string()
+  .email({ message: "Please enter a valid email" })
+  .optional()
+  .or(z.literal("")),
   Legal_company: z.string().optional(),
   Alternate_phone: z.string().optional(),
   Designation: z.string().optional(),
