@@ -149,7 +149,7 @@ const formSchema = z.object({
   Contact_Person: z.string(),
   Otp: z.string(),
   Office_number: z.string().min(1, { message: "Office No. is required" }),
-  Mobile_number: z.string(),
+  Mobile_number: z.string().optional(),
   Currency: z.string().min(1, { message: "Currency is required" }),
   Gst_Tax_Certificate: z.any().refine((file) => file instanceof File, {
     message: "Upload document is required",
