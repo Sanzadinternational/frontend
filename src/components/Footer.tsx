@@ -9,9 +9,9 @@ const Footer = () => {
     >
       <div className="grid grid-cols-1 md:grid-cols-3 justify-items-center gap-3">
         <div className="flex flex-col justify-center items-center md:justify-normal md:items-start">
-          <h3 className="text-xl font-medium">Address</h3>
+          <h3 className="text-xl font-medium">Location</h3>
           <p className="text-center md:text-left">
-            Sanzad International, H-53 First Floor Sector-63 Noida, Uttar
+            H-53 First Floor Sector-63 Noida, Uttar
             Pradesh
           </p>
         </div>
@@ -34,8 +34,8 @@ const Footer = () => {
         </div>
         <div className=" flex flex-col gap-3 items-center md:items-start">
           <div>
-          <h3 className="text-xl font-medium">Contact</h3>
-          <div className="flex gap-1">
+          <h3 className="text-xl font-medium">Follow Us</h3>
+          {/* <div className="flex gap-1">
             <Phone
               className="hover:rounded-full p-1 hover:bg-blue-200 hover:text-indigo-700"
               width={30}
@@ -46,7 +46,7 @@ const Footer = () => {
               width={30}
               height={30}
             />
-          </div>
+          </div> */}
           </div>
           <div className="flex gap-1">
           <SocialIcon style={{ width: 30, height: 30 }} network="facebook" />
@@ -71,7 +71,8 @@ const Footer = () => {
         </div>
         
         <div>
-          <p>Powered By <Link className="hover:text-blue-200" href="https://gcaffe.org" target="_blank">G Caffe</Link></p>
+          {/* <p>Powered By <Link className="hover:text-blue-200" href="https://gcaffe.org" target="_blank">G Caffe</Link></p> */}
+          <p>Powered By Sanzad Group</p>
         </div>
       </div>
     </div>
