@@ -441,7 +441,7 @@ const VehicleDetailsForm = () => {
                                     <SelectTrigger className="w-full">
                                       <SelectValue placeholder="Select Vehicle Type" />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    {/* <SelectContent>
                                       {vehicleTypes.map((type) => (
                                         <SelectItem
                                           key={type.id}
@@ -450,7 +450,17 @@ const VehicleDetailsForm = () => {
                                           {type.VehicleType}
                                         </SelectItem>
                                       ))}
-                                    </SelectContent>
+                                    </SelectContent> */}
+                                    <SelectContent>
+            {vehicleTypes
+              .slice()
+              .sort((a, b) => a.VehicleType.localeCompare(b.VehicleType))
+              .map((type) => (
+                <SelectItem key={type.id} value={type.VehicleType}>
+                  {type.VehicleType}
+                </SelectItem>
+              ))}
+          </SelectContent>
                                   </Select>
                                 </FormControl>
                                 <FormMessage />
@@ -475,7 +485,7 @@ const VehicleDetailsForm = () => {
                                     <SelectTrigger className="w-full">
                                       <SelectValue placeholder="Select Vehicle Brand" />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    {/* <SelectContent>
                                       {vehicleBrands.map((brand) => (
                                         <SelectItem
                                           key={brand.id}
@@ -484,7 +494,17 @@ const VehicleDetailsForm = () => {
                                           {brand.VehicleBrand}
                                         </SelectItem>
                                       ))}
-                                    </SelectContent>
+                                    </SelectContent> */}
+                                     <SelectContent>
+            {vehicleBrands
+              .slice()
+              .sort((a, b) => a.VehicleBrand.localeCompare(b.VehicleBrand))
+              .map((brand) => (
+                <SelectItem key={brand.id} value={brand.VehicleBrand}>
+                  {brand.VehicleBrand}
+                </SelectItem>
+              ))}
+          </SelectContent>
                                   </Select>
                                 </FormControl>
                                 <FormMessage />
@@ -564,7 +584,7 @@ const VehicleDetailsForm = () => {
                                     <SelectTrigger className="w-full">
                                       <SelectValue placeholder="Select Vehicle Model" />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    {/* <SelectContent>
                                       {vehicleModels.map((model) => (
                                         <SelectItem
                                           key={model.id}
@@ -573,7 +593,17 @@ const VehicleDetailsForm = () => {
                                           {model.VehicleModel}
                                         </SelectItem>
                                       ))}
-                                    </SelectContent>
+                                    </SelectContent> */}
+                                    <SelectContent>
+            {vehicleModels
+              .slice()
+              .sort((a, b) => a.VehicleModel.localeCompare(b.VehicleModel))
+              .map((model) => (
+                <SelectItem key={model.id} value={model.VehicleModel}>
+                  {model.VehicleModel}
+                </SelectItem>
+              ))}
+          </SelectContent>
                                   </Select>
                                 </FormControl>
                                 <FormMessage />

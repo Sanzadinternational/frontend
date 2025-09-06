@@ -32,7 +32,7 @@ import { useToast } from "@/hooks/use-toast";
 
 interface Booking {
   id: string;
-  booking_unique_id:string;
+  booking_unique_id: string;
   agent_id?: number;
   vehicle_id?: string;
   supplier_id?: number;
@@ -49,8 +49,7 @@ interface Booking {
   booked_at?: string;
   completed_at?: string | null;
 
-
-   customer_name?: string;
+  customer_name?: string;
   customer_email?: string;
   customer_mobile?: string;
   passengers?: string;
@@ -64,6 +63,9 @@ interface Booking {
   flightNumber?: string | null;
   destinationName?: string | null;
   destinationAddress?: string | null;
+
+  // added at 04-09
+  driver_id?: string;
 }
 
 interface Payment {
@@ -110,16 +112,15 @@ const SupplierBookingsTable = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
 
-
-const [statusFilter, setStatusFilter] = useState<string>("all");
-// Status filter options
-const statusOptions = [
-  { value: "all", label: "All Bookings" },
-  { value: "pending", label: "Pending" },
-  { value: "approved", label: "Upcoming" },
-  { value: "completed", label: "Completed" },
-  { value: "rejected", label: "Rejected" },
-];
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  // Status filter options
+  const statusOptions = [
+    { value: "all", label: "All Bookings" },
+    { value: "pending", label: "Pending" },
+    { value: "approved", label: "Upcoming" },
+    { value: "completed", label: "Completed" },
+    { value: "rejected", label: "Rejected" },
+  ];
 
   const toggleRowExpansion = (bookingId: string) => {
     setExpandedRows((prev) => ({
@@ -139,48 +140,135 @@ const statusOptions = [
     }
   };
 
-
-
-
-// Add to your existing helper functions
-const formatTime = (timeString: string | null | undefined) => {
-  if (!timeString) return "N/A";
-  try {
-    const [hours, minutes] = timeString.split(':');
-    const date = new Date();
-    date.setHours(parseInt(hours, 10));
-    date.setMinutes(parseInt(minutes, 10));
-    return format(date, 'h:mm a');
-  } catch {
-    return "Invalid time";
-  }
-};
-
-const getServiceDateTime = (booking: Booking) => {
-  if (!booking.booking_date) return "N/A";
-  const date = safeFormatDate(booking.booking_date).split(',')[0]; // Just get the date part
-  const time = formatTime(booking.booking_time);
-  return `${date} at ${time}`;
-};
-
-const getReturnTripInfo = (booking: Booking) => {
-  if (booking.return_trip?.toLowerCase() !== 'yes') return null;
-  
-  const returnDate = booking.return_date ? safeFormatDate(booking.return_date).split(',')[0] : "N/A";
-  const returnTime = formatTime(booking.return_time);
-  
-  return {
-    date: returnDate,
-    time: returnTime,
-    fullInfo: `Return on ${returnDate} at ${returnTime}`
+  // Add to your existing helper functions
+  const formatTime = (timeString: string | null | undefined) => {
+    if (!timeString) return "N/A";
+    try {
+      const [hours, minutes] = timeString.split(":");
+      const date = new Date();
+      date.setHours(parseInt(hours, 10));
+      date.setMinutes(parseInt(minutes, 10));
+      return format(date, "h:mm a");
+    } catch {
+      return "Invalid time";
+    }
   };
-};
 
+  const getServiceDateTime = (booking: Booking) => {
+    if (!booking.booking_date) return "N/A";
+    const date = safeFormatDate(booking.booking_date).split(",")[0]; // Just get the date part
+    const time = formatTime(booking.booking_time);
+    return `${date} at ${time}`;
+  };
 
+  const getReturnTripInfo = (booking: Booking) => {
+    if (booking.return_trip?.toLowerCase() !== "yes") return null;
 
+    const returnDate = booking.return_date
+      ? safeFormatDate(booking.return_date).split(",")[0]
+      : "N/A";
+    const returnTime = formatTime(booking.return_time);
 
+    return {
+      date: returnDate,
+      time: returnTime,
+      fullInfo: `Return on ${returnDate} at ${returnTime}`,
+    };
+  };
 
+  // added code at 04-09-25 for driver selection update
 
+  // Add this helper function to calculate time difference
+  const isWithin24Hours = (bookingDate: string, bookingTime: string) => {
+    if (!bookingDate || !bookingTime) return false;
+
+    try {
+      const [hours, minutes] = bookingTime.split(":");
+      const serviceDateTime = new Date(bookingDate);
+      serviceDateTime.setHours(parseInt(hours, 10));
+      serviceDateTime.setMinutes(parseInt(minutes, 10));
+
+      const now = new Date();
+      const timeDiff = serviceDateTime.getTime() - now.getTime();
+      const hoursDiff = timeDiff / (1000 * 60 * 60);
+
+      return hoursDiff <= 24 && hoursDiff > 0;
+    } catch {
+      return false;
+    }
+  };
+
+  const isPast24Hours = (bookingDate: string, bookingTime: string) => {
+    if (!bookingDate || !bookingTime) return false;
+
+    try {
+      const [hours, minutes] = bookingTime.split(":");
+      const serviceDateTime = new Date(bookingDate);
+      serviceDateTime.setHours(parseInt(hours, 10));
+      serviceDateTime.setMinutes(parseInt(minutes, 10));
+
+      const now = new Date();
+      return serviceDateTime.getTime() <= now.getTime();
+    } catch {
+      return false;
+    }
+  };
+
+  {
+    /* Add this function to update driver assignment */
+  }
+  const updateDriverAssignment = async (
+    bookingId: string,
+    driverId: string
+  ) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/supplier/AssignDriverToBooking/${bookingId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            driver_id: driverId,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to assign driver");
+      }
+
+      toast({
+        title: "Success",
+        description: "Driver assigned successfully",
+      });
+
+      // Update local state
+      setBookings((prevBookings) =>
+        prevBookings.map((item) =>
+          item.booking.id === bookingId
+            ? {
+                ...item,
+                booking: {
+                  ...item.booking,
+                  driver_id: driverId,
+                },
+              }
+            : item
+        )
+      );
+    } catch (error: any) {
+      console.error("Error assigning driver:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to assign driver",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // end
 
   const downloadVoucher = async (bookingId: string) => {
     try {
@@ -303,7 +391,70 @@ const getReturnTripInfo = (booking: Booking) => {
     fetchData();
   }, [isAuthenticated]);
 
-  // Update booking status
+  // added for driver update at 04-09
+
+  const updateBookingStatus = async (bookingId: string, newStatus: string) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/supplier/ChangeBookingStatusByBookingId/${bookingId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status: newStatus,
+            // Remove driver_id from here since it's handled separately
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update booking status");
+      }
+
+      toast({
+        title: "Success",
+        description:
+          newStatus === "approved"
+            ? "Booking approved"
+            : newStatus === "completed"
+            ? "Booking marked as completed"
+            : "Booking status updated",
+      });
+
+      // Update local state
+      setBookings((prevBookings) =>
+        prevBookings.map((item) =>
+          item.booking.id === bookingId
+            ? {
+                ...item,
+                booking: {
+                  ...item.booking,
+                  status: newStatus,
+                  completed_at:
+                    newStatus === "completed"
+                      ? new Date().toISOString()
+                      : item.booking.completed_at,
+                },
+              }
+            : item
+        )
+      );
+    } catch (error: any) {
+      console.error("Error updating booking:", error);
+      setError(error.message);
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  // end
+
+  // In your updateBookingStatus function, add the completed case:
   // const updateBookingStatus = async (bookingId: string, newStatus: string) => {
   //   if (newStatus === "approved" && !selectedDriver) {
   //     toast({
@@ -338,6 +489,8 @@ const getReturnTripInfo = (booking: Booking) => {
   //       description:
   //         newStatus === "approved"
   //           ? "Booking approved and driver assigned"
+  //           : newStatus === "completed"
+  //           ? "Booking marked as completed"
   //           : "Booking status updated",
   //     });
 
@@ -350,6 +503,7 @@ const getReturnTripInfo = (booking: Booking) => {
   //               booking: {
   //                 ...item.booking,
   //                 status: newStatus,
+  //                 completed_at: newStatus === "completed" ? new Date().toISOString() : item.booking.completed_at,
   //               },
   //             }
   //           : item
@@ -371,79 +525,6 @@ const getReturnTripInfo = (booking: Booking) => {
   //   }
   // };
 
-
-// In your updateBookingStatus function, add the completed case:
-const updateBookingStatus = async (bookingId: string, newStatus: string) => {
-  if (newStatus === "approved" && !selectedDriver) {
-    toast({
-      title: "Error",
-      description: "Please select a driver before approving",
-      variant: "destructive",
-    });
-    return;
-  }
-
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/supplier/ChangeBookingStatusByBookingId/${bookingId}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          status: newStatus,
-          driver_id: newStatus === "approved" ? selectedDriver : null,
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to update booking status");
-    }
-
-    toast({
-      title: "Success",
-      description:
-        newStatus === "approved"
-          ? "Booking approved and driver assigned"
-          : newStatus === "completed"
-          ? "Booking marked as completed"
-          : "Booking status updated",
-    });
-
-    // Update local state
-    setBookings((prevBookings) =>
-      prevBookings.map((item) =>
-        item.booking.id === bookingId
-          ? {
-              ...item,
-              booking: {
-                ...item.booking,
-                status: newStatus,
-                completed_at: newStatus === "completed" ? new Date().toISOString() : item.booking.completed_at,
-              },
-            }
-          : item
-      )
-    );
-
-    // Reset selected driver after approval
-    if (newStatus === "approved") {
-      setSelectedDriver(null);
-    }
-  } catch (error: any) {
-    console.error("Error updating booking:", error);
-    setError(error.message);
-    toast({
-      title: "Error",
-      description: error.message,
-      variant: "destructive",
-    });
-  }
-};
-
-
   // Safe filtering with null checks
 
   const filteredBookings = bookings.filter((item) => {
@@ -463,20 +544,19 @@ const updateBookingStatus = async (bookingId: string, newStatus: string) => {
       : "";
     const dateSearch = dateSearchTerm.toLowerCase();
 
-
- // Status filtering
-  let statusMatch = true;
-  if (statusFilter !== "all") {
-    if (statusFilter === "approved") {
-      // "Upcoming" shows approved but not completed/rejected
-      statusMatch = bookingStatus === "approved";
-    } else if (statusFilter === "upcoming") {
-      // "Upcoming" shows approved but not completed/rejected
-      statusMatch = bookingStatus === "approved";
-    } else {
-      statusMatch = bookingStatus === statusFilter;
+    // Status filtering
+    let statusMatch = true;
+    if (statusFilter !== "all") {
+      if (statusFilter === "approved") {
+        // "Upcoming" shows approved but not completed/rejected
+        statusMatch = bookingStatus === "approved";
+      } else if (statusFilter === "upcoming") {
+        // "Upcoming" shows approved but not completed/rejected
+        statusMatch = bookingStatus === "approved";
+      } else {
+        statusMatch = bookingStatus === statusFilter;
+      }
     }
-  }
 
     return (
       (pickup.includes(search) ||
@@ -484,8 +564,8 @@ const updateBookingStatus = async (bookingId: string, newStatus: string) => {
         price.includes(search) ||
         bookingStatus.includes(search) ||
         paymentStatus.includes(search)) &&
-      (dateSearchTerm === "" || bookingDate.includes(dateSearch))&&
-    statusMatch
+      (dateSearchTerm === "" || bookingDate.includes(dateSearch)) &&
+      statusMatch
     );
   });
 
@@ -550,80 +630,46 @@ const updateBookingStatus = async (bookingId: string, newStatus: string) => {
 
     const statusText = status.toLowerCase();
 
-  //   if (type === "booking") {
-  //     switch (statusText) {
-  //       case "approved":
-  //         return (
-  //           <Badge className="bg-green-500 hover:bg-green-600">
-  //             <Check className="h-3 w-3 mr-1" />
-  //             Approved
-  //           </Badge>
-  //         );
-  //         case "completed":
-  // return (
-  //   <Badge className="bg-blue-500 hover:bg-blue-600">
-  //     <Check className="h-3 w-3 mr-1" />
-  //     Completed
-  //   </Badge>
-  // );
-  //       case "pending":
-  //         return (
-  //           <Badge className="bg-yellow-500 hover:bg-yellow-600">
-  //             <Clock className="h-3 w-3 mr-1" />
-  //             Pending
-  //           </Badge>
-  //         );
-  //       case "rejected":
-  //         return (
-  //           <Badge variant="destructive">
-  //             <X className="h-3 w-3 mr-1" />
-  //             Rejected
-  //           </Badge>
-  //         );
-  //       default:
-  //         return <Badge variant="outline">{statusText}</Badge>;
-  //     }
+    
 
-  if (type === "booking") {
-    switch (statusText) {
-      case "approved":
-        return (
-          <Badge className="bg-blue-500 hover:bg-blue-600">
-            <Clock className="h-3 w-3 mr-1" />
-            Upcoming
-          </Badge>
-        );
-      case "pending":
-        return (
-          <Badge className="bg-yellow-500 hover:bg-yellow-600">
-            <Clock className="h-3 w-3 mr-1" />
-            Pending
-          </Badge>
-        );
-      case "completed":
-        return (
-          <Badge className="bg-green-500 hover:bg-green-600">
-            <Check className="h-3 w-3 mr-1" />
-            Completed
-          </Badge>
-        );
-      case "rejected":
-        return (
-          <Badge variant="destructive">
-            <X className="h-3 w-3 mr-1" />
-            Rejected
-          </Badge>
-        );
-      default:
-        return <Badge variant="outline">{statusText}</Badge>;
-    }
-
-
+    if (type === "booking") {
+      switch (statusText) {
+        case "approved":
+          return (
+            <Badge className="bg-blue-500 hover:bg-blue-600">
+              <Clock className="h-3 w-3 mr-1" />
+              Upcoming
+            </Badge>
+          );
+        case "pending":
+          return (
+            <Badge className="bg-yellow-500 hover:bg-yellow-600">
+              <Clock className="h-3 w-3 mr-1" />
+              Pending
+            </Badge>
+          );
+        case "completed":
+          return (
+            <Badge className="bg-green-500 hover:bg-green-600">
+              <Check className="h-3 w-3 mr-1" />
+              Completed
+            </Badge>
+          );
+        case "rejected":
+          return (
+            <Badge variant="destructive">
+              <X className="h-3 w-3 mr-1" />
+              Rejected
+            </Badge>
+          );
+        default:
+          return <Badge variant="outline">{statusText}</Badge>;
+      }
     } else {
       // Payment status
       switch (statusText) {
         case "completed":
-          case "successful":
+        case "successful":
           return (
             <Badge className="bg-green-500 hover:bg-green-600">
               <Check className="h-3 w-3 mr-1" />
@@ -694,26 +740,23 @@ const updateBookingStatus = async (bookingId: string, newStatus: string) => {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <CardTitle>My Bookings</CardTitle>
               <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-
-
-{/* Status Filter Dropdown */}
-      <div className="relative w-full md:w-48">
-        <select
-          className="w-full p-2 border rounded bg-background text-sm"
-          value={statusFilter}
-          onChange={(e) => {
-            setStatusFilter(e.target.value);
-            setCurrentPage(1);
-          }}
-        >
-          {statusOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
+                {/* Status Filter Dropdown */}
+                <div className="relative w-full md:w-48">
+                  <select
+                    className="w-full p-2 border rounded bg-background text-sm"
+                    value={statusFilter}
+                    onChange={(e) => {
+                      setStatusFilter(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  >
+                    {statusOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
                 <div className="relative w-full md:w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -873,6 +916,7 @@ const updateBookingStatus = async (bookingId: string, newStatus: string) => {
                                         {/* <p>{item.booking.id}</p> */}
                                         <p>{item.booking.booking_unique_id}</p>
                                       </div>
+
                                       <div>
                                         <h4 className="text-sm font-medium text-gray-500">
                                           Price
@@ -884,6 +928,7 @@ const updateBookingStatus = async (bookingId: string, newStatus: string) => {
                                             "0"}
                                         </p>
                                       </div>
+
                                       <div>
                                         <h4 className="text-sm font-medium text-gray-500">
                                           Payment Status
@@ -895,124 +940,256 @@ const updateBookingStatus = async (bookingId: string, newStatus: string) => {
                                           )}
                                         </p>
                                       </div>
-                                      {/* <div>
+                                      {/* added at 04-09 */}
+                                      <div>
                                         <h4 className="text-sm font-medium text-gray-500">
-                                          Payment Method
+                                          Driver Assignment
                                         </h4>
                                         <p>
-                                          {item.payments?.payment_method ||
-                                            "N/A"}
+                                          {item.booking.driver_id ? (
+                                            <Badge className="bg-green-500 hover:bg-green-600">
+                                              <Check className="h-3 w-3 mr-1" />
+                                              Driver Assigned
+                                            </Badge>
+                                          ) : isPast24Hours(
+                                              item.booking.booking_date,
+                                              item.booking.booking_time
+                                            ) ? (
+                                            <Badge variant="outline">
+                                              N/A (Service completed)
+                                            </Badge>
+                                          ) : (
+                                            <Badge variant="outline">
+                                              No Driver Assigned
+                                            </Badge>
+                                          )}
                                         </p>
                                       </div>
-                                      {item.payments?.transaction_id && (
+                                      {/* end */}
+
+                                      <div>
+                                        <h4 className="text-sm font-medium text-gray-500">
+                                          Passenger Details
+                                        </h4>
+                                        <p>
+                                          {item.booking.customer_name || "N/A"}{" "}
+                                          ({item.booking.passengers || "N/A"}{" "}
+                                          passengers)
+                                        </p>
+                                        <p className="text-sm text-gray-600">
+                                          {item.booking.customer_mobile ||
+                                            "N/A"}
+                                        </p>
+                                        <p className="text-sm text-gray-600">
+                                          {item.booking.customer_email || "N/A"}
+                                        </p>
+                                      </div>
+
+                                      <div>
+                                        <h4 className="text-sm font-medium text-gray-500">
+                                          Service Date & Time
+                                        </h4>
+                                        <p>
+                                          {getServiceDateTime(item.booking)}
+                                        </p>
+                                        {item.booking.pickup_type && (
+                                          <p className="text-sm text-gray-600">
+                                            Pickup from:{" "}
+                                            {item.booking.pickup_type}
+                                            {item.booking.planeArrivingFrom &&
+                                              ` (${item.booking.planeArrivingFrom})`}
+                                            {item.booking.flightNumber &&
+                                              ` - Flight ${item.booking.flightNumber}`}
+                                          </p>
+                                        )}
+                                      </div>
+
+                                      {getReturnTripInfo(item.booking) && (
                                         <div>
                                           <h4 className="text-sm font-medium text-gray-500">
-                                            Transaction ID
-                                          </h4>
-                                          <p>{item.payments.transaction_id}</p>
-                                        </div>
-                                      )}
-                                      {item.payments?.reference_number && (
-                                        <div>
-                                          <h4 className="text-sm font-medium text-gray-500">
-                                            Reference Number
+                                            Return Trip
                                           </h4>
                                           <p>
-                                            {item.payments.reference_number}
+                                            {
+                                              getReturnTripInfo(item.booking)
+                                                ?.fullInfo
+                                            }
                                           </p>
                                         </div>
-                                      )} */}
+                                      )}
 
-
-
-
- <div>
-            <h4 className="text-sm font-medium text-gray-500">
-              Passenger Details
-            </h4>
-            <p>
-              {item.booking.customer_name || 'N/A'} ({item.booking.passengers || 'N/A'} passengers)
-            </p>
-            <p className="text-sm text-gray-600">
-              {item.booking.customer_mobile || 'N/A'}
-            </p>
-            <p className="text-sm text-gray-600">
-              {item.booking.customer_email || 'N/A'}
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="text-sm font-medium text-gray-500">
-              Service Date & Time
-            </h4>
-            <p>{getServiceDateTime(item.booking)}</p>
-            {item.booking.pickup_type && (
-              <p className="text-sm text-gray-600">
-                Pickup from: {item.booking.pickup_type}
-                {item.booking.planeArrivingFrom && ` (${item.booking.planeArrivingFrom})`}
-                {item.booking.flightNumber && ` - Flight ${item.booking.flightNumber}`}
-              </p>
-            )}
-          </div>
-          
-          {getReturnTripInfo(item.booking) && (
-            <div>
-              <h4 className="text-sm font-medium text-gray-500">
-                Return Trip
-              </h4>
-              <p>{getReturnTripInfo(item.booking)?.fullInfo}</p>
-            </div>
-          )}
-          
-          <div>
-            <h4 className="text-sm font-medium text-gray-500">
-              Destination
-            </h4>
-            <p>{item.booking.destinationName || 'N/A'}</p>
-            {item.booking.destinationAddress && (
-              <p className="text-sm text-gray-600">
-                {item.booking.destinationAddress}
-              </p>
-            )}
-          </div>
-
+                                      <div>
+                                        <h4 className="text-sm font-medium text-gray-500">
+                                          Destination
+                                        </h4>
+                                        <p>
+                                          {item.booking.destinationName ||
+                                            "N/A"}
+                                        </p>
+                                        {item.booking.destinationAddress && (
+                                          <p className="text-sm text-gray-600">
+                                            {item.booking.destinationAddress}
+                                          </p>
+                                        )}
+                                      </div>
                                     </div>
 
-                                    {/* {item.booking.status?.toLowerCase() !==
-                                      "approved" &&
+                                    {/* added code for update driver at 04-09 */}
+
+                                    {(item.booking.status?.toLowerCase() ===
+                                      "approved" ||
+                                      item.booking.status?.toLowerCase() ===
+                                        "pending") &&
                                       (item.payments?.payment_status?.toLowerCase() ===
-                                        "completed" || 
-item.payments?.payment_status?.toLowerCase() === "successful") && (
-                                      <div className="col-span-2">
-                                        <h4 className="text-sm font-medium text-gray-500 mb-1">
-                                          Assign Driver
-                                        </h4>
-                                        <select
-                                          className="w-full p-2 border rounded"
-                                          value={selectedDriver || ""}
-                                          onChange={(e) =>
-                                            setSelectedDriver(e.target.value)
-                                          }
-                                        >
-                                          <option value="">
-                                            Select a driver
-                                          </option>
-                                          {drivers.map((driver) => (
-                                            <option
-                                              key={driver.id}
-                                              value={driver.id}
-                                            >
-                                              {driver.DriverName} (
-                                              {driver.DriverContact})
+                                        "completed" ||
+                                        item.payments?.payment_status?.toLowerCase() ===
+                                          "successful") &&
+                                      !isPast24Hours(
+                                        item.booking.booking_date,
+                                        item.booking.booking_time
+                                      ) && (
+                                        <div className="col-span-2">
+                                          <h4 className="text-sm font-medium text-gray-500 mb-1">
+                                            Assign Driver
+                                            {isWithin24Hours(
+                                              item.booking.booking_date,
+                                              item.booking.booking_time
+                                            ) && (
+                                              <span className="text-orange-500 text-xs ml-2">
+                                                (Within 24 hours)
+                                              </span>
+                                            )}
+                                          </h4>
+                                          <select
+                                            className="w-full p-2 border rounded"
+                                            value={
+                                              item.booking.driver_id ||
+                                              selectedDriver ||
+                                              ""
+                                            }
+                                            onChange={(e) => {
+                                              setSelectedDriver(e.target.value);
+                                              // Optionally update the driver immediately or on blur
+                                            }}
+                                            onBlur={() => {
+                                              if (selectedDriver) {
+                                                updateDriverAssignment(
+                                                  item.booking.id,
+                                                  selectedDriver
+                                                );
+                                              }
+                                            }}
+                                          >
+                                            <option value="">
+                                              Select a driver
                                             </option>
-                                          ))}
-                                        </select>
-                                      </div>
-                                    )}
-                                    <div className="flex justify-end gap-2">
-                                      {item.booking.status?.toLowerCase() ===
-                                "approved" && (
-                                      <div>
+                                            {drivers.map((driver) => (
+                                              <option
+                                                key={driver.id}
+                                                value={driver.id}
+                                              >
+                                                {driver.DriverName} (
+                                                {driver.DriverContact})
+                                              </option>
+                                            ))}
+                                          </select>
+
+                                          {isWithin24Hours(
+                                            item.booking.booking_date,
+                                            item.booking.booking_time
+                                          ) &&
+                                            !item.booking.driver_id &&
+                                            !selectedDriver && (
+                                              <p className="text-red-500 text-xs mt-1">
+                                                Warning: Service is within 24
+                                                hours and no driver is assigned!
+                                              </p>
+                                            )}
+                                        </div>
+                                      )}
+
+                                    {/* end */}
+
+                                    {/* Updated driver selection and buttons */}
+                                    {item.booking.status?.toLowerCase() ===
+                                      "pending" &&
+                                      (item.payments?.payment_status?.toLowerCase() ===
+                                        "completed" ||
+                                        item.payments?.payment_status?.toLowerCase() ===
+                                          "successful") && (
+                                        <>
+                                          {/* commented at 04-09-25 */}
+
+                                          {/* <div className="col-span-2">
+              <h4 className="text-sm font-medium text-gray-500">
+                Assign Driver
+              </h4>
+              <select
+                className="w-full p-2 border rounded"
+                value={selectedDriver || ""}
+                onChange={(e) => setSelectedDriver(e.target.value)}
+              >
+                <option value="">Select a driver</option>
+                {drivers.map((driver) => (
+                  <option key={driver.id} value={driver.id}>
+                    {driver.DriverName} ({driver.DriverContact})
+                  </option>
+                ))}
+              </select>
+            </div> */}
+
+                                          {/* comment end */}
+                                          <div className="flex justify-end gap-2">
+                                            <Button
+                                              size="sm"
+                                              onClick={() => {
+                                                // commented at 04-09
+
+                                                // if (!selectedDriver) {
+                                                //   toast({
+                                                //     title: "Warning",
+                                                //     description: "Please select a driver before approving",
+                                                //     variant: "destructive",
+                                                //   });
+                                                //   return;
+                                                // }
+
+                                                // comment end
+                                                updateBookingStatus(
+                                                  item.booking.id,
+                                                  "approved"
+                                                );
+                                              }}
+                                              className="h-8"
+                                            >
+                                              <Check className="h-4 w-4 mr-1" />
+                                              Approve Booking
+                                            </Button>
+
+                                            <Button
+                                              variant="destructive"
+                                              size="sm"
+                                              onClick={() =>
+                                                updateBookingStatus(
+                                                  item.booking.id,
+                                                  "rejected"
+                                                )
+                                              }
+                                              className="h-8"
+                                            >
+                                              <X className="h-4 w-4 mr-1" />
+                                              Reject
+                                            </Button>
+                                          </div>
+                                        </>
+                                      )}
+
+                                    {/* Voucher download button (show only for approved bookings) */}
+                                    {(item.booking.status?.toLowerCase() ===
+                                      "approved" ||
+                                      item.booking.status?.toLowerCase() ===
+                                        "completed") && (
+                                      <div className="flex justify-end">
                                         <Button
                                           variant="outline"
                                           size="sm"
@@ -1034,152 +1211,27 @@ item.payments?.payment_status?.toLowerCase() === "successful") && (
                                           Voucher
                                         </Button>
                                       </div>
-                                )}
-                                      {item.booking.status?.toLowerCase() !==
-                                        "approved" &&
-                                        item.payments?.payment_status?.toLowerCase() ===
-                                        "completed" || 
-item.payments?.payment_status?.toLowerCase() === "successful" && (
+                                    )}
+
+                                    {/* After the voucher download button in desktop view */}
+                                    {item.booking.status?.toLowerCase() ===
+                                      "approved" && (
+                                      <div className="flex justify-end mt-2">
                                         <Button
-                                          size="sm"
-                                          onClick={() => {
-                                            if (!selectedDriver) {
-                                              toast({
-                                                title: "Warning",
-                                                description:
-                                                  "Please select a driver before approving",
-                                                variant: "destructive",
-                                              });
-                                              return;
-                                            }
-                                            updateBookingStatus(
-                                              item.booking.id,
-                                              "approved"
-                                            );
-                                          }}
-                                          className="h-8"
-                                        >
-                                          <Check className="h-4 w-4 mr-1" />
-                                          Approve Booking
-                                        </Button>
-                                      )}
-                                      {item.booking.status?.toLowerCase() !==
-                                        "rejected" && 
-                                        item.payments?.payment_status?.toLowerCase() ===
-                                        "completed" || 
-item.payments?.payment_status?.toLowerCase() === "successful" && (
-                                        <Button
-                                          variant="destructive"
                                           size="sm"
                                           onClick={() =>
                                             updateBookingStatus(
                                               item.booking.id,
-                                              "rejected"
+                                              "completed"
                                             )
                                           }
-                                          className="h-8"
+                                          className="h-8 bg-blue-600 hover:bg-blue-700"
                                         >
-                                          <X className="h-4 w-4 mr-1" />
-                                          Reject
+                                          <Check className="h-4 w-4 mr-1" />
+                                          Complete Booking
                                         </Button>
-                                      )}
-                                    </div> */}
-
-
-
-                                      {/* Updated driver selection and buttons */}
-        {item.booking.status?.toLowerCase() === "pending" && 
-         (item.payments?.payment_status?.toLowerCase() === "completed" || 
-          item.payments?.payment_status?.toLowerCase() === "successful") && (
-          <>
-            <div className="col-span-2">
-              <h4 className="text-sm font-medium text-gray-500">
-                Assign Driver
-              </h4>
-              <select
-                className="w-full p-2 border rounded"
-                value={selectedDriver || ""}
-                onChange={(e) => setSelectedDriver(e.target.value)}
-              >
-                <option value="">Select a driver</option>
-                {drivers.map((driver) => (
-                  <option key={driver.id} value={driver.id}>
-                    {driver.DriverName} ({driver.DriverContact})
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div className="flex justify-end gap-2">
-              <Button
-                size="sm"
-                onClick={() => {
-                  if (!selectedDriver) {
-                    toast({
-                      title: "Warning",
-                      description: "Please select a driver before approving",
-                      variant: "destructive",
-                    });
-                    return;
-                  }
-                  updateBookingStatus(item.booking.id, "approved");
-                }}
-                className="h-8"
-              >
-                <Check className="h-4 w-4 mr-1" />
-                Approve Booking
-              </Button>
-              
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => updateBookingStatus(item.booking.id, "rejected")}
-                className="h-8"
-              >
-                <X className="h-4 w-4 mr-1" />
-                Reject
-              </Button>
-            </div>
-          </>
-        )}
-
-        {/* Voucher download button (show only for approved bookings) */}
-        {(item.booking.status?.toLowerCase() === "approved" ||
-        item.booking.status?.toLowerCase() === "completed") && (
-          <div className="flex justify-end">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => downloadVoucher(item.booking.id)}
-              disabled={downloadingVoucher === item.booking.id}
-              className="h-8"
-            >
-              {downloadingVoucher === item.booking.id ? (
-                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-              ) : (
-                <Download className="h-4 w-4 mr-1" />
-              )}
-              Voucher
-            </Button>
-          </div>
-        )}
-
-{/* After the voucher download button in desktop view */}
-{item.booking.status?.toLowerCase() === "approved" && (
-  <div className="flex justify-end mt-2">
-    <Button
-      size="sm"
-      onClick={() => updateBookingStatus(item.booking.id, "completed")}
-      className="h-8 bg-blue-600 hover:bg-blue-700"
-    >
-      <Check className="h-4 w-4 mr-1" />
-      Complete Booking
-    </Button>
-  </div>
-)}
-
-
-
+                                      </div>
+                                    )}
                                   </div>
                                 </TableCell>
                               </TableRow>
@@ -1271,7 +1323,9 @@ item.payments?.payment_status?.toLowerCase() === "successful" && (
                                   Booking ID
                                 </h4>
                                 {/* <p className="text-sm">{item.booking.id}</p> */}
-                                <p className="text-sm">{item.booking.booking_unique_id}</p>
+                                <p className="text-sm">
+                                  {item.booking.booking_unique_id}
+                                </p>
                               </div>
                               <div>
                                 <h4 className="text-sm font-medium text-gray-500">
@@ -1284,6 +1338,7 @@ item.payments?.payment_status?.toLowerCase() === "successful" && (
                                     "0"}
                                 </p>
                               </div>
+
                               <div>
                                 <h4 className="text-sm font-medium text-gray-500">
                                   Payment Status
@@ -1295,194 +1350,173 @@ item.payments?.payment_status?.toLowerCase() === "successful" && (
                                   )}
                                 </p>
                               </div>
-
-
-
-<div>
-        <h4 className="text-sm font-medium text-gray-500">
-          Passenger Details
-        </h4>
-        <p className="text-sm">
-          {item.booking.customer_name || 'N/A'} ({item.booking.passengers || 'N/A'} passengers)
-        </p>
-        <p className="text-xs text-gray-600">
-          {item.booking.customer_mobile || 'N/A'} • {item.booking.customer_email || 'N/A'}
-        </p>
-      </div>
-      
-      <div>
-        <h4 className="text-sm font-medium text-gray-500">
-          Service Date & Time
-        </h4>
-        <p className="text-sm">{getServiceDateTime(item.booking)}</p>
-        {item.booking.pickup_type && (
-          <p className="text-xs text-gray-600">
-            Pickup from: {item.booking.pickup_type}
-            {item.booking.planeArrivingFrom && ` (${item.booking.planeArrivingFrom})`}
-            {item.booking.flightNumber && ` - Flight ${item.booking.flightNumber}`}
-          </p>
-        )}
-      </div>
-      
-      {getReturnTripInfo(item.booking) && (
-        <div>
-          <h4 className="text-sm font-medium text-gray-500">
-            Return Trip
-          </h4>
-          <p className="text-sm">{getReturnTripInfo(item.booking)?.fullInfo}</p>
-        </div>
-      )}
-      
-      <div>
-        <h4 className="text-sm font-medium text-gray-500">
-          Destination
-        </h4>
-        <p className="text-sm">{item.booking.destinationName || 'N/A'}</p>
-        {item.booking.destinationAddress && (
-          <p className="text-xs text-gray-600">
-            {item.booking.destinationAddress}
-          </p>
-        )}
-      </div>
-
-                              {/* <div>
+                              {/* added at 04-09 */}
+                              <div>
                                 <h4 className="text-sm font-medium text-gray-500">
-                                  Payment Method
+                                  Driver Assignment
                                 </h4>
                                 <p className="text-sm">
-                                  {item.payments?.payment_method || "N/A"}
+                                  {item.booking.driver_id ? (
+                                    <Badge className="bg-green-500 hover:bg-green-600">
+                                      <Check className="h-3 w-3 mr-1" />
+                                      Driver Assigned
+                                    </Badge>
+                                  ) : isPast24Hours(
+                                      item.booking.booking_date,
+                                      item.booking.booking_time
+                                    ) ? (
+                                    <Badge variant="outline">
+                                      N/A (Service completed)
+                                    </Badge>
+                                  ) : (
+                                    <Badge variant="outline">
+                                      No Driver Assigned
+                                    </Badge>
+                                  )}
                                 </p>
                               </div>
-                              {item.payments?.transaction_id && (
+                              {/* end */}
+
+                              <div>
+                                <h4 className="text-sm font-medium text-gray-500">
+                                  Passenger Details
+                                </h4>
+                                <p className="text-sm">
+                                  {item.booking.customer_name || "N/A"} (
+                                  {item.booking.passengers || "N/A"} passengers)
+                                </p>
+                                <p className="text-xs text-gray-600">
+                                  {item.booking.customer_mobile || "N/A"} •{" "}
+                                  {item.booking.customer_email || "N/A"}
+                                </p>
+                              </div>
+
+                              <div>
+                                <h4 className="text-sm font-medium text-gray-500">
+                                  Service Date & Time
+                                </h4>
+                                <p className="text-sm">
+                                  {getServiceDateTime(item.booking)}
+                                </p>
+                                {item.booking.pickup_type && (
+                                  <p className="text-xs text-gray-600">
+                                    Pickup from: {item.booking.pickup_type}
+                                    {item.booking.planeArrivingFrom &&
+                                      ` (${item.booking.planeArrivingFrom})`}
+                                    {item.booking.flightNumber &&
+                                      ` - Flight ${item.booking.flightNumber}`}
+                                  </p>
+                                )}
+                              </div>
+
+                              {getReturnTripInfo(item.booking) && (
                                 <div>
                                   <h4 className="text-sm font-medium text-gray-500">
-                                    Transaction ID
+                                    Return Trip
                                   </h4>
                                   <p className="text-sm">
-                                    {item.payments.transaction_id}
+                                    {getReturnTripInfo(item.booking)?.fullInfo}
                                   </p>
                                 </div>
                               )}
-                              {item.payments?.reference_number && (
-                                <div>
-                                  <h4 className="text-sm font-medium text-gray-500">
-                                    Reference Number
-                                  </h4>
-                                  <p className="text-sm">
-                                    {item.payments.reference_number}
+
+                              <div>
+                                <h4 className="text-sm font-medium text-gray-500">
+                                  Destination
+                                </h4>
+                                <p className="text-sm">
+                                  {item.booking.destinationName || "N/A"}
+                                </p>
+                                {item.booking.destinationAddress && (
+                                  <p className="text-xs text-gray-600">
+                                    {item.booking.destinationAddress}
                                   </p>
-                                </div>
-                              )} */}
-                              {/* {item.booking.status?.toLowerCase() !==
-                                "approved" &&
-                                item.payments?.payment_status?.toLowerCase() ===
-                                        "completed" || 
-item.payments?.payment_status?.toLowerCase() === "successful" && (
-                                <div>
-                                  <h4 className="text-sm font-medium text-gray-500">
-                                    Assign Driver
-                                  </h4>
-                                  <select
-                                    className="w-full p-2 border rounded mt-1"
-                                    value={selectedDriver || ""}
-                                    onChange={(e) =>
-                                      setSelectedDriver(e.target.value)
-                                    }
-                                  >
-                                    <option value="">Select a driver</option>
-                                    {drivers.map((driver) => (
-                                      <option key={driver.id} value={driver.id}>
-                                        {driver.DriverName} (
-                                        {driver.DriverCarInfo})
-                                      </option>
-                                    ))}
-                                  </select>
-                                </div>
-                              )}
-                              <div className="flex gap-2 pt-2">
-                                {item.booking.status?.toLowerCase() ===
-                                "approved" && (
-                                <div>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() =>
-                                      downloadVoucher(item.booking.id)
-                                    }
-                                    disabled={
-                                      downloadingVoucher === item.booking.id
-                                    }
-                                  >
-                                    {downloadingVoucher === item.booking.id ? (
-                                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                                    ) : (
-                                      <Download className="h-4 w-4 mr-1" />
-                                    )}
-                                    Voucher
-                                  </Button>
-                                </div>
-                              )}
-                                {item.booking.status?.toLowerCase() !==
-                                  "approved" && 
+                                )}
+                              </div>
+
+                              {/* updated for driver at 04-09 */}
+
+                              {(item.booking.status?.toLowerCase() ===
+                                "approved" ||
+                                item.booking.status?.toLowerCase() ===
+                                  "pending") &&
+                                (item.payments?.payment_status?.toLowerCase() ===
+                                  "completed" ||
                                   item.payments?.payment_status?.toLowerCase() ===
-                                        "completed" || 
-item.payments?.payment_status?.toLowerCase() === "successful" && (
-                                  <Button
-                                    size="sm"
-                                    onClick={() => {
-                                      if (!selectedDriver) {
-                                        toast({
-                                          title: "Warning",
-                                          description:
-                                            "Please select a driver before approving",
-                                          variant: "destructive",
-                                        });
-                                        return;
+                                    "successful") &&
+                                !isPast24Hours(
+                                  item.booking.booking_date,
+                                  item.booking.booking_time
+                                ) && (
+                                  <div>
+                                    <h4 className="text-sm font-medium text-gray-500">
+                                      Assign Driver
+                                      {isWithin24Hours(
+                                        item.booking.booking_date,
+                                        item.booking.booking_time
+                                      ) && (
+                                        <span className="text-orange-500 text-xs ml-2">
+                                          (Within 24 hours)
+                                        </span>
+                                      )}
+                                    </h4>
+                                    <select
+                                      className="w-full p-2 border rounded mt-1"
+                                      value={
+                                        item.booking.driver_id ||
+                                        selectedDriver ||
+                                        ""
                                       }
-                                      updateBookingStatus(
-                                        item.booking.id,
-                                        "approved"
-                                      );
-                                    }}
-                                    className="flex-1"
-                                  >
-                                    <Check className="h-4 w-4 mr-1" />
-                                    Approve Booking
-                                  </Button>
+                                      onChange={(e) => {
+                                        setSelectedDriver(e.target.value);
+                                      }}
+                                      onBlur={() => {
+                                        if (selectedDriver) {
+                                          updateDriverAssignment(
+                                            item.booking.id,
+                                            selectedDriver
+                                          );
+                                        }
+                                      }}
+                                    >
+                                      <option value="">Select a driver</option>
+                                      {drivers.map((driver) => (
+                                        <option
+                                          key={driver.id}
+                                          value={driver.id}
+                                        >
+                                          {driver.DriverName} (
+                                          {driver.DriverContact})
+                                        </option>
+                                      ))}
+                                    </select>
+
+                                    {isWithin24Hours(
+                                      item.booking.booking_date,
+                                      item.booking.booking_time
+                                    ) &&
+                                      !item.booking.driver_id &&
+                                      !selectedDriver && (
+                                        <p className="text-red-500 text-xs mt-1">
+                                          Warning: Service is within 24 hours
+                                          and no driver is assigned!
+                                        </p>
+                                      )}
+                                  </div>
                                 )}
-                                {item.booking.status?.toLowerCase() !==
-                                  "rejected" && 
+
+                              {/* end */}
+
+                              {/* Updated driver selection and buttons */}
+                              {item.booking.status?.toLowerCase() ===
+                                "pending" &&
+                                (item.payments?.payment_status?.toLowerCase() ===
+                                  "completed" ||
                                   item.payments?.payment_status?.toLowerCase() ===
-                                        "completed" || 
-item.payments?.payment_status?.toLowerCase() === "successful" && (
-                                  <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={() =>
-                                      updateBookingStatus(
-                                        item.booking.id,
-                                        "rejected"
-                                      )
-                                    }
-                                    className="flex-1"
-                                  >
-                                    <X className="h-4 w-4 mr-1" />
-                                    Reject
-                                  </Button>
-                                )}
-                              </div> */}
-
-
-
-
-
-
-                                {/* Updated driver selection and buttons */}
-      {item.booking.status?.toLowerCase() === "pending" && 
-       (item.payments?.payment_status?.toLowerCase() === "completed" || 
-        item.payments?.payment_status?.toLowerCase() === "successful") && (
-        <>
-          <div>
+                                    "successful") && (
+                                  <>
+                                    {/* commented at 04-09 */}
+                                    {/* <div>
             <h4 className="text-sm font-medium text-gray-500">
               Assign Driver
             </h4>
@@ -1498,76 +1532,100 @@ item.payments?.payment_status?.toLowerCase() === "successful" && (
                 </option>
               ))}
             </select>
-          </div>
-          
-          <div className="flex gap-2 pt-2">
-            <Button
-              size="sm"
-              onClick={() => {
-                if (!selectedDriver) {
-                  toast({
-                    title: "Warning",
-                    description: "Please select a driver before approving",
-                    variant: "destructive",
-                  });
-                  return;
-                }
-                updateBookingStatus(item.booking.id, "approved");
-              }}
-              className="flex-1"
-            >
-              <Check className="h-4 w-4 mr-1" />
-              Approve Booking
-            </Button>
-            
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => updateBookingStatus(item.booking.id, "rejected")}
-              className="flex-1"
-            >
-              <X className="h-4 w-4 mr-1" />
-              Reject
-            </Button>
-          </div>
-        </>
-      )}
+          </div> */}
 
-      {/* Voucher download button (show only for approved bookings) */}
-      {(item.booking.status?.toLowerCase() === "approved" ||
-      item.booking.status?.toLowerCase() === "completed") && (
-        <div className="flex pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => downloadVoucher(item.booking.id)}
-            disabled={downloadingVoucher === item.booking.id}
-            className="flex-1"
-          >
-            {downloadingVoucher === item.booking.id ? (
-              <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-            ) : (
-              <Download className="h-4 w-4 mr-1" />
-            )}
-            Voucher
-          </Button>
-        </div>
-      )}
+                                    {/* end */}
+                                    <div className="flex gap-2 pt-2">
+                                      <Button
+                                        size="sm"
+                                        onClick={() => {
+                                          // commented 04-09
 
-      {/* After the voucher download button in mobile view */}
-{item.booking.status?.toLowerCase() === "approved" && (
-  <div className="flex pt-2">
-    <Button
-      size="sm"
-      onClick={() => updateBookingStatus(item.booking.id, "completed")}
-      className="flex-1 bg-blue-600 hover:bg-blue-700"
-    >
-      <Check className="h-4 w-4 mr-1" />
-      Complete Booking
-    </Button>
-  </div>
-)}
+                                          // if (!selectedDriver) {
+                                          //   toast({
+                                          //     title: "Warning",
+                                          //     description: "Please select a driver before approving",
+                                          //     variant: "destructive",
+                                          //   });
+                                          //   return;
+                                          // }
 
+                                          // end
+                                          updateBookingStatus(
+                                            item.booking.id,
+                                            "approved"
+                                          );
+                                        }}
+                                        className="flex-1"
+                                      >
+                                        <Check className="h-4 w-4 mr-1" />
+                                        Approve Booking
+                                      </Button>
+
+                                      <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        onClick={() =>
+                                          updateBookingStatus(
+                                            item.booking.id,
+                                            "rejected"
+                                          )
+                                        }
+                                        className="flex-1"
+                                      >
+                                        <X className="h-4 w-4 mr-1" />
+                                        Reject
+                                      </Button>
+                                    </div>
+                                  </>
+                                )}
+
+                              {/* Voucher download button (show only for approved bookings) */}
+                              {(item.booking.status?.toLowerCase() ===
+                                "approved" ||
+                                item.booking.status?.toLowerCase() ===
+                                  "completed") && (
+                                <div className="flex pt-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                      downloadVoucher(item.booking.id)
+                                    }
+                                    disabled={
+                                      downloadingVoucher === item.booking.id
+                                    }
+                                    className="flex-1"
+                                  >
+                                    {downloadingVoucher === item.booking.id ? (
+                                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                                    ) : (
+                                      <Download className="h-4 w-4 mr-1" />
+                                    )}
+                                    Voucher
+                                  </Button>
+                                </div>
+                              )}
+
+                              {/* After the voucher download button in mobile view */}
+                              {item.booking.status?.toLowerCase() ===
+                                "approved" && (
+                                <div className="flex pt-2">
+                                  <Button
+                                    size="sm"
+                                    onClick={() =>
+                                      updateBookingStatus(
+                                        item.booking.id,
+                                        "completed"
+                                      )
+                                    }
+                                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                                  >
+                                    <Check className="h-4 w-4 mr-1" />
+                                    Complete Booking
+                                  </Button>
+                                </div>
+                              )}
                             </div>
                           </CardContent>
                         )}

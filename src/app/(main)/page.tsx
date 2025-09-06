@@ -4,7 +4,7 @@ import Image from "next/image";
 import {
   Card,
   CardContent,
-  CardDescription,
+  // CardDescription,
   // CardDescription,
   // CardFooter,
   CardHeader,
@@ -61,7 +61,7 @@ export default function Home() {
         </div>
       </div>
       <div className="flex justify-center mt-[-80px]">
-        <Location />
+      <Location onFormSubmit={() => {}}/>
       </div>
       <div
         id="about"
@@ -150,3 +150,179 @@ export default function Home() {
     </>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// "use client"
+// import { Button } from "@/components/ui/button";
+// import Image from "next/image";
+// import {
+//   Card,
+//   CardContent,
+//   CardDescription,
+//   CardHeader,
+//   CardTitle,
+// } from "@/components/ui/card";
+// import Location from "@/components/Location";
+// import Link from "next/link";
+// import { features } from "@/components/constants/features";
+// import { useSearchParams } from "next/navigation";
+// import { useEffect } from "react";
+
+// export default function Home() {
+//   const searchParams = useSearchParams();
+  
+//   useEffect(() => {
+//     // Store dev access if valid key is provided
+//     const devAccessKey = searchParams.get('dev');
+//     const isValidDevKey = devAccessKey === process.env.NEXT_PUBLIC_DEV_ACCESS_KEY;
+    
+//     if (isValidDevKey && typeof window !== 'undefined') {
+//       localStorage.setItem('devAccess', 'true');
+//     }
+//   }, [searchParams]);
+
+//   // Check if we should show coming soon content
+//   const isComingSoon = process.env.NEXT_PUBLIC_COMING_SOON === 'true';
+//   const devAccessKey = searchParams.get('dev');
+//   const isValidDevKey = devAccessKey === process.env.NEXT_PUBLIC_DEV_ACCESS_KEY;
+//   const hasDevAccess = typeof window !== 'undefined' && localStorage.getItem('devAccess') === 'true';
+  
+//   const showComingSoon = isComingSoon && !isValidDevKey && !hasDevAccess;
+
+//   if (showComingSoon) {
+//     return (
+//       <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+//         <div className="text-center max-w-2xl mx-auto">
+//           <Image
+//             src="/Sanzad International-Logo.svg"
+//             alt="Sanzad International Logo"
+//             width={200}
+//             height={200}
+//             className="mx-auto mb-2"
+//           />
+//           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-800 dark:text-white">
+//             Coming Soon
+//           </h1>
+//           <p className="text-xl md:text-2xl mb-6 text-gray-600 dark:text-gray-300">
+//             We&apos;re working on something amazing!
+//           </p>
+//           <p className="text-lg mb-8 text-gray-500 dark:text-gray-400">
+//             Sanzad International will be launching soon. Stay tuned for our official launch.
+//           </p>
+          
+//           <p className="mt-8 text-sm text-gray-500 dark:text-gray-400">
+//             For urgent inquiries, contact us at{" "}
+//             <a href="mailto:info@sanzadinternational.in" className="text-blue-600 hover:underline">
+//               info@sanzadinternational.in
+//             </a>
+//           </p>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <>
+//       {/* Normal homepage content without the dialog */}
+//       <div className="grid grid-cols-1 md:grid-cols-2 py-2 px-5 mx-10 my-4 z-[-1] rounded-md bg-slate-100 dark:bg-primary dark:text-black">
+//         <div className="py-4 px-5">
+//           <h1 className="">Sanzad International</h1>
+//           <p className="text-xl md:text-6xl font-bold">
+//             Transfer Rides In All Countries
+//           </p>
+//           <Button className="my-2 bg-blue-500 dark:bg-card-foreground">
+//             <Link href="/contact">Contact</Link>
+//           </Button>
+//         </div>
+//         <div className="flex justify-center">
+//           <Image
+//             src="/Transfer-Rides_Sanzad-International.webp"
+//             alt="Hero Image"
+//             width={250}
+//             height={250}
+//           />
+//         </div>
+//       </div>
+//       <div className="flex justify-center mt-[-80px]">
+//         <Location/>
+//       </div>
+//        <div
+//         id="about"
+//         className="flex flex-col items-center gap-5 mt-20 px-10"
+//       >
+//         <div className="w-full flex flex-col items-center gap-1">
+//           <h2 className="text-muted-foreground text-xl">About Us</h2>
+//           <h3 className="text-2xl md:text-4xl font-semibold text-center">Anytime, Anywhere<br/>Connecting Cities, Airports & Ports-With Ease</h3>
+//           <p className="md:w-2/3 text-muted-foreground text-center">We are a trusted global B2B transfer service provider. Our portal enables instant confirmation for seamless Point-to-Point transfers worldwide. Book transfers to/from airports, stations, ports, and cities in just 3 simple steps through our user-friendly platform. In addition, we provide customized services offline Our dedicated team is available 24/7 to ensure on-time assistance and reliable support at every step.</p>
+//         </div>
+//       </div>
+//       <div id="features" className="flex flex-col md:flex-row md:justify-center gap-5 mt-10 mb-20 px-10">
+//       {features.map((feature, id) => (
+//             <Card key={id}>
+//               <CardHeader>
+//                 <CardTitle>{feature.title}</CardTitle>
+//               </CardHeader>
+//               <CardContent>
+//                 {/* <p>{feature.description}</p> */}
+//                  {feature.points ? (
+//       <ul className="list-disc">
+//  {feature.points.map((point, i) => (
+//         <li key={i}>
+//           {typeof point === "string" ? (
+//             point
+//           ) : (
+//             <>
+//               <a
+//                 href={`mailto:${point.email}`}
+//                 className="text-blue-600 underline"
+//               >
+//                 {point.email}
+//               </a>{" "}
+//               /{" "}
+//               <a
+//                 href={`tel:${point.phone}`}
+//                 className="text-blue-600 underline"
+//               >
+//                 {point.phone}
+//               </a>
+//             </>
+//           )}
+//         </li>
+//       ))}
+
+//       </ul>
+//     ) : (
+//       <p>No Data</p>
+//     )}
+//               </CardContent>
+//             </Card>
+//           ))}
+//       </div>
+//     </>
+//   );
+// }

@@ -137,7 +137,7 @@ const formSchema = z.object({
   Contact_Person: z.string(),
   Otp: z.string(),
   Office_number: z.string().min(1, { message: "Office No. is required" }),
-  Mobile_number: z.string().min(1, { message: "Mobile No. is required" }),
+  Mobile_number: z.string().optional(),
   Currency: z.string().min(1, { message: "Currency is required" }),
   Gst_Tax_Certificate: z.any().refine((file) => file instanceof File, {
     message: "Upload document is required",
@@ -832,7 +832,9 @@ const handleCityChange = (value: string) => {
                       name="Mobile_number"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Mobile Number <span className="text-red-500">*</span></FormLabel>
+                          <FormLabel>Mobile Number 
+                            {/* <span className="text-red-500">*</span> */}
+                          </FormLabel>
                           <FormControl>
                             <div className="flex gap-2 items-center">
                               {/* {selectedFlag && (
