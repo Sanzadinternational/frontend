@@ -928,7 +928,6 @@ const SupplierBookingsTable = () => {
                                             "0"}
                                         </p>
                                       </div>
-
                                       <div>
                                         <h4 className="text-sm font-medium text-gray-500">
                                           Payment Status
