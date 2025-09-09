@@ -135,9 +135,12 @@ const Profile = () => {
       console.log("Server response:", data);
   
       // Update user data with new image if uploaded
-      const profileImageUrl = image ? 
-        (preview || `${API_BASE_URL}/uploads/${updatedData.profileImage}`) : 
-        updatedData.profileImage;
+      // const profileImageUrl = image ? 
+      //   (preview || `${API_BASE_URL}/uploads/${updatedData.profileImage}`) : 
+      //   updatedData.profileImage;
+      const profileImageUrl = updatedData.profileImage 
+  ? `${API_BASE_URL}/uploads/${updatedData.profileImage}`
+  : user?.profileImage;
   
       const updatedUserData = {
         ...updatedData,
@@ -233,7 +236,7 @@ const Profile = () => {
           <div className="flex flex-col md:flex-row items-center gap-6">
             <div className="relative">
               <Image
-                src={getImageUrl()}
+                src={preview || getImageUrl()}
                 width={120}
                 height={120}
                 alt="Profile"
