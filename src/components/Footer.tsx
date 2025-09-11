@@ -11,8 +11,7 @@ const Footer = () => {
         <div className="flex flex-col justify-center items-center md:justify-normal md:items-start">
           <h3 className="text-xl font-medium">Location</h3>
           <p className="text-center md:text-left">
-            H-53 First Floor Sector-63 Noida, Uttar
-            Pradesh
+            Suite No. 4, H-143, Sector-63, Noida, Gautam Buddha Nagar, UP, 201301
           </p>
         </div>
         <div>
