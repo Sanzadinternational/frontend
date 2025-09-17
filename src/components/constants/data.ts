@@ -90,9 +90,21 @@ export const sideBarItems: Role[] = [
         title: 'All Booking',
         url: '/dashboard/supplier/booking',
         icon: 'booking',
-        isActive: false
-      },
-    ]      
+        isActive: false,
+        items: [
+          {
+            title: 'My Booking',
+            url: '/dashboard/supplier/booking',
+            icon: 'booking',
+          },
+          {
+            title: 'Upload Invoice',
+            url: '/dashboard/supplier/upload-invoice',
+            icon: 'booking',
+          },
+        ]
+      }, 
+    ]     
   },
   {
     role: 'admin',
@@ -199,6 +211,11 @@ export const sideBarItems: Role[] = [
           {
             title: 'Transfer Info',
             url: '/dashboard/admin/supplier-transfer',
+            icon: 'add'
+          },
+          {
+            title: 'Supplier Invoice',
+            url: '/dashboard/admin/supplier-invoice',
             icon: 'add'
           }
         ]

@@ -1,5 +1,5 @@
 "use client";
-import { CalendarDays, Car, IdCard, Map, Route } from "lucide-react";
+import { CalendarDays, Car, FileText, IdCard, Map, Route } from "lucide-react";
 import DashboardContainer from "@/components/layout/DashboardContainer";
 import { Button } from "@/components/ui/button";
 import {
@@ -192,7 +192,25 @@ const Page = () => {
                   </Link>
                 </CardFooter>
               </Card>
-              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Booking
+                  </CardTitle>
+                  <FileText width={20} height={20}/>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-xl font-bold">Upload Invoice</div>
+                  <p className="text-xs text-muted-foreground">
+                    upload your invoice here
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <Link href="/dashboard/supplier/upload-invoice">
+                    <Button variant="outline">Upload Invoice</Button>
+                  </Link>
+                </CardFooter>
+              </Card>
              
              
             </div>
