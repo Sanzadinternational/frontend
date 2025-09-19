@@ -1104,7 +1104,7 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
   const [pickupType, setPickupType] = useState("airport");
   const [gstRequired, setGstRequired] = useState("no");
   const [totalPrice, setTotalPrice] = useState(0);
-
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -1147,8 +1147,10 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
   }, [bookingInfo, gstRequired]);
 
   const handleSubmit = async (data) => {
+    setIsLoading(true);
     if (!bookingInfo) {
       console.error("Booking info is missing");
+      setIsLoading(false);
       return;
     }
 
@@ -1302,6 +1304,8 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
         description: "Failed to create booking.",
         variant: "destructive",
       });
+    }finally {
+      setIsLoading(false); 
     }
   };
 
@@ -1771,7 +1775,10 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
                   )}
                 </div>
 
-                <Button type="submit">Proceed</Button>
+                {/* <Button type="submit">Proceed</Button> */}
+                 <Button type="submit" disabled={isLoading}>
+        {isLoading ? "Processing..." : "Proceed"}
+      </Button>
               </form>
             </Form>
           </CardContent>

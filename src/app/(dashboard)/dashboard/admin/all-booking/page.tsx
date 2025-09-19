@@ -62,6 +62,7 @@ interface Payment {
   booking_id: string;
   payment_method: string;
   payment_status: string;
+  reference_number: string;
   amount: string;
   created_at: string;
 }
@@ -786,6 +787,16 @@ if (type === "booking") {
                                             "N/A"}
                                         </p>
                                       </div>
+                                       {item.payments?.reference_number && (
+                                        <div>
+                                          <h4 className="text-sm font-medium text-gray-500">
+                                            Reference Number
+                                          </h4>
+                                          <p>
+                                            {item.payments.reference_number}
+                                          </p>
+                                        </div>
+                                      )}
 
 
 
