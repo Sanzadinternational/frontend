@@ -858,7 +858,9 @@ if (type === "booking") {
           </div>
 
                                       <div className="flex gap-2">
-                                        {item.payments?.payment_status?.toLowerCase() === "completed" && (
+                                        {(item.payments?.payment_status?.toLowerCase() ===
+                                        "completed" || 
+item.payments?.payment_status?.toLowerCase() === "successful") && (
                                         <Button
                                           variant="outline"
                                           size="sm"
@@ -1094,7 +1096,9 @@ if (type === "booking") {
       </div>
 
                               <div className="flex gap-2">
-                                {item.payments?.payment_status?.toLowerCase() === "completed" && (
+                                {(item.payments?.payment_status?.toLowerCase() ===
+                                        "completed" || 
+item.payments?.payment_status?.toLowerCase() === "successful") && (
                                 <Button
                                   variant="outline"
                                   size="sm"

@@ -1135,8 +1135,9 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
   useEffect(() => {
     const basePrice = Number(bookingInfo?.vehicle?.price || 0);
     const extraCost = Number(bookingInfo?.extraCost || 0);
-    const isReturnTrip = bookingInfo?.returnDate && bookingInfo?.returnTime;
-    let calculatedTotal = (basePrice + extraCost) * (isReturnTrip ? 2 : 1);
+    // const isReturnTrip = bookingInfo?.returnDate && bookingInfo?.returnTime;
+    // let calculatedTotal = (basePrice + extraCost) * (isReturnTrip ? 2 : 1);
+    let calculatedTotal = (basePrice + extraCost);
     
     // Add 5% GST if required
     if (gstRequired === "yes") {
