@@ -8,8 +8,7 @@ import { ChooseCurrency } from "../constants/currency";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-// import { ScrollArea } from "@/components/ui/scroll-area";
-// import { Separator } from "@/components/ui/separator";
+
 import {
   Card,
   CardHeader,
@@ -45,11 +44,6 @@ import { Textarea } from "@/components/ui/textarea";
 import CountryCityAPI from "../api/CountryCityAPI";
 import { useToast } from "@/hooks/use-toast";
 
-// interface Country {
-//   name: string;
-//   flag: string;
-//   dialCode: string;
-// }
 
 interface FormattedCountry {
   name: string;
@@ -63,50 +57,9 @@ interface FormattedCountry {
 
 
 
-// const tags = ["GST", "Adhar", "PAN", "Passport"];
 const chooseCurrency = ChooseCurrency;
 
-// const formSchema = z.object({
-//   Company_name: z.string().min(1, { message: "Company Name is Required" }),
-//   Address: z.string().min(1, { message: "Address is Required" }),
-//   Email: z
-//     .string()
-//     .min(1, { message: "Email is Required" })
-//     .email({ message: "Please enter valid email" }),
-//   Password: z.string().min(1, { message: "Password is Required" }),
-//   Zip_code: z.string().min(1, { message: "Zipcode is Required" }),
-//   Owner: z.string().min(1, { message: "Owner Name is required" }),
-//   Country: z.string().min(1, { message: "Country is required" }),
-//   State: z.string().min(1, { message: "State is required" }),
-//   // City: z.string().min(1, { message: "City is required" }),
-//   City: z.string().optional(),
-//   Gst_Vat_Tax_number: z.string(),
-//   PAN_number: z.string(),
-//   Contact_Person: z.string(),
-//   Otp: z.string(),
-//   Office_number: z.string().min(1, { message: "Office No. is required" }),
-//   Mobile_number: z.string().min(1, { message: "Mobile No. is required" }),
-//   Currency: z.string().min(1, { message: "Currency is required" }),
-//   Gst_Tax_Certificate: z.any().refine((file) => file instanceof File, {
-//     message: "Upload document is required",
-//   }),
-//   Alternate_email: z.string().email({ message: "Please enter valid email" }).optional(),
-//   Legal_company: z.string().optional(),
-//   Alternate_phone: z.string().optional(),
-//   Designation: z.string().optional(),
-// }).superRefine((data, ctx) => {
-//   // Custom validation - City is required only if cities are available
-//   const selectedState = states.find(state => state.name === data.State);
-//   if (selectedState?.cities.length > 0 && !data.City) {
-//     ctx.addIssue({
-//       code: z.ZodIssueCode.custom,
-//       message: "City is required",
-//       path: ["City"]
-//     });
-//   }
-// });
 
-// type FormData = z.infer<typeof formSchema>;
 
 const SupplierRegistration: React.FC = () => {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -429,17 +382,7 @@ const selectedState = states.find(state => state.name === data.State);
     }
   };
 
-  // const handleCountryChange = (value: string) => {
-  //   const country = countries.find((country) => country.name === value);
-  //   if (country) {
-  //     setSelectedCountry(value);
-  //     setSelectedDialCode(country.dialCode);
-  //     setSelectedFlag(country.flag);
-  //     form.setValue("Country", value);
-  //     form.trigger("Country");
-  //     form.setValue("City", "");
-  //   }
-  // };
+  
 
   const handleCountryChange = (value: string) => {
   const country = countries.find((country) => country.name === value);
@@ -456,15 +399,7 @@ const selectedState = states.find(state => state.name === data.State);
   }
 };
 
-// const handleStateChange = (value: string) => {
-//   const state = states.find((state) => state.name === value);
-//   if (state) {
-//     setCities(state.cities);
-//     form.setValue("State", value);
-//     form.setValue("City", "");
-//     form.trigger("State");
-//   }
-// };
+
 const handleStateChange = (value: string) => {
   const state = states.find((state) => state.name === value);
   if (state) {
@@ -602,21 +537,7 @@ const handleCityChange = (value: string) => {
                 />
                 
 
-                  {/* <FormField
-                  control={form.control}
-                  name="State"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        State <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter Your State" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
+                
                   <FormField
   control={form.control}
   name="State"
@@ -650,52 +571,7 @@ const handleCityChange = (value: string) => {
 
 
 
-                {/* <FormField
-                  control={form.control}
-                  name="City"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        City <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter Your City" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
-
-                  {/* <FormField
-  control={form.control}
-  name="City"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>
-        City <span className="text-red-500">*</span>
-      </FormLabel>
-      <FormControl>
-        <Select
-          {...field}
-          onValueChange={handleCityChange}
-          disabled={!form.getValues("State")}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select a city" />
-          </SelectTrigger>
-          <SelectContent>
-            {cities.map((city) => (
-              <SelectItem key={city} value={city}>
-                {city}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>   */}
+                
 <FormField
   control={form.control}
   name="City"
@@ -1118,21 +994,7 @@ const handleCityChange = (value: string) => {
 
                   {/* Documents Section */}
                   <div>
-                    {/* <ScrollArea className="h-28 w-full rounded-md border mb-4">
-                      <div className="p-4">
-                        <h4 className="mb-4 text-xs uppercase font-bold text-zinc-500 dark:text-white leading-none">
-                          Documents To Attach
-                        </h4>
-                        {tags.map((tag, index) => (
-                          <div key={index}>
-                            <div className="text-sm">{tag}</div>
-                            {index < tags.length - 1 && (
-                              <Separator className="my-2" />
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea> */}
+                    
 
                     <FormField
                       control={form.control}

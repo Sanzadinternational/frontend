@@ -155,48 +155,7 @@ const filteredDrivers = drivers.filter(driver => {
     setCurrentPage(page);
   };
 
-//   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-//     setIsSubmitting(true);
-//     setError(null);
 
-//     try {
-//       const SupplierId = user?.userId;
-//       const url = editingId
-//         ? `${API_BASE_URL}/supplier/UpdateDriver/${editingId}`
-//         : `${API_BASE_URL}/supplier/CreateDriver`;
-
-//       const method = editingId ? "PUT" : "POST";
-
-//       const response = await fetch(url, {
-//         method,
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ ...data, SupplierId }),
-//       });
-
-//       if (!response.ok) throw new Error("Failed to save driver");
-
-//       toast({ 
-//         title: "Success", 
-//         description: `Driver ${editingId ? "updated" : "added"} successfully!` 
-//       });
-      
-//       form.reset();
-//       setEditingId(null);
-//       fetchDrivers(user.id);
-//       setCurrentPage(1); // Reset to first page after submission
-//     } catch (err: any) {
-//       console.error("Error:", err);
-//       const errorMessage = err.response?.data?.message || err.message;
-//       setError(errorMessage);
-//       toast({ 
-//         title: "Error", 
-//         description: errorMessage, 
-//         variant: "destructive" 
-//       });
-//     } finally {
-//       setIsSubmitting(false);
-//     }
-//   };
 const handleSubmit = async (data: z.infer<typeof formSchema>) => {
   setIsSubmitting(true);
   setError(null);

@@ -325,32 +325,7 @@ const Profile = () => {
         editing={false}
         onChange={handleChange}
       />
-            {/* <div className="space-y-1">
-        <label className="text-sm font-medium text-gray-700">Currency</label>
-        {editing && !isAdmin() ? (
-          <Select
-            value={updatedUser?.Currency || ""}
-            onValueChange={(value) => {
-              setUpdatedUser(prev => prev ? { ...prev, Currency: value } : null);
-            }}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select currency" />
-            </SelectTrigger>
-            <SelectContent>
-              {ChooseCurrency.map((currency) => (
-                <SelectItem key={currency.value} value={currency.value}>
-                  {currency.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        ) : (
-          <p className="text-gray-900">
-            {updatedUser?.Currency || "N/A"}
-          </p>
-        )}
-      </div> */}
+           
           </div>
         </CardContent>
       </Card>

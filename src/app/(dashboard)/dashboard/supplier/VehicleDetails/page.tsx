@@ -441,16 +441,7 @@ const VehicleDetailsForm = () => {
                                     <SelectTrigger className="w-full">
                                       <SelectValue placeholder="Select Vehicle Type" />
                                     </SelectTrigger>
-                                    {/* <SelectContent>
-                                      {vehicleTypes.map((type) => (
-                                        <SelectItem
-                                          key={type.id}
-                                          value={type.VehicleType}
-                                        >
-                                          {type.VehicleType}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent> */}
+                                    
                                     <SelectContent>
             {vehicleTypes
               .slice()
@@ -485,16 +476,7 @@ const VehicleDetailsForm = () => {
                                     <SelectTrigger className="w-full">
                                       <SelectValue placeholder="Select Vehicle Brand" />
                                     </SelectTrigger>
-                                    {/* <SelectContent>
-                                      {vehicleBrands.map((brand) => (
-                                        <SelectItem
-                                          key={brand.id}
-                                          value={brand.VehicleBrand}
-                                        >
-                                          {brand.VehicleBrand}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent> */}
+                                    
                                      <SelectContent>
             {vehicleBrands
               .slice()
@@ -512,42 +494,7 @@ const VehicleDetailsForm = () => {
                             )}
                           />
 
-                          {/* <FormField
-                           control={form.control}
-                           name="ServiceType"
-                           render={({ field }) => (
-                             <FormItem>
-                               <FormLabel>Service Type <span className="text-red-500">*</span></FormLabel>
-                               <FormControl>
-                                 <Select
-                                   value={field.value}
-                                   onValueChange={field.onChange}
-                                 >
-                                   <SelectTrigger className="w-full">
-                                     <SelectValue placeholder="Select Service Type" />
-                                   </SelectTrigger>
-                                   <SelectContent>
-                                     {Array.from(
-                                       new Set(
-                                         vehicleBrands.map(
-                                           (brand) => brand.ServiceType
-                                         )
-                                       )
-                                     ).map((serviceType, index) => (
-                                       <SelectItem
-                                         key={index}
-                                         value={serviceType}
-                                       >
-                                         {serviceType}
-                                       </SelectItem>
-                                     ))}
-                                   </SelectContent>
-                                 </Select>
-                               </FormControl>
-                               <FormMessage />
-                             </FormItem>
-                           )}
-                         /> */}
+                         
 
                           <FormField
                             control={form.control}
@@ -584,16 +531,7 @@ const VehicleDetailsForm = () => {
                                     <SelectTrigger className="w-full">
                                       <SelectValue placeholder="Select Vehicle Model" />
                                     </SelectTrigger>
-                                    {/* <SelectContent>
-                                      {vehicleModels.map((model) => (
-                                        <SelectItem
-                                          key={model.id}
-                                          value={model.VehicleModel}
-                                        >
-                                          {model.VehicleModel}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent> */}
+                                   
                                     <SelectContent>
             {vehicleModels
               .slice()

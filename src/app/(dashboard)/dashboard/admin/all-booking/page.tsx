@@ -478,32 +478,7 @@ const getReturnTripInfo = (booking: Booking) => {
 
     const statusText = status.toLowerCase();
 
-    // if (type === "booking") {
-    //   switch (statusText) {
-    //     case "approved":
-    //       return (
-    //         <Badge className="bg-green-500 hover:bg-green-600">
-    //           <Check className="h-3 w-3 mr-1" />
-    //           Approved
-    //         </Badge>
-    //       );
-    //     case "pending":
-    //       return (
-    //         <Badge className="bg-yellow-500 hover:bg-yellow-600">
-    //           <Clock className="h-3 w-3 mr-1" />
-    //           Pending
-    //         </Badge>
-    //       );
-    //     case "rejected":
-    //       return (
-    //         <Badge variant="destructive">
-    //           <X className="h-3 w-3 mr-1" />
-    //           Rejected
-    //         </Badge>
-    //       );
-    //     default:
-    //       return <Badge variant="outline">{statusText}</Badge>;
-    //   }
+    
 
 if (type === "booking") {
     switch (statusText) {
@@ -913,23 +888,7 @@ item.payments?.payment_status?.toLowerCase() === "successful") && (
               )}
                                         </>
                                       )}
-                                      {/* {item.payments?.payment_status?.toLowerCase() !==
-                                        "completed" && (
-                                        <Button
-                                          size="sm"
-                                          onClick={() =>
-                                            updatePaymentStatus(
-                                              item.booking?.id || null,
-                                              "completed"
-                                            )
-                                          }
-                                          className="h-8"
-                                          disabled={!item.payments}
-                                        >
-                                          <Check className="h-4 w-4 mr-1" />
-                                          Approve Payment
-                                        </Button>
-                                      )} */}
+                                     
 
                                       {item.payments?.payment_status?.toLowerCase() !==
                                         "completed" &&
@@ -1201,23 +1160,7 @@ item.payments?.payment_status?.toLowerCase() === "successful") && (
               )}
                                   </>
                                 )}
-                                {/* {item.payments?.payment_status?.toLowerCase() !==
-                                  "completed" && (
-                                  <Button
-                                    size="sm"
-                                    onClick={() =>
-                                      updatePaymentStatus(
-                                        item.booking?.id || null,
-                                        "completed"
-                                      )
-                                    }
-                                    className="flex-1"
-                                    disabled={!item.payments}
-                                  >
-                                    <Check className="h-4 w-4 mr-1" />
-                                    Approve Payment
-                                  </Button>
-                                )} */}
+                              
 
                                 {item.payments?.payment_status?.toLowerCase() !==
                                   "completed" &&

@@ -173,53 +173,7 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
 };
 
 
-// const DateInput = ({ value, onChange, ...props }) => {
-//   const inputRef = useRef(null);
 
-//   const handleClick = () => {
-//     if (inputRef.current) {
-//       inputRef.current.showPicker(); // This triggers the native picker
-//     }
-//   };
-
-//   return (
-//     <div className="relative" onClick={handleClick}>
-//       <input
-//         ref={inputRef}
-//         type="date"
-//         value={value}
-//         onChange={(e) => onChange(e.target.value)}
-//         className="w-full bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-2 appearance-none cursor-pointer"
-//         {...props}
-//       />
-//       {/* <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-300 pointer-events-none" /> */}
-//     </div>
-//   );
-// };
-
-// const TimeInput = ({ value, onChange, ...props }) => {
-//   const inputRef = useRef(null);
-
-//   const handleClick = () => {
-//     if (inputRef.current) {
-//       inputRef.current.showPicker(); // This triggers the native picker
-//     }
-//   };
-
-//   return (
-//     <div className="relative" onClick={handleClick}>
-//       <input
-//         ref={inputRef}
-//         type="time"
-//         value={value}
-//         onChange={(e) => onChange(e.target.value)}
-//         className="w-full bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-2 appearance-none cursor-pointer"
-//         {...props}
-//       />
-//       {/* <ClockIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-300 pointer-events-none" /> */}
-//     </div>
-//   );
-// };
 
 
 // Define the validation schema with date and time fields
@@ -460,65 +414,7 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-                {/* <FormField
-                  control={form.control}
-                  name="pax"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel className="uppercase text-xs font-bold text-blue-400 dark:text-white">
-                        Number of Passengers
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative flex items-center">
-          <input
-            {...field}
-            type="text"
-            placeholder="Number of Passengers"
-            className="w-full bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-1"
-          />
-          <span className="absolute right-3 text-xl text-gray-500 w-6 h-6 flex items-center justify-center">
-            <UsersRound className="w-5 h-5 text-gray-500 dark:text-gray-300" />
-          </span>
-        </div>
-                      </FormControl>
-                      <FormMessage>
-                        {form.formState.errors.pax?.message}
-                      </FormMessage>
-                    </FormItem>
-                  )}
-                /> */}
-
-                  {/* <FormField
-  control={form.control}
-  name="pax"
-  render={({ field }) => (
-    <FormItem className="flex flex-col">
-      <FormLabel className="uppercase text-xs font-bold text-blue-400 dark:text-white">
-        Number of Passengers
-      </FormLabel>
-      <FormControl>
-        <div className="relative flex items-center">
-          <select
-            {...field}
-            className="w-full bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-2 appearance-none"
-          >
-            {Array.from({ length: 50 }, (_, i) => i + 1).map((num) => (
-              <option key={num} value={num}>
-                {num} {num === 1 ? 'Passenger' : 'Passengers'}
-              </option>
-            ))}
-          </select>
-          <span className="absolute right-3 text-xl text-gray-500 w-6 h-6 flex items-center justify-center pointer-events-none">
-            <UsersRound className="w-5 h-5 text-gray-500 dark:text-gray-300" />
-          </span>
-        </div>
-      </FormControl>
-      <FormMessage>
-        {form.formState.errors.pax?.message}
-      </FormMessage>
-    </FormItem>
-  )}
-/> */}
+               
 
 <FormField
   control={form.control}
@@ -555,28 +451,7 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
 
 
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
-                  {/* Date Field */}
-                  {/* <FormField
-                    control={form.control}
-                    name="date"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel className="uppercase text-xs font-bold text-blue-400 dark:text-white">
-                          Date
-                        </FormLabel>
-                        <FormControl>
-                          <input
-                            {...field}
-                            type="date"
-                            className=" bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-1"
-                          />
-                        </FormControl>
-                        <FormMessage>
-                          {form.formState.errors.date?.message}
-                        </FormMessage>
-                      </FormItem>
-                    )}
-                  /> */}
+                 
 
                     <FormField
   control={form.control}
@@ -599,28 +474,7 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
   )}
 />
 
-                  {/* Time Field */}
-                  {/* <FormField
-                    control={form.control}
-                    name="time"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel className="uppercase text-xs font-bold text-blue-400 dark:text-white">
-                          Time
-                        </FormLabel>
-                        <FormControl>
-                          <input
-                            {...field}
-                            type="time"
-                            className=" bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-1"
-                          />
-                        </FormControl>
-                        <FormMessage>
-                          {form.formState.errors.time?.message}
-                        </FormMessage>
-                      </FormItem>
-                    )}
-                  /> */}
+                 
 
                     <FormField
   control={form.control}
@@ -662,28 +516,7 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
               {/* Conditional Return Date and Time Fields */}
               {showReturnFields && (
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
-                  {/* Return Date Field */}
-                  {/* <FormField
-                    control={form.control}
-                    name="returnDate"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel className="uppercase text-xs font-bold text-blue-400 dark:text-white">
-                          Return Date
-                        </FormLabel>
-                        <FormControl>
-                          <input
-                            {...field}
-                            type="date"
-                            className=" bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-1"
-                          />
-                        </FormControl>
-                        <FormMessage>
-                          {form.formState.errors.returnDate?.message}
-                        </FormMessage>
-                      </FormItem>
-                    )}
-                  /> */}
+                 
                   <FormField
   control={form.control}
   name="returnDate"
@@ -704,28 +537,7 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
     </FormItem>
   )}
 />
-                  {/* Return Time Field */}
-                  {/* <FormField
-                    control={form.control}
-                    name="returnTime"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel className="uppercase text-xs font-bold text-blue-400 dark:text-white">
-                          Return Time
-                        </FormLabel>
-                        <FormControl>
-                          <input
-                            {...field}
-                            type="time"
-                            className=" bg-slate-100 dark:bg-slate-500 border-0 rounded-sm ring-1 ring-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 text-black dark:text-white p-1"
-                          />
-                        </FormControl>
-                        <FormMessage>
-                          {form.formState.errors.returnTime?.message}
-                        </FormMessage>
-                      </FormItem>
-                    )}
-                  /> */}
+                  
 
                     <FormField
   control={form.control}

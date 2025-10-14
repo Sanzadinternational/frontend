@@ -404,42 +404,7 @@ const Surcharge = () => {
     <DashboardContainer scrollable>
       <div className="space-y-4">
         <Card>
-          {/* <CardHeader className="flex flex-row justify-between items-center">
-            <div>
-              <CardTitle>Surcharge Management</CardTitle>
-              <CardDescription>
-                {filteredSurcharges.length} surcharge{filteredSurcharges.length !== 1 ? 's' : ''} found
-              </CardDescription>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="relative w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search surcharges..."
-                  className="pl-9"
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                />
-              </div>
-              <Button
-                onClick={() => {
-                  setEditingId(null);
-                  form.reset({
-                    uniqueId: "",
-                    SurgeChargePrice: "",
-                    DateRange: { from: null, to: null },
-                    currency: userCurrency,
-                  });
-                  setShowForm(true);
-                }}
-              >
-                <Plus className="mr-2 h-4 w-4" /> Add Surcharge
-              </Button>
-            </div>
-          </CardHeader> */}
+          
 <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
   <div>
     <CardTitle className="text-lg md:text-xl">Surcharge Management</CardTitle>

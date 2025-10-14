@@ -120,32 +120,6 @@ const OtherDetailsForm = () => {
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     console.log("Form Submitted:", data); // Log form values
 
-    // const selectedVehicle = vehicles.find((v) => v.uniqueId === data.uniqueId);
-    // if (!selectedVehicle) {
-    //   toast({ title: "Error", description: "Invalid vehicle selection", variant: "destructive" });
-    //   setIsSubmitting(false);
-    //   return;
-    // }
-
-    // setIsLoading(true);
-    // try {
-    //   const response = await fetch("/api/vehicle-details", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(data),
-    //   });
-
-    //   if (!response.ok) {
-    //     throw new Error("Failed to save vehicle details");
-    //   }
-
-    //   toast({ title: "Success!", description: "Vehicle details saved." });
-    //   form.reset();
-    // } catch (error) {
-    //   toast({ title: "Error", description: (error as Error).message });
-    // } finally {
-    //   setIsLoading(false);
-    // }
   };
   if (loading) {
     return (

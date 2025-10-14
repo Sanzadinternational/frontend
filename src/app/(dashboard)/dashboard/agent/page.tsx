@@ -3,7 +3,6 @@ import DashboardContainer from "@/components/layout/DashboardContainer";
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,CardFooter
   } from '@/components/ui/card';

@@ -62,12 +62,7 @@ const Header = () => {
         >
           Home
         </Link>
-        {/* <Link
-          className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
-          href="/#about"
-        >
-          About
-        </Link> */}
+       
         <Link
           className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
           href="/agent"
@@ -80,22 +75,11 @@ const Header = () => {
         >
           Supplier Signup
         </Link>
-        {/* <Link
-          className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
-          href="/contact"
-        >
-          Contact
-        </Link> */}
-        {/* <Link
-          className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
-          href="/#features"
-        >
-          Features
-        </Link> */}
+        
         {user && (
           <Link
             className="hover:bg-blue-200 hover:text-indigo-700 rounded-md px-2 py-1"
-            // href={`/dashboard/${user?.role}`}
+            
             href={
                           user?.role === "superadmin"
                             ? `/dashboard/admin`
@@ -122,16 +106,7 @@ const Header = () => {
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                {/* <Link 
-                // href={`/dashboard/${user?.role}`}
-                href={
-                          user?.role === "superadmin"
-                            ? `/dashboard/admin`
-                            : `/dashboard/${user?.role}`
-                        }
-                >
-                  <DropdownMenuItem>Dashboard</DropdownMenuItem>
-                </Link> */}
+                
                 <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -164,15 +139,7 @@ const Header = () => {
               <Link href="/supplier">
                 <DropdownMenuItem>Supplier Signup</DropdownMenuItem>
               </Link>
-              {/* <Link href="/#about">
-                <DropdownMenuItem>About</DropdownMenuItem>
-              </Link>
-              <Link href="/contact">
-                <DropdownMenuItem>Contact</DropdownMenuItem>
-              </Link>
-              <Link href="/#features">
-                <DropdownMenuItem>Features</DropdownMenuItem>
-              </Link> */}
+              
               {user && (
                 <Link 
                 // href={`/dashboard/${user?.role}`}
