@@ -699,13 +699,12 @@ function DetailItem({
   isFile?: boolean 
 }) {
   const [expanded, setExpanded] = useState(false);
-  
   if (!value) return null;
 
   if (isFile) {
     // Construct the full URL to the file
-    const fileUrl = `https://api.sanzadinternational.in/uploads/${value}`;
-    
+    // const fileUrl = `https://api.sanzadinternational.in/uploads/${value}`;
+    const fileUrl = `${API_BASE_URL}/uploads/${value}`;
     return (
       <div className="text-sm">
         <span className="font-medium text-muted-foreground">{label}</span>
