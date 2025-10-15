@@ -58,6 +58,10 @@ export function UserNav() {
     fetchUserData();
   }, []);
 
+const profileImageUrl = user?.profileImage 
+  ? `${API_BASE_URL}/uploads/${user.profileImage}`
+  : null;
+
   if (error) {
     console.error("Error in UserNav:", error); // Log errors for debugging
   }
@@ -68,7 +72,7 @@ export function UserNav() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8">
-          <Avatar className="h-8 w-8">
+          {/* <Avatar className="h-8 w-8">
             <AvatarImage
               src={user?.avatar || "https://github.com/shadcn.png1"} // Use default avatar if none is provided
               alt="avatar"
@@ -76,7 +80,20 @@ export function UserNav() {
             <AvatarFallback className="bg-primary text-primary-foreground rounded-lg">
               {user?.Company_name?.slice(0, 2)?.toUpperCase() || "NA"}
             </AvatarFallback>
-          </Avatar>
+          </Avatar> */}
+          <Avatar className="h-8 w-8 rounded-lg">
+  {profileImageUrl ? (
+    <AvatarImage
+      src={profileImageUrl}
+      alt="avatar"
+      className="object-cover"
+    />
+  ) : (
+    <AvatarFallback className="bg-primary text-primary-foreground rounded-lg">
+      {user?.Company_name?.slice(0, 2)?.toUpperCase() || "NA"}
+    </AvatarFallback>
+  )}
+</Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>

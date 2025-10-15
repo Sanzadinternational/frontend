@@ -106,6 +106,11 @@ const { state } = useSidebar();
       setOpenMobile(false);
     }
   }, [pathname]);
+
+const profileImageUrl = userData?.profileImage 
+  ? `${API_BASE_URL}/uploads/${userData.profileImage}`
+  : null;
+
   if (error) return <p>Error: {error}</p>;
   if (!userData) return <p>Loading...</p>;
 
@@ -246,15 +251,28 @@ const { state } = useSidebar();
                     size="lg"
                     className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                   >
-                    <Avatar className="h-8 w-8 rounded-lg">
+                    {/* <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage
-                        src={userData?.avatar || "https://github.com/shadcn.png1"}
+                        src={userData?.profileImage || "https://github.com/shadcn.png1"}
                         alt="avatar"
                       />
                       <AvatarFallback className="bg-primary text-primary-foreground rounded-lg">
                         {userData?.Company_name?.slice(0, 2)?.toUpperCase() || "NA"}
                       </AvatarFallback>
-                    </Avatar>
+                    </Avatar> */}
+                    <Avatar className="h-8 w-8 rounded-lg">
+  {profileImageUrl ? (
+    <AvatarImage
+      src={profileImageUrl}
+      alt="avatar"
+      className="object-cover"
+    />
+  ) : (
+    <AvatarFallback className="bg-primary text-primary-foreground rounded-lg">
+      {userData?.Company_name?.slice(0, 2)?.toUpperCase() || "NA"}
+    </AvatarFallback>
+  )}
+</Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">
                         {userData?.Company_name || "User Name"}
@@ -274,15 +292,28 @@ const { state } = useSidebar();
                 >
                   <DropdownMenuLabel className="p-0 font-normal">
                     <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                      <Avatar className="h-8 w-8 rounded-lg">
+                      {/* <Avatar className="h-8 w-8 rounded-lg">
                         <AvatarImage
-                          src={userData?.avatar || "https://github.com/shadcn.png1"}
+                          src={userData?.profileImage || "https://github.com/shadcn.png1"}
                           alt="avatar"
                         />
                         <AvatarFallback className="bg-primary text-primary-foreground rounded-lg">
                           {userData?.Company_name?.slice(0, 2)?.toUpperCase() || "NA"}
                         </AvatarFallback>
-                      </Avatar>
+                      </Avatar> */}
+                      <Avatar className="h-8 w-8 rounded-lg">
+  {profileImageUrl ? (
+    <AvatarImage
+      src={profileImageUrl}
+      alt="avatar"
+      className="object-cover"
+    />
+  ) : (
+    <AvatarFallback className="bg-primary text-primary-foreground rounded-lg">
+      {userData?.Company_name?.slice(0, 2)?.toUpperCase() || "NA"}
+    </AvatarFallback>
+  )}
+</Avatar>
                       <div className="grid flex-1 text-left text-sm leading-tight">
                         <span className="truncate font-semibold">
                           {userData?.Company_name || "User Name"}
