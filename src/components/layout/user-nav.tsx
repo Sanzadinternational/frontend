@@ -48,7 +48,7 @@ export function UserNav() {
         const data = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
         setUser(data);
       } catch (err: any) {
-        console.error("Error fetching user data:", err);
+        // console.error("Error fetching user data:", err);
         setError(err.message || "An error occurred while fetching user data.");
         removeToken(); // Clear token if the request fails
         router.push("/login"); // Redirect to login
@@ -63,7 +63,7 @@ const profileImageUrl = user?.profileImage
   : null;
 
   if (error) {
-    console.error("Error in UserNav:", error); // Log errors for debugging
+    console.error("Error in UserNav:", error); 
   }
 
   const rolename = user?.role;

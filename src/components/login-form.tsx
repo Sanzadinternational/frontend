@@ -56,7 +56,7 @@ const LoginFormContent = () => {
         setUser(data);
         router.push(`/dashboard/${data.role}`);
       } catch (err: any) {
-        console.error("Error:", err);
+        // console.error("Error:", err);
         setError(err.message);
         removeToken();
       }
@@ -92,7 +92,7 @@ const LoginFormContent = () => {
         router.push(targetUrl);
       }
     } catch (err: any) {
-      console.error("Login Error:", err);
+      // console.error("Login Error:", err);
       const errorMessage = err.response?.data?.message || "Login failed. Please try again.";
       setError(errorMessage);
       toast({ 

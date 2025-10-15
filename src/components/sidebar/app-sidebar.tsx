@@ -90,9 +90,9 @@ const { state } = useSidebar();
           `${API_BASE_URL}/dashboard`
         );
         setUserData(data);
-        console.log("userData",data);
+        // console.log("userData",data);
       } catch (err: any) {
-        console.log("API error fetching data", err);
+        // console.log("API error fetching data", err);
         setError(err.message);
         removeToken();
         router.push("/login");

@@ -110,10 +110,10 @@ const Profile = () => {
       }
   
       // Log the data being sent to the server
-      console.log("Data being sent to server:", {
-        ...updatedUser,
-        profileImage: image ? "(new image file)" : user?.profileImage
-      });
+      // console.log("Data being sent to server:", {
+      //   ...updatedUser,
+      //   profileImage: image ? "(new image file)" : user?.profileImage
+      // });
   
       const response = await fetch(`${API_BASE_URL}/view/UpdateProfile/${user?.userId}`, {
         method: "PUT",
@@ -132,7 +132,7 @@ const Profile = () => {
       const updatedData = data.updateResult?.[0] || data;
       
       // Log the response from the server
-      console.log("Server response:", data);
+      // console.log("Server response:", data);
   
       // Update user data with new image if uploaded
       // const profileImageUrl = image ? 
@@ -148,7 +148,7 @@ const Profile = () => {
       };
   
       // Log the final updated user data
-      console.log("Updated user data:", updatedUserData);
+      // console.log("Updated user data:", updatedUserData);
   
       setUser(updatedUserData);
       setUpdatedUser(updatedUserData);
@@ -160,7 +160,7 @@ const Profile = () => {
         description: "Profile updated successfully",
       });
     } catch (err: any) {
-      console.error("Error updating profile:", err.message);
+      // console.error("Error updating profile:", err.message);
       setError(err.message);
       toast({
         title: "Error",

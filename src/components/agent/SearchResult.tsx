@@ -29,8 +29,8 @@ const SearchResult = ({
   distance,
   estimatedTime,
 }) => {
-  console.log("Received Form Data:", formData);
-  console.log("Available Vehicles:", vehicles);
+  // console.log("Received Form Data:", formData);
+  // console.log("Available Vehicles:", vehicles);
   const [userData, setUserData] = useState<any>(null);
   const {
     pickup,
@@ -55,9 +55,9 @@ const SearchResult = ({
       try {
         const data = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
         setUserData(data);
-        console.log("userData", userData);
+        // console.log("userData", userData);
       } catch (err: any) {
-        console.log("API error fetching data", err);
+        // console.log("API error fetching data", err);
         removeToken();
       }
     };
@@ -188,7 +188,7 @@ const SearchResult = ({
       });
     }
   } catch (error) {
-    console.error("Email sending error:", error);
+    // console.error("Email sending error:", error);
     toast({
       title: "Error",
       description: `❌ ${error}`,
@@ -265,7 +265,7 @@ const SearchResult = ({
         formData.returnDate && formData.returnTime ? "Round Trip" : "One Way",
     };
 
-    console.log("Selected Booking Info:", bookingInfo);
+    // console.log("Selected Booking Info:", bookingInfo);
     onSelect(bookingInfo); // Send data to TransferMultiStepForm
   };
 

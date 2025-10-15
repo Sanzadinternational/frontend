@@ -68,7 +68,7 @@ const VehicleType = () => {
       if (!response.ok) throw new Error("Failed to fetch vehicle types");
   
       const result = await response.json();
-      console.log("API Response:", result); // Debug log
+      // console.log("API Response:", result); 
       
       if (!result.success || !Array.isArray(result.data)) {
         throw new Error("Invalid data format");
@@ -76,7 +76,7 @@ const VehicleType = () => {
   
       setTypes(result.data);
     } catch (error) {
-      console.error("Error fetching vehicle types:", error);
+      // console.error("Error fetching vehicle types:", error);
       setTypes([]);
       toast({
         title: "Error",
@@ -136,11 +136,11 @@ const VehicleType = () => {
         formData.append("vehicleImage", data.vehicleImage);
       }
       
-      console.log("Submitting form data:", {
-        VehicleType: data.VehicleType,
-        hasImage: !!data.vehicleImage,
-        imageType: typeof data.vehicleImage
-      }); // Debug log
+      // console.log("Submitting form data:", {
+      //   VehicleType: data.VehicleType,
+      //   hasImage: !!data.vehicleImage,
+      //   imageType: typeof data.vehicleImage
+      // }); 
 
       const url = editingId
         ? `${API_BASE_URL}/supplier/UpdateVehicleTypes/${editingId}`
@@ -148,7 +148,7 @@ const VehicleType = () => {
 
       const method = editingId ? "PUT" : "POST";
 
-      console.log("Making request to:", url); // Debug log
+      // console.log("Making request to:", url); 
       
       const response = await fetch(url, {
         method,
@@ -156,7 +156,7 @@ const VehicleType = () => {
       });
 
       const responseData = await response.json();
-      console.log("Server response:", responseData); // Debug log
+      // console.log("Server response:", responseData); 
 
       if (!response.ok) {
         throw new Error(responseData.message || "Failed to save vehicle type");
@@ -175,7 +175,7 @@ const VehicleType = () => {
       fetchTypes();
       setCurrentPage(1);
     } catch (error: any) {
-      console.error("Submission error:", error); // Debug log
+      // console.error("Submission error:", error); 
       toast({ 
         title: "Error", 
         description: error.message || "Operation failed", 

@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardFooter,
 } from "../ui/card";
-import { useEffect } from "react";
+// import { useEffect } from "react";
 import { CircleCheckBig } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { Button } from "../ui/button"; 
@@ -17,9 +17,9 @@ import { useRouter} from "next/navigation";
 const Confirm = ({ bookingInfo }) => {
   const router = useRouter();
   
-  useEffect(() => {
-    console.log("Confirm Page - bookingInfo:", bookingInfo);
-  }, [bookingInfo]);
+  // useEffect(() => {
+  //   console.log("Confirm Page - bookingInfo:", bookingInfo);
+  // }, [bookingInfo]);
 
   if (!bookingInfo) {
     return <p>Loading...</p>;

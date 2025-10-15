@@ -63,14 +63,14 @@ const AddAdmin = () => {
   const { toast } = useToast();
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log("Admin data",data);
+    // console.log("Admin data",data);
     setIsSubmitting(true);
     try {
       const response = await axios.post(
         `${API_BASE_URL}/admin/create`,
         data
       );
-      console.log("Admin added successfully:", response.data);
+      // console.log("Admin added successfully:", response.data);
       toast({
         title: "Success!",
         description: "Admin added successfully.",

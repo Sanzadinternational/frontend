@@ -45,7 +45,7 @@ const TransferMultiStepForm = () => {
         const data = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
         setUser(data);
       } catch (err) {
-        console.error("API error fetching user data", err);
+        // console.error("API error fetching user data", err);
         removeToken();
       }
     };

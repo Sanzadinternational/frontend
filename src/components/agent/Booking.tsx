@@ -40,8 +40,8 @@ const formSchema = z.object({
   referenceNumber: z.string().optional(),
   pickupType: z.enum(["airport", "cruise", "station","hotel", "others"]),
   // GST fields
-  gstRequired: z.enum(["yes", "no"]),
-  gstNumber: z.string().optional(),
+  // gstRequired: z.enum(["yes", "no"]),
+  // gstNumber: z.string().optional(),
   // Airport fields
   planeArrivingFrom: z.string().optional(),
   airlineName: z.string().optional(),
@@ -67,7 +67,7 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
   const { toast } = useToast();
   const [paymentMethod, setPaymentMethod] = useState("pay_now");
   const [pickupType, setPickupType] = useState("airport");
-  const [gstRequired, setGstRequired] = useState("no");
+  // const [gstRequired, setGstRequired] = useState("no");
   const [totalPrice, setTotalPrice] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const form = useForm({
@@ -79,8 +79,8 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
       paymentMethod: "pay_now",
       referenceNumber: "",
       pickupType: "airport",
-      gstRequired: "no",
-      gstNumber: "",
+      // gstRequired: "no",
+      // gstNumber: "",
       planeArrivingFrom: "",
       airlineName: "",
       flightNumber: "",
@@ -102,15 +102,17 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
     const extraCost = Number(bookingInfo?.extraCost || 0);
     // const isReturnTrip = bookingInfo?.returnDate && bookingInfo?.returnTime;
     // let calculatedTotal = (basePrice + extraCost) * (isReturnTrip ? 2 : 1);
-    let calculatedTotal = (basePrice + extraCost);
-    
+    // let calculatedTotal = (basePrice + extraCost);
+     const calculatedTotal = (basePrice + extraCost);
     // Add 5% GST if required
-    if (gstRequired === "yes") {
-      calculatedTotal = calculatedTotal * 1.05;
-    }
+    // if (gstRequired === "yes") {
+    //   calculatedTotal = calculatedTotal * 1.05;
+    // }
     
+  //   setTotalPrice(calculatedTotal);
+  // }, [bookingInfo, gstRequired]);
     setTotalPrice(calculatedTotal);
-  }, [bookingInfo, gstRequired]);
+  }, [bookingInfo]);
 
   const handleSubmit = async (data) => {
     setIsLoading(true);
@@ -189,8 +191,8 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
       passenger_name: data.name,
       passenger_email: data.email,
       passenger_phone: data.mobile,
-      gst_required: data.gstRequired,
-      gst_number: data.gstRequired === "yes" ? data.gstNumber : null,
+      // gst_required: data.gstRequired,
+      // gst_number: data.gstRequired === "yes" ? data.gstNumber : null,
       pickupDetails,
       dropoffDetails: {
         destinationName: data.destinationName,
@@ -248,10 +250,10 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
           email: data.email,
           mobile: data.mobile,
         },
-        gstDetails: {
-          gstRequired: data.gstRequired,
-          gstNumber: data.gstNumber,
-        },
+        // gstDetails: {
+        //   gstRequired: data.gstRequired,
+        //   gstNumber: data.gstNumber,
+        // },
         pickupDetails,
         dropoffDetails: {
           destinationName: data.destinationName,
@@ -264,7 +266,7 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
         nextStep();
       }
     } catch (error) {
-      console.error("Error submitting booking:", error);
+      // console.error("Error submitting booking:", error);
       toast({
         title: "Booking Failed",
         description: "Failed to create booking.",
@@ -317,7 +319,7 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
               <dt className="text-muted-foreground">Passengers</dt>
               <dd>{bookingInfo?.pax || "N/A"}</dd>
             </div>
-            {gstRequired === "yes" && (
+            {/* {gstRequired === "yes" && (
               <>
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Base Price</dt>
@@ -328,7 +330,7 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
                   <dd>{`${bookingInfo?.targetCurrency} ${(totalPrice * 0.05).toFixed(2)}`}</dd>
                 </div>
               </>
-            )}
+            )} */}
             <div className="flex justify-between font-semibold">
               <dt className="text-muted-foreground">Total Cost</dt>
               <dd>{`${bookingInfo?.targetCurrency} ${totalPrice.toFixed(2)}`}</dd>
@@ -638,7 +640,7 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
                 </div>
 
                 {/* GST Option */}
-                <div className="space-y-4">
+                {/* <div className="space-y-4">
                   <h3 className="text-lg font-semibold">GST Information</h3>
                   <FormField
                     control={form.control}
@@ -685,7 +687,7 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
                       )}
                     />
                   )}
-                </div>
+                </div> */}
 
                 {/* Payment Method */}
                 <div className="space-y-4">

@@ -86,11 +86,11 @@ const SupplierAPI = () => {
           }
         }
       } catch (err: any) {
-        console.error("Error fetching data:", err);
+        // console.error("Error fetching data:", err);
         setError(err.message);
         if (err.response?.status === 401) {
           removeToken();
-          // window.location.href = "/login";
+          
         }
       } finally {
         setIsLoading(false);
@@ -149,7 +149,7 @@ const SupplierAPI = () => {
         throw new Error("API integration failed.");
       }
     } catch (error: any) {
-      console.error("Error during API submission:", error);
+      // console.error("Error during API submission:", error);
       toast({
         title: "Error",
         description: error?.message || "An error occurred while integrating the API.",
@@ -178,7 +178,7 @@ const SupplierAPI = () => {
         throw new Error("Failed to delete API configuration.");
       }
     } catch (error: any) {
-      console.error("Error deleting API:", error);
+      // console.error("Error deleting API:", error);
       toast({
         title: "Error",
         description: error?.message || "Failed to delete API configuration.",
