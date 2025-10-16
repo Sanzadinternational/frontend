@@ -108,7 +108,7 @@ const page = () => {
       <div>
         <h2 className="text-xl md:text-2xl font-bold">Disclaimer of Warranty and Limitation of Damages</h2>
         <p>
-          Sanzad International provides the site “as is” without any warranties, either expressed or implied, including guarantees about ownership, accuracy, reliability, or suitability for any purpose. They do not guarantee the truth or reliability of user-submitted content. Sanzad International is not responsible for any damages—direct or indirect—that may result from using or being unable to use the site, even if warned about such risks. In some places, certain warranty disclaimers or liability limits may not apply, and Sanzad International liability will then be limited to the maximum extent allowed by law.
+          Sanzad International provides the site “as is” without any warranties, either expressed or implied, including guarantees about ownership, accuracy, reliability, or suitability for any purpose. They do not guarantee the truth or reliability of user-submitted content. Sanzad International is not responsible for any damages-direct or indirect-that may result from using or being unable to use the site, even if warned about such risks. In some places, certain warranty disclaimers or liability limits may not apply, and Sanzad International liability will then be limited to the maximum extent allowed by law.
         </p>
       </div>
       <div>
