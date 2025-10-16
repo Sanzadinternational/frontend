@@ -44,7 +44,7 @@ const page = () => {
           <span className="font-semibold">Confirmation:</span> Instant email confirmation on reservation; voucher follows within 48–72 hours.
         </li>
         <li>
-          <span className="font-semibold">Special Events:</span> Stricter terms apply—higher prices, no amendments, and no refunds.
+          <span className="font-semibold">Special Events:</span> Stricter terms apply-higher prices, no amendments, and no refunds.
         </li>
         </ul>  
       </div>
@@ -155,8 +155,8 @@ const page = () => {
           <p>When you register, book a service, or fill out a form, we may collect the following personal information:
             </p>
             <ul className="list-disc list-outside ml-4">
-              <li>Full Name | Date of Birth |Passport Number |PAN Card Details</li>
-              <li>Flight Ticket Details |Email Address |Phone Number | Address</li>
+              <li>Full Name | Date of Birth | Passport Number | PAN Card Details</li>
+              <li>Flight Ticket Details | Email Address | Phone Number | Address</li>
               <li>Any other details necessary to complete your travel booking or verification.</li>
             </ul>
           
