@@ -47,11 +47,11 @@ const Footer = () => {
             />
           </div> */}
           </div>
-          <div className="flex gap-1">
-          <SocialIcon style={{ width: 30, height: 30 }} network="facebook" />
-          <SocialIcon style={{ width: 30, height: 30 }} network="instagram" />
-          <SocialIcon style={{ width: 30, height: 30 }} network="youtube" />
-          <SocialIcon style={{ width: 30, height: 30 }} network="linkedin" />
+          <div className="flex gap-2">
+          <SocialIcon style={{ width: 30, height: 30 }} network="facebook"url="https://www.facebook.com/Sanzadinternational" target="_blank"/>
+          <SocialIcon style={{ width: 30, height: 30 }} network="instagram" url="https://www.instagram.com/sanzadinternational?igshid=YmMyMTA2M2Y%3D" target="_blank"/>
+          {/* <SocialIcon style={{ width: 30, height: 30 }} network="youtube" />
+          <SocialIcon style={{ width: 30, height: 30 }} network="linkedin" /> */}
         </div>
         </div>
       </div>

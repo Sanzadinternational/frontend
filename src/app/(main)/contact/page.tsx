@@ -39,7 +39,7 @@ const page = () => {
                 <div className="">
                     <MapPin width={20} height={20}/>
                     <h3 className="text-lg mt-1">Find Us</h3>
-                    <p className="w-2/3">Get help with your account or other queries</p>
+                    <p className="w-2/3">Suite No. 4, H-143, Sector-63, Noida, Gautam Buddha Nagar, UP, 201301</p>
                 </div>
                 <div className="">
                 <h4 className="underline"><Link href='mailto:support@sanzadinternational.com' target="_blank">support@sanzadinternational.com</Link></h4>
