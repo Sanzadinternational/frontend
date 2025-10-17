@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
+import { Checkbox } from "@/components/ui/checkbox";
 // Define the schema for the form
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -60,6 +60,9 @@ const formSchema = z.object({
   // Dropoff fields
   destinationName: z.string().optional(),
   destinationAddress: z.string().optional(),
+  termsAccepted: z.boolean().refine(val => val === true, {
+    message: "You must accept the terms and conditions",
+  }),
 });
 
 const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
@@ -93,6 +96,7 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
       venueAddress:"",
       destinationName: "",
       destinationAddress: "",
+      termsAccepted: true,
     },
   });
 
@@ -193,6 +197,7 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
       passenger_phone: data.mobile,
       // gst_required: data.gstRequired,
       // gst_number: data.gstRequired === "yes" ? data.gstNumber : null,
+      
       pickupDetails,
       dropoffDetails: {
         destinationName: data.destinationName,
@@ -688,6 +693,33 @@ const Booking = ({ bookingInfo, setBookingInfo, nextStep }) => {
                     />
                   )}
                 </div> */}
+
+
+                  {/* Terms and Conditions */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Terms & Conditions</h3>
+                  <FormField
+                    control={form.control}
+                    name="termsAccepted"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>
+                            By clicking this checkbox, you agree to the terms and conditions
+                          </FormLabel>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
 
                 {/* Payment Method */}
                 <div className="space-y-4">
