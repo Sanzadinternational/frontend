@@ -951,7 +951,7 @@ const SearchResult = ({
                           <div className="w-auto md:w-[75%] flex flex-col md:justify-between">
                             <Image
                               src={
-                                vehicle.image ||
+                                vehicle.vehicleImage ||
                                 "/Car-Mockup_Sanzad-International.webp"
                               } 
                               width={250}
