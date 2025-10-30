@@ -125,7 +125,7 @@ const statusOptions = [
   { value: "all", label: "All Bookings" },
   { value: "pending", label: "Pending" },
   // { value: "approved", label: "Upcoming" },
-  { value: "approved", label: "Confirm" },
+  { value: "approved", label: "Confirmed" },
   { value: "completed", label: "Completed" },
   { value: "rejected", label: "Rejected" },
 ];
@@ -454,7 +454,7 @@ if (type === "booking") {
             {/* <Clock className="h-3 w-3 mr-1" />
             Upcoming */}
             <Check className="h-3 w-3 mr-1" /> 
-                  Confirm 
+                  Confirmed
           </Badge>
         );
       case "pending":

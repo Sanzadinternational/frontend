@@ -126,7 +126,7 @@ const SupplierBookingsTable = () => {
     { value: "all", label: "All Bookings" },
     { value: "pending", label: "Pending" },
     // { value: "approved", label: "Upcoming" },
-    { value: "approved", label: "Confirm" },
+    { value: "approved", label: "Confirmed" },
     { value: "completed", label: "Completed" },
     { value: "rejected", label: "Rejected" },
   ];
@@ -655,7 +655,7 @@ const SupplierBookingsTable = () => {
               {/* <Clock className="h-3 w-3 mr-1" />
               Upcoming */}
               <Check className="h-3 w-3 mr-1" /> 
-      Confirm 
+      Confirmed 
             </Badge>
 
           );
