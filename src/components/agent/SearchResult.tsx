@@ -884,14 +884,12 @@ const SearchResult = ({
               </CardFooter>
             </Card>
             {map && (
-              <Card className="flex items-center justify-center p-2">
-                <CardContent>
-                  <LocationMap
-                    pickupLocation={pickupLocation}
-                    dropoffLocation={dropoffLocation}
-                  />
-                </CardContent>
-              </Card>
+          <Card className="p-2">
+            <LocationMap
+              pickupLocation={pickupLocation}
+              dropoffLocation={dropoffLocation}
+            />
+          </Card>
             )}
           </div>
         </ScrollArea>
