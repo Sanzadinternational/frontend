@@ -1,15 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import {
-  Users,
-  Luggage,
-  BadgeInfo,
-  Car,
-  Map,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
+import { Users, Luggage, BadgeInfo, Car, Map, ChevronDown, ChevronUp } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 import { fetchWithAuth } from "@/components/utils/api";
 import { removeToken } from "@/components/utils/auth";
@@ -37,8 +29,6 @@ const SearchResult = ({
   distance,
   estimatedTime,
 }) => {
-  // console.log("Received Form Data:", formData);
-  // console.log("Available Vehicles:", vehicles);
   const [userData, setUserData] = useState<any>(null);
   const {
     pickup,
@@ -55,19 +45,15 @@ const SearchResult = ({
   const [displayForm, setDisplayForm] = useState(false);
   const [map, setMap] = useState(false);
   const [isLoadingOneWay, setIsLoadingOneWay] = useState(false);
-  const [expandedVehicles, setExpandedVehicles] = useState<Set<string>>(
-    new Set()
-  );
+  const [expandedVehicles, setExpandedVehicles] = useState<Set<string>>(new Set());
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
+  
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const data = await fetchWithAuth(`${API_BASE_URL}/dashboard`);
         setUserData(data);
-        // console.log("userData", userData);
       } catch (err: any) {
-        // console.log("API error fetching data", err);
         removeToken();
       }
     };
@@ -78,11 +64,11 @@ const SearchResult = ({
   const showLocation = () => {
     setDisplayForm(!displayForm);
   };
-
+  
   const showMap = () => {
     setMap(!map);
   };
-
+  
   const toggleTransferInfo = (vehicleId: string) => {
     const newExpanded = new Set(expandedVehicles);
     if (newExpanded.has(vehicleId)) {
@@ -96,118 +82,116 @@ const SearchResult = ({
   const { toast } = useToast();
 
   const handleEmailQuote = async (vehicle) => {
-    const isRoundTrip = returnDate && returnTime;
-    setIsLoadingOneWay(true);
+  const isRoundTrip = returnDate && returnTime;
+  setIsLoadingOneWay(true);
 
-    // Use the price directly from backend (already calculated for round trip if applicable)
-    const price = Number(vehicle.price);
-    const tripType = isRoundTrip ? "Round Trip" : "One Way";
+  const price = Number(vehicle.price);
+  const tripType = isRoundTrip ? "Round Trip" : "One Way";
 
-    const emailData = {
-      subject: `🚗 Transfer Quote for Your ${tripType} Trip`,
-      message: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; padding: 20px; background-color: #f9f9f9;">
-          <h2 style="color: #007bff; text-align: center;">🚖 Transfer Quotation</h2>
-          <p style="text-align: center; font-size: 16px; color: #555;">
-            Here is your quotation for the requested ${tripType} transfer.
-          </p>
+  const emailData = {
+    subject: `🚗 Transfer Quote for Your ${tripType} Trip`,
+    message: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; padding: 20px; background-color: #f9f9f9;">
+        <h2 style="color: #007bff; text-align: center;">🚖 Transfer Quotation</h2>
+        <p style="text-align: center; font-size: 16px; color: #555;">
+          Here is your quotation for the requested ${tripType} transfer.
+        </p>
 
-          <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-            <tr>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>🚗 Trip Type:</strong></td>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${tripType}</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>📍 Pickup Location:</strong></td>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${pickup}</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>📍 Dropoff Location:</strong></td>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${dropoff}</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>👥 Passengers:</strong></td>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${pax}</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>📅 Date & Time:</strong></td>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${date} ${time}</td>
-            </tr>
-            ${
-              isRoundTrip
-                ? `<tr>
-                      <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>🔄 Return Date & Time:</strong></td>
-                      <td style="padding: 8px; border-bottom: 1px solid #ddd;">${returnDate} ${returnTime}</td>
-                    </tr>`
-                : ""
-            }
-            <tr>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>🚘 Vehicle:</strong></td>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${
-                vehicle.brand
-              } - ${vehicle.vehicalType}</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>💰 Price:</strong></td>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold; color: #28a745;">${
-                vehicle.currency
-              } ${price.toFixed(2)}</td>
-            </tr>
-          </table>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>🚗 Trip Type:</strong></td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${tripType}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>📍 Pickup Location:</strong></td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${pickup}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>📍 Dropoff Location:</strong></td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${dropoff}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>👥 Passengers:</strong></td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${pax}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>📅 Date & Time:</strong></td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${date} ${time}</td>
+          </tr>
+          ${
+            isRoundTrip
+              ? `<tr>
+                  <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>🔄 Return Date & Time:</strong></td>
+                  <td style="padding: 8px; border-bottom: 1px solid #ddd;">${returnDate} ${returnTime}</td>
+                </tr>`
+              : ""
+          }
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>🚘 Vehicle:</strong></td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${
+              vehicle.brand
+            } - ${vehicle.vehicalType}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>💰 Price:</strong></td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold; color: #28a745;">${
+              vehicle.currency
+            } ${price.toFixed(2)}</td>
+          </tr>
+        </table>
 
-          <p style="margin-top: 15px; text-align: center;">
-            <strong>✅ Ready to confirm?</strong><br/>
-            Please reply to this email or contact our support team.
-          </p>
+        <p style="margin-top: 15px; text-align: center;">
+          <strong>✅ Ready to confirm?</strong><br/>
+          Please reply to this email or contact our support team.
+        </p>
 
-          <div style="text-align: center; margin-top: 20px;">
-            <a href="mailto:sanzadinternational5@gmail.com" 
-               style="background-color: #007bff; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px;">
-              📩 Confirm Your Booking
-            </a>
-          </div>
-
-          <p style="text-align: center; font-size: 14px; color: #888; margin-top: 20px;">
-            If you have any questions, feel free to contact us at 
-            <a href="mailto:sanzadinternational5@gmail.com" style="color: #007bff;">sanzadinternational5@gmail.com</a>
-          </p>
+        <div style="text-align: center; margin-top: 20px;">
+          <a href="mailto:sanzadinternational5@gmail.com" 
+             style="background-color: #007bff; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px;">
+            📩 Confirm Your Booking
+          </a>
         </div>
-      `,
-      recipient: `${userData.Email}`,
-    };
 
-    try {
-      const response = await axios.post(
-        `${API_BASE_URL}/agent/QuickEmail`,
-        emailData,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+        <p style="text-align: center; font-size: 14px; color: #888; margin-top: 20px;">
+          If you have any questions, feel free to contact us at 
+          <a href="mailto:sanzadinternational5@gmail.com" style="color: #007bff;">sanzadinternational5@gmail.com</a>
+        </p>
+      </div>
+    `,
+    recipient: `${userData.Email}`,
+  };
 
-      if (response.status === 200) {
-        toast({
-          title: "Email Quotation",
-          description: "📩 Email sent successfully!",
-        });
-      } else {
-        toast({
-          title: "Email Quotation",
-          description: "⚠️ Failed to send email. Please try again.",
-          variant: "destructive",
-        });
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/agent/QuickEmail`,
+      emailData,
+      {
+        headers: { "Content-Type": "application/json" },
       }
-    } catch (error) {
-      // console.error("Email sending error:", error);
+    );
+
+    if (response.status === 200) {
       toast({
-        title: "Error",
-        description: `❌ ${error}`,
+        title: "Email Quotation",
+        description: "📩 Email sent successfully!",
+      });
+    } else {
+      toast({
+        title: "Email Quotation",
+        description: "⚠️ Failed to send email. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoadingOneWay(false);
     }
-  };
+  } catch (error) {
+    toast({
+      title: "Error",
+      description: `❌ ${error}`,
+      variant: "destructive",
+    });
+  } finally {
+    setIsLoadingOneWay(false);
+  }
+};
 
   const handleBookNow = (vehicle) => {
     if (!userData) {
@@ -217,7 +201,6 @@ const SearchResult = ({
       )}`;
       return;
     }
-    // Allow only agents to book
     if (userData.role !== "agent") {
       toast({
         title: "Access Denied",
@@ -243,64 +226,77 @@ const SearchResult = ({
       distance_miles: `${distance}`,
       estimatedTime: `${estimatedTime}`,
       agent_id: `${userData.userId}`,
-      agent_email: `${userData?.Email}`,
-      targetCurrency: formData?.targetCurrency,
-      agent_address: `${userData.Address}`,
-      agent_city: `${userData.City}`,
-      agent_country: `${userData.Country}`,
-      agent_zipcode: `${userData.Zip_code}`,
+      agent_email:`${userData?.Email}`,
+      targetCurrency:formData?.targetCurrency,
+      agent_address:`${userData.Address}`,
+      agent_city:`${userData.City}`,
+      agent_country:`${userData.Country}`,
+      agent_zipcode:`${userData.Zip_code}`,
       vehicle: {
         brand: vehicle.brand,
         currency: vehicle.currency,
         extraPricePerKm: vehicle.extraPricePerKm,
         mediumBag: vehicle.mediumBag,
-        smallBag: vehicle.SmallBag,
+        smallBag:vehicle.SmallBag,
         nightTime: vehicle.nightTime,
         nightTimePrice: vehicle.nightTimePrice,
         passengers: vehicle.passengers,
-        price: Number(vehicle.price), // Use the price directly from backend
+        price: Number(vehicle.price),
         suplier_id: vehicle.supplierId,
         transferInfo: vehicle.transferInfo,
         vehicalType: vehicle.vehicalType,
         vehicle_id: vehicle.vehicleId,
-        vehicleTax: vehicle.vehicleTax,
-        tollTax: vehicle.tollTax,
-        parking: vehicle.parking,
-        driverTips: vehicle.driverTips,
-        driverCharge: vehicle.driverCharge,
+        vehicleTax:vehicle.vehicleTax,
+        tollTax:vehicle.tollTax,
+        parking:vehicle.parking,
+        driverTips:vehicle.driverTips,
+        driverCharge:vehicle.driverCharge,
       },
       extraCost: vehicle.extraCost || "0",
       tripType:
         formData.returnDate && formData.returnTime ? "Round Trip" : "One Way",
     };
 
-    // console.log("Selected Booking Info:", bookingInfo);
-    onSelect(bookingInfo); // Send data to TransferMultiStepForm
+    onSelect(bookingInfo);
   };
 
-  const truncateText = (text, maxLength = 20) => {
-    return text?.length > maxLength
-      ? text.substring(0, maxLength) + "..."
-      : text;
+  // Improved location text display with better responsive design
+  const LocationText = ({ text, type = "pickup" }) => {
+    const maxLength = typeof window !== 'undefined' && window.innerWidth < 768 ? 25 : 35;
+    
+    if (!text) return "N/A";
+    
+    if (text.length <= maxLength) {
+      return text;
+    }
+    
+    return (
+      <span 
+        className="relative group cursor-help"
+        title={text}
+      >
+        {text.substring(0, maxLength - 3)}...
+        <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-normal w-64 text-center z-50">
+          {text}
+          <span className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></span>
+        </span>
+      </span>
+    );
   };
 
-  // Filter vehicles based on passenger capacity
   const filterVehiclesByPassengerCapacity = (vehicles, requiredPassengers) => {
     if (!requiredPassengers) return vehicles;
-
-    return vehicles.filter((vehicle) => {
+    
+    return vehicles.filter(vehicle => {
       const vehicleCapacity = parseInt(vehicle.passengers) || 0;
       return vehicleCapacity >= parseInt(requiredPassengers);
     });
   };
 
-  // Sort vehicles by price (backend already provides correct pricing)
-  const filteredAndSortedVehicles = filterVehiclesByPassengerCapacity(
-    vehicles,
-    pax
-  ).sort((a, b) => {
-    return Number(a.price) - Number(b.price);
-  });
+  const filteredAndSortedVehicles = filterVehiclesByPassengerCapacity(vehicles, pax)
+    .sort((a, b) => {
+      return Number(a.price) - Number(b.price);
+    });
 
   return (
     <>
@@ -310,7 +306,7 @@ const SearchResult = ({
         </div>
       )}
       <div className="flex flex-col md:flex-row gap-5">
-        {/* Summary Section (unchanged) */}
+        {/* Summary Section with improved location layout */}
         <ScrollArea className="md:w-1/3 whitespace-nowrap rounded-md border">
           <div className="md:h-96 flex flex-col px-2 py-4 gap-4">
             <Card>
@@ -322,77 +318,63 @@ const SearchResult = ({
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <div className="flex items-center gap-1">
                   <Car width={20} height={20} />
-                  <Separator className="shrink" />
+                  <Separator className="flex-1" />
                 </div>
-                <dl className="">
-                  {/* --- START OF FIX --- */}
-                  <div className="flex justify-between">
-                    <dt className="text-muted-foreground flex-shrink-0 pr-2">
-                      Pickup
-                    </dt>
-                    <dd className="text-right break-words">
-                      {pickup || "N/A"}
+                
+                {/* Improved location layout */}
+                <div className="space-y-3">
+                  <div className="flex flex-col gap-1">
+                    <dt className="text-muted-foreground text-sm font-medium">Pickup</dt>
+                    <dd className="text-sm break-words min-h-[20px]">
+                      <LocationText text={pickup} type="pickup" />
                     </dd>
                   </div>
-                  <div className="flex justify-between">
-                    <dt className="text-muted-foreground flex-shrink-0 pr-2">
-                      Dropoff
-                    </dt>
-                    <dd className="text-right break-words">
-                      {dropoff || "N/A"}
+                  
+                  <div className="flex flex-col gap-1">
+                    <dt className="text-muted-foreground text-sm font-medium">Dropoff</dt>
+                    <dd className="text-sm break-words min-h-[20px]">
+                      <LocationText text={dropoff} type="dropoff" />
                     </dd>
                   </div>
-                  <div className="flex justify-between">
-                    <dt className="text-muted-foreground flex-shrink-0 pr-2">
-                      Passengers
-                    </dt>
-                    <dd className="text-right break-words">{pax || "N/A"}</dd>
+                  
+                  <div className="flex justify-between items-center">
+                    <dt className="text-muted-foreground text-sm">Passengers</dt>
+                    <dd className="text-sm">{pax || "N/A"}</dd>
                   </div>
-                  <div className="flex justify-between">
-                    <dt className="text-muted-foreground flex-shrink-0 pr-2">
-                      Date & Time
-                    </dt>
-                    <dd className="text-right break-words">
+                  
+                  <div className="flex justify-between items-center">
+                    <dt className="text-muted-foreground text-sm">Date & Time</dt>
+                    <dd className="text-sm text-right">
                       {date || "N/A"}, {time || "N/A"}
                     </dd>
                   </div>
-                  <div className="flex justify-between">
-                    <dt className="text-muted-foreground flex-shrink-0 pr-2">
-                      Return Date & Time
-                    </dt>
-                    <dd className="text-right break-words">
+                  
+                  <div className="flex justify-between items-center">
+                    <dt className="text-muted-foreground text-sm">Return Date & Time</dt>
+                    <dd className="text-sm text-right">
                       {returnDate || "N/A"}, {returnTime || "N/A"}
                     </dd>
                   </div>
-                  {/* --- END OF FIX --- */}
-                </dl>
+                </div>
+
                 <div className="flex items-center gap-1">
                   <Map width={20} height={20} />
-                  <Separator className="shrink" />
+                  <Separator className="flex-1" />
                 </div>
-                <dl>
-                  {/* --- START OF FIX (Applied here too) --- */}
-                  <div className="flex justify-between">
-                    <dt className="text-muted-foreground flex-shrink-0 pr-2">
-                      Estimated Trip Time
-                    </dt>
-                    <dd className="text-right break-words">
-                      {estimatedTime ? `${estimatedTime}` : "N/A"}
-                    </dd>
+                
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <dt className="text-muted-foreground text-sm">Estimated Trip Time</dt>
+                    <dd className="text-sm">{estimatedTime ? `${estimatedTime}` : "N/A"}</dd>
                   </div>
-                  <div className="flex justify-between">
-                    <dt className="text-muted-foreground flex-shrink-0 pr-2">
-                      Distance
-                    </dt>
-                    <dd className="text-right break-words">
-                      {distance ? `${distance} Miles` : "N/A"}
-                    </dd>
+                  <div className="flex justify-between items-center">
+                    <dt className="text-muted-foreground text-sm">Distance</dt>
+                    <dd className="text-sm">{distance ? `${distance} Miles` : "N/A"}</dd>
                   </div>
-                  {/* --- END OF FIX --- */}
-                </dl>
+                </div>
               </CardContent>
               <CardFooter>
                 <Button variant="outline" onClick={showMap}>
@@ -411,7 +393,7 @@ const SearchResult = ({
           </div>
         </ScrollArea>
 
-        {/* Vehicles Section with expandable transfer info */}
+        {/* Vehicles Section */}
         <ScrollArea className="md:w-2/3 whitespace-nowrap rounded-md border">
           <h2 className="text-2xl px-4 pt-2">Available Vehicles</h2>
           {loading ? (
@@ -424,64 +406,42 @@ const SearchResult = ({
             <div className="flex flex-col gap-5 p-4 md:h-96">
               {filteredAndSortedVehicles.length > 0 ? (
                 filteredAndSortedVehicles.map((vehicle, index) => {
-                  const isExpanded = expandedVehicles.has(
-                    vehicle.vehicleId || `vehicle-${index}`
-                  );
-
+                  const isExpanded = expandedVehicles.has(vehicle.vehicleId || `vehicle-${index}`);
+                  
                   return (
                     <Card key={index} className="">
                       <CardHeader>
                         <div className="flex justify-between items-center">
                           <div>
                             <CardTitle>{vehicle.brand}</CardTitle>
-                            <CardDescription>
-                              {vehicle.vehicalType}
-                            </CardDescription>
+                            <CardDescription>{vehicle.vehicalType}</CardDescription>
                           </div>
                           <div>
-                            <Button
-                              variant="ghost"
+                            <Button 
+                              variant="ghost" 
                               className="flex items-center text-blue-500 cursor-pointer p-0 h-auto"
-                              onClick={() =>
-                                toggleTransferInfo(
-                                  vehicle.vehicleId || `vehicle-${index}`
-                                )
-                              }
+                              onClick={() => toggleTransferInfo(vehicle.vehicleId || `vehicle-${index}`)}
                             >
-                              <BadgeInfo
-                                width={15}
-                                height={15}
-                                className="mr-1"
-                              />
+                              <BadgeInfo width={15} height={15} className="mr-1" />
                               Transfer Info
                               {isExpanded ? (
-                                <ChevronUp
-                                  width={15}
-                                  height={15}
-                                  className="ml-1"
-                                />
+                                <ChevronUp width={15} height={15} className="ml-1" />
                               ) : (
-                                <ChevronDown
-                                  width={15}
-                                  height={15}
-                                  className="ml-1"
-                                />
+                                <ChevronDown width={15} height={15} className="ml-1" />
                               )}
                             </Button>
                           </div>
                         </div>
                       </CardHeader>
-
-                      {/* Expanded transfer info section */}
+                      
                       {isExpanded && (
                         <div className="px-6 pb-4">
                           <div className="bg-muted p-3 rounded-md text-sm">
-                            {vehicle.transferInfo ||
-                              "No transfer information available."}
+                            {vehicle.transferInfo || "No transfer information available."}
                           </div>
                         </div>
                       )}
-
+                      
                       <CardContent>
                         <div className="flex flex-col gap-5 md:flex-row justify-between">
                           <div className="w-auto md:w-[75%] flex flex-col md:justify-between">
@@ -489,7 +449,7 @@ const SearchResult = ({
                               src={
                                 vehicle.vehicleImage ||
                                 "/Car-Mockup_Sanzad-International.webp"
-                              }
+                              } 
                               width={250}
                               height={100}
                               alt={vehicle.brand}
@@ -509,13 +469,13 @@ const SearchResult = ({
                                 </div>
                                 <div className="flex md:justify-end items-center gap-1">
                                   <dt>Small Bags</dt>
-                                  <dd>{vehicle.SmallBag || "N/A"}</dd>
+                                  <dd>{vehicle.SmallBag||"N/A"}</dd>
                                   <Luggage width={15} height={15} />
                                 </div>
                               </dl>
                             </div>
                           </div>
-                          <div className="w-1/2 md:w-[25%] bg-slate-50 dark:bg-slate-800 rounded-sm px-2 py-1 flex flex-col justify-between">
+                          <div className="w-full md:w-[25%] bg-slate-50 dark:bg-slate-800 rounded-sm px-2 py-1 flex flex-col justify-between">
                             <div>
                               <p>
                                 {returnDate && returnTime
@@ -524,8 +484,7 @@ const SearchResult = ({
                               </p>
                               <h2 className="text-2xl font-medium">
                                 {targetCurrency}{" "}
-                                {Number(vehicle.price).toFixed(2)}{" "}
-                                {/* Use price directly */}
+                                {Number(vehicle.price).toFixed(2)}
                               </h2>
                             </div>
                             <div>
@@ -548,7 +507,9 @@ const SearchResult = ({
                           onClick={() => handleEmailQuote(vehicle)}
                           disabled={isLoadingOneWay || !userData}
                         >
-                          {isLoadingOneWay ? "Sending..." : "Email Quote"}
+                          {isLoadingOneWay 
+                            ? "Sending..." 
+                            : "Email Quote"}
                         </Button>
                       </CardFooter>
                     </Card>
