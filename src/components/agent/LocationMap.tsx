@@ -38,10 +38,13 @@ const LocationMap = ({ pickupLocation, dropoffLocation }) => {
 
   // FIX 2: Add a default center for the map to load
   // This prevents the "blank map" issue. I've set it to Delhi, India.
-  const center = useMemo(() => ({
-    lat: 28.6139,
-    lng: 77.2090,
-  }), []);
+const center = useMemo(() => {
+  if (fromCoords) return fromCoords;
+  if (toCoords) return toCoords;
+
+  // Only fallback when both are missing
+  return { lat: 28.6139, lng: 77.2090 };
+}, [fromCoords, toCoords]);
 
   // Call Directions API
   useEffect(() => {
