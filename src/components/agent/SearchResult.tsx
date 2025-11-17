@@ -835,11 +835,11 @@ const SearchResult = ({
                 <dl className="">
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Pickup</dt>
-                    <dd>{truncateText(pickup) || "N/A"}</dd>
+                    <dd>{pickup || "N/A"}</dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Dropoff</dt>
-                    <dd>{truncateText(dropoff) || "N/A"}</dd>
+                    <dd>{dropoff || "N/A"}</dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Passengers</dt>
