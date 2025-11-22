@@ -136,9 +136,9 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected, value, onChange }: any) =>
       document.createElement("div")
     );
     placesService.getDetails({ placeId }, (place) => {
-      if (place && place.geometry) {
+      if (place) {
         const cleanName = getCleanLocationName(place);
-        onPlaceSelected(place, cleanName);
+        onPlaceSelected(place, cleanName, placeId);
         
         const placeTypes = place.types || [];
         const icon = placeTypes.find((type) => placeTypeIcons[type]) ? (
@@ -303,8 +303,8 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export default function Location({ onFormSubmit }: { onFormSubmit: () => void }) {
-  const [fromCoords, setFromCoords] = useState<{ lat: number; lng: number } | null>(null);
-  const [toCoords, setToCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [fromPlaceId, setFromPlaceId] = useState<string | null>(null);
+  const [toPlaceId, setToPlaceId] = useState<string | null>(null);
   const [showReturnFields, setShowReturnFields] = useState(false);
   const googleMapsApiKey = "AIzaSyAjXkEFU-hA_DSnHYaEjU3_fceVwQra0LI";
   const { toast } = useToast();
@@ -323,22 +323,20 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
     },
   });
 
-  const handleSelectFrom = (place: any, cleanName: string) => {
-    const location = place.geometry.location;
-    setFromCoords({ lat: location.lat(), lng: location.lng() });
-    console.log("Pickup coordinates:", { lat: location.lat(), lng: location.lng() });
+  const handleSelectFrom = (place: any, cleanName: string, placeId: string) => {
+    setFromPlaceId(placeId);
+    console.log("Pickup place ID:", placeId);
     console.log("Pickup name:", cleanName);
   };
 
-  const handleSelectTo = (place: any, cleanName: string) => {
-    const location = place.geometry.location;
-    setToCoords({ lat: location.lat(), lng: location.lng() });
-    console.log("Dropoff coordinates:", { lat: location.lat(), lng: location.lng() });
+  const handleSelectTo = (place: any, cleanName: string, placeId: string) => {
+    setToPlaceId(placeId);
+    console.log("Dropoff place ID:", placeId);
     console.log("Dropoff name:", cleanName);
   };
 
   const onSubmit = (data: FormData) => {
-    if (!fromCoords || !toCoords) {
+    if (!fromPlaceId || !toPlaceId) {
       toast({
         title: "Valid Location",
         description: "Please select valid locations for both Pickup and Dropoff.",
@@ -347,7 +345,7 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
       return;
     }
   
-    // Convert form data into query parameters
+    // Convert form data into query parameters - using same parameter names but sending place IDs
     const queryParams = new URLSearchParams({
       pickup: data.pickup,
       dropoff: data.dropoff,
@@ -356,15 +354,15 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
       time: data.time,
       returnDate: data.returnDate || "",
       returnTime: data.returnTime || "",
-      pickupLocation: `${fromCoords.lat},${fromCoords.lng}`,
-      dropoffLocation: `${toCoords.lat},${toCoords.lng}`,
+      pickupLocation: fromPlaceId, // Same parameter name but now contains place ID
+      dropoffLocation: toPlaceId,  // Same parameter name but now contains place ID
     }).toString();
 
     console.log("Submitting with data:", {
       pickup: data.pickup,
       dropoff: data.dropoff,
-      pickupCoords: `${fromCoords.lat},${fromCoords.lng}`,
-      dropoffCoords: `${toCoords.lat},${toCoords.lng}`,
+      pickupLocation: fromPlaceId, // Now contains place ID
+      dropoffLocation: toPlaceId,  // Now contains place ID
     });
 
     if (onFormSubmit) {
