@@ -306,7 +306,7 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
   const [fromPlaceId, setFromPlaceId] = useState<string | null>(null);
   const [toPlaceId, setToPlaceId] = useState<string | null>(null);
   const [showReturnFields, setShowReturnFields] = useState(false);
-  const googleMapsApiKey = "AIzaSyAjXkEFU-hA_DSnHYaEjU3_fceVwQra0LI";
+  const googleMapsApiKey = "AIzaSyC9vmFHkCL1BZUjf1rTNytSfbKhmDG3OyE";
   const { toast } = useToast();
   const router = useRouter();
   
