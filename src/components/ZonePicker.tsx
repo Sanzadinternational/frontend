@@ -2,7 +2,7 @@
 "use client";
 import { useState } from "react";
 import AutocompleteInput from "@/components/AutocompleteInput";
-const googleMapsApiKey = "AIzaSyAjXkEFU-hA_DSnHYaEjU3_fceVwQra0LI";
+const googleMapsApiKey = "AIzaSyC9vmFHkCL1BZUjf1rTNytSfbKhmDG3OyE";
 // type ZonePickerProps = {
 //   onChange: (value: string) => void;
 //   setValue: (name: string, value: string) => void;
