@@ -32,7 +32,7 @@ export default function LocationMap({ pickupLocation, dropoffLocation }) {
   // dropoffLocation = placeId string
 
   const [pickupCoords, setPickupCoords] = useState(null);
-  const [dropoffCoords, setDropoffCoords] = useState(null);
+  const [dropoffCoords, setDropoffCoords] = useState(null); 
   const [directions, setDirections] = useState(null);
 
   const { isLoaded } = useLoadScript({
