@@ -1,4 +1,3 @@
-
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { Plane, Hotel, TrainFront, Bus, MapPin } from "lucide-react";
@@ -13,7 +12,12 @@ const placeTypeIcons: { [key: string]: JSX.Element } = {
 };
 const defaultIcon = <MapPin className="w-6 h-6 text-gray-500" />;
 
-const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
+interface AutocompleteInputProps {
+  apiKey: string;
+  onPlaceSelected: (place: any) => void;
+}
+
+const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
   const [predictions, setPredictions] = useState<any[]>([]);
@@ -86,12 +90,18 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
         setSelectedIcon(icon);
         setPredictions([]);
 
-        onPlaceSelected({
+        // Create the place object with place_id included
+        const selectedPlace = {
           address: description,
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng(),
+          place_id: placeId, // Include the place_id
           icon,
-        });
+        };
+
+        console.log("Selected place details:", selectedPlace); // Debug log
+
+        onPlaceSelected(selectedPlace);
 
         if (inputRef.current) inputRef.current.value = description;
       }
@@ -109,7 +119,6 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: any) => {
         <input
           ref={inputRef}
           type="text"
-          // className="w-full bg-slate-100 dark:text-white dark:bg-slate-700 border border-gray-300 dark:border-gray-600 rounded-md pl-12 p-3 text-lg focus:ring-2 focus:ring-blue-400"
           className="flex h-9 w-full rounded-md border border-input bg-transparent pl-12 p-3 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
           placeholder={isGoogleLoaded ? "Search a location..." : "Loading Google Maps..."}
           disabled={!isGoogleLoaded}
