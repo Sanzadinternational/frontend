@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Plane, Hotel, TrainFront, Bus, MapPin } from "lucide-react";
+import { Plane, Hotel, TrainFront, Bus, MapPin, Landmark } from "lucide-react";
 
 // Place type icons mapping
 const placeTypeIcons: { [key: string]: JSX.Element } = {
