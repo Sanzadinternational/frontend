@@ -9,6 +9,7 @@ const placeTypeIcons: { [key: string]: JSX.Element } = {
   train_station: <TrainFront className="w-6 h-6 text-green-500" />,
   bus_station: <Bus className="w-6 h-6 text-purple-500" />,
   establishment: <MapPin className="w-6 h-6 text-gray-500" />,
+  tourist_attraction: <MapPin className="w-6 h-6 text-red-500" />,
 };
 const defaultIcon = <MapPin className="w-6 h-6 text-gray-500" />;
 
@@ -70,7 +71,7 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
     service.getPlacePredictions(
       {
         input: inputValue,
-        types: ["airport", "bus_station", "transit_station", "train_station", "lodging"],
+        types: ["airport", "bus_station", "transit_station", "train_station", "lodging", "tourist_attraction"],
       },
       (results) => {
         setPredictions(results || []);
