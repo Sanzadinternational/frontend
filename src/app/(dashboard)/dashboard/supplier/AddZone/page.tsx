@@ -1,4 +1,3 @@
-
 "use client";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -53,6 +52,7 @@ const formSchema = z.object({
   radius_miles: z.string().min(1, { message: "Radius is required" }),
   latitude: z.string().min(1, { message: "Latitude is required" }),
   longitude: z.string().min(1, { message: "Longitude is required" }),
+  place_id: z.string().optional(), // Add place_id to form schema
 });
 
 const ITEMS_PER_PAGE = 5;
@@ -83,6 +83,7 @@ const Page = () => {
       radius_miles: "5",
       latitude: "",
       longitude: "",
+      place_id: "", // Initialize place_id
     },
   });
 
@@ -136,6 +137,7 @@ const Page = () => {
         radius_miles: "5",
         latitude: "",
         longitude: "",
+        place_id: "", // Reset place_id
       });
     }
   }, [isDialogOpen, editingId]);
@@ -203,13 +205,17 @@ const Page = () => {
 
       const method = editingId ? "PUT" : "POST";
 
+      // Prepare the payload with place_id
+      const payload = {
+        ...data,
+        supplier_id: userData.userId,
+        place_id: data.place_id || undefined, // Include place_id in the payload
+      };
+
       await fetchWithAuth(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          ...data,
-          supplier_id: userData.userId 
-        }),
+        body: JSON.stringify(payload),
       });
 
       toast({ 
@@ -241,13 +247,15 @@ const Page = () => {
       radius_miles: zone.radius_miles.toString(),
       latitude: zone.latitude.toString(),
       longitude: zone.longitude.toString(),
+      place_id: zone.place_id || "", // Include place_id when editing
     });
     setIsDialogOpen(true);
   };
 
   const handleDelete = async (id: string) => {
     const confirmDelete = window.confirm("Are you sure you want to delete?");
-  if (!confirmDelete) return;
+    if (!confirmDelete) return;
+    
     try {
       await fetchWithAuth(`${API_BASE_URL}/supplier/deleteZone/${id}`, {
         method: "DELETE",
@@ -285,35 +293,35 @@ const Page = () => {
       <div className="space-y-4">
         <Card>
           <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-  <div className="w-full md:w-auto">
-    <CardTitle className="text-lg md:text-xl">Zones Management</CardTitle>
-    <CardDescription className="text-xs md:text-sm">
-      {filteredZones.length} zone{filteredZones.length !== 1 ? 's' : ''} found
-    </CardDescription>
-  </div>
-  <div className="flex flex-col md:flex-row items-stretch w-full md:w-auto gap-2">
-    <div className="relative w-full">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-      <Input
-        placeholder="Search zones..."
-        className="pl-9 w-full text-sm"
-        value={searchTerm}
-        onChange={(e) => {
-          setSearchTerm(e.target.value);
-          setCurrentPage(1);
-        }}
-      />
-    </div>
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <DialogTrigger asChild>
-        <Button 
-          onClick={() => setEditingId(null)}
-          className="w-full md:w-auto"
-          size="sm"
-        >
-          <Plus className="mr-2 h-4 w-4" /> Create Zone
-        </Button>
-      </DialogTrigger>
+            <div className="w-full md:w-auto">
+              <CardTitle className="text-lg md:text-xl">Zones Management</CardTitle>
+              <CardDescription className="text-xs md:text-sm">
+                {filteredZones.length} zone{filteredZones.length !== 1 ? 's' : ''} found
+              </CardDescription>
+            </div>
+            <div className="flex flex-col md:flex-row items-stretch w-full md:w-auto gap-2">
+              <div className="relative w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search zones..."
+                  className="pl-9 w-full text-sm"
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                />
+              </div>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button 
+                    onClick={() => setEditingId(null)}
+                    className="w-full md:w-auto"
+                    size="sm"
+                  >
+                    <Plus className="mr-2 h-4 w-4" /> Create Zone
+                  </Button>
+                </DialogTrigger>
                 <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-[600px]">
                   <DialogHeader>
                     <DialogTitle>
@@ -322,97 +330,114 @@ const Page = () => {
                   </DialogHeader>
                   <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Zone Name <span className="text-red-500">*</span></FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter zone name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Zone Name <span className="text-red-500">*</span></FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enter zone name" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                    <FormField
-                      control={form.control}
-                      name="address"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Zone Address <span className="text-red-500">*</span></FormLabel>
-                          <FormControl>
-                            <ZonePicker
-                              onChange={field.onChange}
-                              setValue={form.setValue}
-                              initialValue={form.getValues("address")}
-                              initialCoords={{
-                                lat: parseFloat(form.getValues("latitude")) || undefined,
-                                lng: parseFloat(form.getValues("longitude")) || undefined,
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                      <FormField
+                        control={form.control}
+                        name="address"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Zone Address <span className="text-red-500">*</span></FormLabel>
+                            <FormControl>
+                              <ZonePicker
+                                onChange={field.onChange}
+                                setValue={form.setValue}
+                                initialValue={form.getValues("address")}
+                                initialCoords={{
+                                  lat: parseFloat(form.getValues("latitude")) || undefined,
+                                  lng: parseFloat(form.getValues("longitude")) || undefined,
+                                }}
+                                // Make sure ZonePicker also sets the place_id
+                                onPlaceSelect={(place: any) => {
+                                  if (place.place_id) {
+                                    form.setValue("place_id", place.place_id);
+                                  }
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                    <FormField
-                      control={form.control}
-                      name="radius_miles"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Radius (miles) <span className="text-red-500">*</span></FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              placeholder="Enter radius in miles"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                      <FormField
+                        control={form.control}
+                        name="radius_miles"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Radius (miles) <span className="text-red-500">*</span></FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="Enter radius in miles"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                    {/* Hidden fields for coordinates */}
-                    <FormField
-                      control={form.control}
-                      name="latitude"
-                      render={({ field }) => (
-                        <FormItem className="hidden">
-                          <FormControl>
-                            <Input type="hidden" {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="longitude"
-                      render={({ field }) => (
-                        <FormItem className="hidden">
-                          <FormControl>
-                            <Input type="hidden" {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
+                      {/* Hidden fields for coordinates and place_id */}
+                      <FormField
+                        control={form.control}
+                        name="latitude"
+                        render={({ field }) => (
+                          <FormItem className="hidden">
+                            <FormControl>
+                              <Input type="hidden" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="longitude"
+                        render={({ field }) => (
+                          <FormItem className="hidden">
+                            <FormControl>
+                              <Input type="hidden" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="place_id"
+                        render={({ field }) => (
+                          <FormItem className="hidden">
+                            <FormControl>
+                              <Input type="hidden" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
 
-                    <div className="flex justify-end gap-4 pt-4">
-                      <Button
-                        variant="secondary"
-                        onClick={() => setIsDialogOpen(false)}
-                        type="button"
-                      >
-                        Cancel
-                      </Button>
-                      <Button type="submit" disabled={isLoading}>
-                        {isLoading ? "Saving..." : editingId ? "Update" : "Create"} Zone
-                      </Button>
-                      <Button variant="outline"><Link href="/dashboard/supplier/VehicleTransfer">Add Transfer</Link></Button>
-                    </div>
+                      <div className="flex justify-end gap-4 pt-4">
+                        <Button
+                          variant="secondary"
+                          onClick={() => setIsDialogOpen(false)}
+                          type="button"
+                        >
+                          Cancel
+                        </Button>
+                        <Button type="submit" disabled={isLoading}>
+                          {isLoading ? "Saving..." : editingId ? "Update" : "Create"} Zone
+                        </Button>
+                        <Button variant="outline"><Link href="/dashboard/supplier/VehicleTransfer">Add Transfer</Link></Button>
+                      </div>
                     </form>
                   </Form>
                 </DialogContent>
