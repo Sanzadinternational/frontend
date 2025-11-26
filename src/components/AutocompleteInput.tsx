@@ -71,7 +71,7 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
     service.getPlacePredictions(
       {
         input: inputValue,
-        types: ["airport", "bus_station", "transit_station", "train_station", "lodging", "tourist_attraction"],
+        types: ["establishment"],
       },
       (results) => {
         setPredictions(results || []);
