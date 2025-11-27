@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
-import { Plane, Hotel, TrainFront, Bus, MapPin, Landmark, Star, Utensils, Mountain, ShoppingBag, Camera } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Plane, Hotel, TrainFront, Bus, MapPin, Landmark, Star, Utensils, Mountain, ShoppingBag, Camera, Search } from "lucide-react";
 
 // Expanded place type icons mapping
 const placeTypeIcons: { [key: string]: JSX.Element } = {
@@ -27,6 +27,9 @@ interface AutocompleteInputProps {
 
 const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const sessionTokenRef = useRef<any>(null); // Store session token
+  
   const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
   const [predictions, setPredictions] = useState<any[]>([]);
   const [selectedIcon, setSelectedIcon] = useState<JSX.Element | null>(null);
@@ -53,11 +56,15 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
           clearInterval(checkInterval);
           callback();
         }
-      }, 500);
+      }, 100);
     };
 
     const initializeGoogleServices = () => {
-      if (window.google?.maps?.places) setIsGoogleLoaded(true);
+      if (window.google?.maps?.places) {
+        setIsGoogleLoaded(true);
+        // Initialize session token
+        sessionTokenRef.current = new window.google.maps.places.AutocompleteSessionToken();
+      }
     };
 
     if (window.google?.maps?.places) {
@@ -67,68 +74,75 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
     }
   }, [apiKey]);
 
+  // Main search logic wrapped in a function
+  const executeSearch = (inputValue: string) => {
+    if (!window.google?.maps?.places) return;
+
+    const service = new window.google.maps.places.AutocompleteService();
+    
+    // Strategy: Simple Autocomplete with Session Token
+    const request = {
+      input: inputValue,
+      sessionToken: sessionTokenRef.current,
+      // Optional: Add componentRestrictions to limit to France if this is a France-only app
+      // componentRestrictions: { country: 'fr' }, 
+    };
+
+    service.getPlacePredictions(request, (results, status) => {
+      if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+        setPredictions(results);
+      } else {
+        // If Autocomplete fails (common for full addresses), offer a "Manual Search" option in the dropdown
+        setPredictions([{
+            place_id: 'MANUAL_FALLBACK',
+            description: `Use this exact address: "${inputValue}"`,
+            isManual: true,
+            structured_formatting: {
+                main_text: inputValue,
+                secondary_text: "Search via Geocoding"
+            }
+        }]);
+      }
+    });
+  };
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value;
+    
+    // Clear existing timer
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+
     if (!inputValue) {
       setPredictions([]);
       return;
     }
 
-    const service = new window.google.maps.places.AutocompleteService();
-    
-    console.log("Searching for:", inputValue);
-    
-    // Try multiple search strategies
-    const searchStrategies = [
-      { input: inputValue }, // No restrictions
-      { input: inputValue, types: ['establishment'] },
-      { input: inputValue, types: ['tourist_attraction', 'amusement_park'] },
-      { input: inputValue, types: ['geocode'] } // Address-based search
-    ];
-
-    let attempts = 0;
-    const maxAttempts = searchStrategies.length;
-
-    const tryNextStrategy = (index: number) => {
-      if (index >= maxAttempts) {
-        console.log("All search strategies exhausted");
-        return;
-      }
-
-      service.getPlacePredictions(
-        searchStrategies[index],
-        (results, status) => {
-          console.log(`Strategy ${index}:`, searchStrategies[index], "Status:", status, "Results:", results?.length);
-          
-          if (results && results.length > 0) {
-            setPredictions(results);
-          } else if (index < maxAttempts - 1) {
-            // Try next strategy
-            tryNextStrategy(index + 1);
-          } else {
-            setPredictions([]);
-          }
-        }
-      );
-    };
-
-    // Start with first strategy
-    tryNextStrategy(0);
+    // Set new timer (Debounce 300ms)
+    debounceTimerRef.current = setTimeout(() => {
+        executeSearch(inputValue);
+    }, 300);
   };
 
-  const handleSelectPlace = (placeId: string, description: string) => {
+  const handleSelectPlace = (placeId: string, description: string, isManual: boolean = false) => {
+    if (isManual) {
+        // If user clicked the manual fallback, trigger geocoding immediately
+        handleGeocodingFallback(inputRef.current?.value || description, `manual_${Date.now()}`);
+        return;
+    }
+
     const placesService = new window.google.maps.places.PlacesService(document.createElement("div"));
+    
     placesService.getDetails({ 
       placeId,
-      fields: ['geometry', 'name', 'types', 'formatted_address', 'vicinity', 'address_components']
+      fields: ['geometry', 'name', 'types', 'formatted_address', 'vicinity', 'address_components'],
+      sessionToken: sessionTokenRef.current // Use the same token for details
     }, (place, status) => {
-      console.log("Place details status:", status);
-      console.log("Full place details:", place);
       
-      if (place && place.geometry) {
+      // Refresh session token after usage
+      sessionTokenRef.current = new window.google.maps.places.AutocompleteSessionToken();
+
+      if (status === window.google.maps.places.PlacesServiceStatus.OK && place && place.geometry) {
         const placeTypes = place.types || [];
-        console.log("Place types:", placeTypes);
-        
         const iconType = placeTypes.find((type) => placeTypeIcons[type]) || "establishment";
         const icon = placeTypeIcons[iconType] || defaultIcon;
 
@@ -138,20 +152,17 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
         const selectedPlace = {
           address: place.formatted_address || description,
           name: place.name || description,
-          lat: place.geometry.location.lat(),
-          lng: place.geometry.location.lng(),
+          lat: place.geometry.location?.lat(),
+          lng: place.geometry.location?.lng(),
           place_id: placeId,
           types: placeTypes,
           icon,
         };
 
-        console.log("Selected place details:", selectedPlace);
         onPlaceSelected(selectedPlace);
-
         if (inputRef.current) inputRef.current.value = place.name || description;
       } else {
         console.error("Failed to get place details:", status);
-        // Fallback: Create a basic place object and try geocoding
         handleGeocodingFallback(description, placeId);
       }
     });
@@ -163,8 +174,8 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
       if (status === 'OK' && results && results[0]) {
         const location = results[0].geometry.location;
         const selectedPlace = {
-          address: description,
-          name: description,
+          address: results[0].formatted_address || description,
+          name: description, // Use the input description as name
           lat: location.lat(),
           lng: location.lng(),
           place_id: placeId,
@@ -172,49 +183,26 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
           icon: defaultIcon,
         };
         
-        console.log("Geocoding fallback result:", selectedPlace);
+        setSelectedIcon(defaultIcon);
+        setPredictions([]);
         onPlaceSelected(selectedPlace);
         
-        if (inputRef.current) inputRef.current.value = description;
+        // Update input to formatted address from geocoder if available
+        if (inputRef.current) inputRef.current.value = results[0].formatted_address;
       }
     });
   };
 
   const handleManualSearch = () => {
     if (!inputRef.current?.value) return;
-    
     const inputValue = inputRef.current.value;
-    console.log("Manual search for:", inputValue);
     
-    // Try direct Places API search as fallback
-    const placesService = new window.google.maps.places.PlacesService(document.createElement("div"));
-    const request = {
-      query: inputValue,
-      fields: ['name', 'geometry', 'formatted_address', 'types']
-    };
-    
-    placesService.findPlaceFromQuery(request, (results, status) => {
-      console.log("Direct Places API search results:", results, "Status:", status);
-      
-      if (results && results.length > 0) {
-        const place = results[0];
-        const selectedPlace = {
-          address: place.formatted_address || inputValue,
-          name: place.name || inputValue,
-          lat: place.geometry?.location.lat(),
-          lng: place.geometry?.location.lng(),
-          place_id: `manual_${Date.now()}`,
-          types: place.types || ['establishment'],
-          icon: defaultIcon,
-        };
-        
-        console.log("Manual search result:", selectedPlace);
-        onPlaceSelected(selectedPlace);
-      }
-    });
+    // First try the custom geocoding fallback
+    handleGeocodingFallback(inputValue, `manual_${Date.now()}`);
   };
 
   const getIconForPrediction = (prediction: any) => {
+    if (prediction.isManual) return <Search className="w-5 h-5 text-gray-400" />;
     const types = prediction.types || [];
     const iconType = types.find((type: string) => placeTypeIcons[type]) || "establishment";
     return placeTypeIcons[iconType] || defaultIcon;
@@ -231,10 +219,10 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
           ref={inputRef}
           type="text"
           className="flex h-9 w-full rounded-md border border-input bg-transparent pl-12 p-3 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-          placeholder={isGoogleLoaded ? "Search for locations, addresses, businesses..." : "Loading Google Maps..."}
+          placeholder={isGoogleLoaded ? "Search for locations..." : "Loading Maps..."}
           disabled={!isGoogleLoaded}
           onChange={handleInputChange}
-          onKeyPress={(e) => {
+          onKeyDown={(e) => {
             if (e.key === 'Enter') {
               handleManualSearch();
             }
@@ -249,16 +237,18 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
             <li
               key={prediction.place_id}
               className="flex items-center gap-3 p-3 cursor-pointer hover:bg-blue-100 dark:hover:bg-gray-700 transition-all duration-200 rounded-md"
-              onClick={() => handleSelectPlace(prediction.place_id, prediction.description)}
+              onClick={() => handleSelectPlace(prediction.place_id, prediction.description, prediction.isManual)}
             >
               <span className="w-6 h-6 flex items-center justify-center flex-shrink-0">
                 {getIconForPrediction(prediction)}
               </span>
               <div className="flex flex-col">
-                <span className="text-lg font-medium">{prediction.description}</span>
-                {prediction.types && (
+                <span className="text-sm font-medium">
+                    {prediction.structured_formatting?.main_text || prediction.description}
+                </span>
+                {prediction.structured_formatting?.secondary_text && (
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {prediction.types.join(', ')}
+                    {prediction.structured_formatting.secondary_text}
                   </span>
                 )}
               </div>
@@ -266,10 +256,10 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
           ))}
         </ul>
       )}
-
-      {/* Manual search hint */}
-      <div className="text-xs text-gray-500 mt-1">
-        Press Enter for manual search if location doesn't appear in suggestions
+      
+      {/* Help text */}
+      <div className="text-xs text-gray-400 mt-1 px-1">
+        Can't find it? Press Enter to search precisely.
       </div>
     </div>
   );
