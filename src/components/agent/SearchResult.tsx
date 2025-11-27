@@ -21,6 +21,53 @@ import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "../ui/skeleton";
 
+// Helper function to check if a string is in coordinate format
+const isCoordinateFormat = (location: string): boolean => {
+  if (!location) return false;
+  
+  // Check if it matches the pattern: number,number (with optional spaces)
+  const coordinateRegex = /^-?\d+\.?\d*,\s*-?\d+\.?\d*$/;
+  return coordinateRegex.test(location.trim());
+};
+
+// Helper function to get coordinates from place name using Google Geocoding API
+const getCoordinatesFromPlace = async (placeName: string): Promise<string> => {
+  try {
+    const response = await axios.get(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(placeName)}&key=AIzaSyC9vmFHkCL1BZUjf1rTNytSfbKhmDG3OyE`
+    );
+
+    if (response.data.status === "OK" && response.data.results.length > 0) {
+      const location = response.data.results[0].geometry.location;
+      return `${location.lat},${location.lng}`;
+    } else {
+      throw new Error(`Geocoding failed: ${response.data.status}`);
+    }
+  } catch (error) {
+    console.error("Error getting coordinates from place:", error);
+    throw error;
+  }
+};
+
+// Helper function to parse and validate location
+const parseLocation = (location: string): { lat: number; lng: number } | null => {
+  if (!location) return null;
+  
+  try {
+    const [latStr, lngStr] = location.split(",");
+    const lat = parseFloat(latStr.trim());
+    const lng = parseFloat(lngStr.trim());
+    
+    if (isNaN(lat) || isNaN(lng)) {
+      return null;
+    }
+    
+    return { lat, lng };
+  } catch (error) {
+    return null;
+  }
+};
+
 const SearchResult = ({
   onSelect,
   formData,
@@ -46,6 +93,14 @@ const SearchResult = ({
   const [map, setMap] = useState(false);
   const [isLoadingOneWay, setIsLoadingOneWay] = useState(false);
   const [expandedVehicles, setExpandedVehicles] = useState<Set<string>>(new Set());
+  const [resolvedLocations, setResolvedLocations] = useState({
+    pickup: pickupLocation,
+    dropoff: dropoffLocation
+  });
+  const [locationLoading, setLocationLoading] = useState({
+    pickup: false,
+    dropoff: false
+  });
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   
   useEffect(() => {
@@ -60,6 +115,58 @@ const SearchResult = ({
 
     fetchUserData();
   }, []);
+
+  // Effect to resolve location coordinates when component mounts or locations change
+  useEffect(() => {
+    const resolveLocations = async () => {
+      const newResolvedLocations = { ...resolvedLocations };
+      const newLocationLoading = { ...locationLoading };
+
+      // Resolve pickup location if needed
+      if (pickupLocation && !isCoordinateFormat(pickupLocation)) {
+        newLocationLoading.pickup = true;
+        setLocationLoading(newLocationLoading);
+        
+        try {
+          const coordinates = await getCoordinatesFromPlace(pickupLocation);
+          newResolvedLocations.pickup = coordinates;
+        } catch (error) {
+          console.error("Failed to resolve pickup location:", error);
+          newResolvedLocations.pickup = pickupLocation; // Fallback to original
+        } finally {
+          newLocationLoading.pickup = false;
+          setLocationLoading(newLocationLoading);
+        }
+      } else {
+        newResolvedLocations.pickup = pickupLocation;
+      }
+
+      // Resolve dropoff location if needed
+      if (dropoffLocation && !isCoordinateFormat(dropoffLocation)) {
+        newLocationLoading.dropoff = true;
+        setLocationLoading(newLocationLoading);
+        
+        try {
+          const coordinates = await getCoordinatesFromPlace(dropoffLocation);
+          newResolvedLocations.dropoff = coordinates;
+        } catch (error) {
+          console.error("Failed to resolve dropoff location:", error);
+          newResolvedLocations.dropoff = dropoffLocation; // Fallback to original
+        } finally {
+          newLocationLoading.dropoff = false;
+          setLocationLoading(newLocationLoading);
+        }
+      } else {
+        newResolvedLocations.dropoff = dropoffLocation;
+      }
+
+      setResolvedLocations(newResolvedLocations);
+    };
+
+    if (pickupLocation || dropoffLocation) {
+      resolveLocations();
+    }
+  }, [pickupLocation, dropoffLocation]);
 
   const showLocation = () => {
     setDisplayForm(!displayForm);
@@ -209,6 +316,11 @@ const SearchResult = ({
       });
       return;
     }
+
+    // Parse coordinates from resolved locations
+    const pickupCoords = parseLocation(resolvedLocations.pickup);
+    const dropoffCoords = parseLocation(resolvedLocations.dropoff);
+
     const bookingInfo = {
       pickup: formData.pickup,
       dropoff: formData.dropoff,
@@ -217,12 +329,12 @@ const SearchResult = ({
       time: formData.time,
       returnDate: formData?.returnDate,
       returnTime: formData?.returnTime,
-      pickup_location: formData.pickupLocation,
-      pickup_lat: parseFloat(formData.pickupLocation.split(",")[0].trim()),
-      pickup_lng: parseFloat(formData.pickupLocation.split(",")[1].trim()),
-      drop_location: formData.dropoffLocation,
-      drop_lat: parseFloat(formData.dropoffLocation.split(",")[0].trim()),
-      drop_lng: parseFloat(formData.dropoffLocation.split(",")[1].trim()),
+      pickup_location: resolvedLocations.pickup,
+      pickup_lat: pickupCoords?.lat || 0,
+      pickup_lng: pickupCoords?.lng || 0,
+      drop_location: resolvedLocations.dropoff,
+      drop_lat: dropoffCoords?.lat || 0,
+      drop_lng: dropoffCoords?.lng || 0,
       distance_miles: `${distance}`,
       estimatedTime: `${estimatedTime}`,
       agent_id: `${userData.userId}`,
@@ -329,14 +441,28 @@ const SearchResult = ({
                   <div className="flex flex-col gap-1">
                     <dt className="text-muted-foreground text-sm font-medium">Pickup</dt>
                     <dd className="text-sm break-words min-h-[20px]">
-                      <LocationText text={pickup} type="pickup" />
+                      {locationLoading.pickup ? (
+                        <div className="flex items-center gap-2">
+                          <Skeleton className="h-4 w-32" />
+                          <span className="text-xs text-muted-foreground">Resolving location...</span>
+                        </div>
+                      ) : (
+                        <LocationText text={pickup} type="pickup" />
+                      )}
                     </dd>
                   </div>
                   
                   <div className="flex flex-col gap-1">
                     <dt className="text-muted-foreground text-sm font-medium">Dropoff</dt>
                     <dd className="text-sm break-words min-h-[20px]">
-                      <LocationText text={dropoff} type="dropoff" />
+                      {locationLoading.dropoff ? (
+                        <div className="flex items-center gap-2">
+                          <Skeleton className="h-4 w-32" />
+                          <span className="text-xs text-muted-foreground">Resolving location...</span>
+                        </div>
+                      ) : (
+                        <LocationText text={dropoff} type="dropoff" />
+                      )}
                     </dd>
                   </div>
                   
@@ -385,8 +511,8 @@ const SearchResult = ({
             {map && (
               <Card className="p-2">
                 <LocationMap
-                  pickupLocation={pickupLocation}
-                  dropoffLocation={dropoffLocation}
+                  pickupLocation={resolvedLocations.pickup}
+                  dropoffLocation={resolvedLocations.dropoff}
                 />
               </Card>
             )}
