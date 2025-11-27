@@ -71,7 +71,7 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
     service.getPlacePredictions(
       {
         input: inputValue,
-        types: ["geocode", "establishment"],
+        // Removed types restriction to show all locations
       },
       (results) => {
         setPredictions(results || []);
