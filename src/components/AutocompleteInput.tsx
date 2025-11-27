@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Plane, Hotel, TrainFront, Bus, MapPin, Landmark, Star, Utensils, Mountain, ShoppingBag, Camera, Search } from "lucide-react";
+import { Plane, Hotel, TrainFront, Bus, MapPin, Landmark, Star, Utensils, Mountain, ShoppingBag, Camera, Search, AlertCircle } from "lucide-react";
 
+// 1. Icon Mapping
 const placeTypeIcons: { [key: string]: JSX.Element } = {
   airport: <Plane className="w-6 h-6 text-blue-500" />,
   lodging: <Hotel className="w-6 h-6 text-yellow-500" />,
@@ -33,6 +34,7 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
   const [predictions, setPredictions] = useState<any[]>([]);
   const [selectedIcon, setSelectedIcon] = useState<JSX.Element | null>(null);
 
+  // 2. Initialize Google Maps
   useEffect(() => {
     const loadGoogleMapsScript = () => {
       if (document.querySelector("#google-maps-script")) {
@@ -71,28 +73,32 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
     }
   }, [apiKey]);
 
+  // 3. The Search Strategy
   const executeSearch = (inputValue: string) => {
     if (!window.google?.maps?.places || !inputValue) return;
 
     const service = new window.google.maps.places.AutocompleteService();
+    
+    // We do NOT restrict types. This allows names, addresses, and cities.
     const request = {
       input: inputValue,
       sessionToken: sessionTokenRef.current,
     };
 
     service.getPlacePredictions(request, (results, status) => {
-      // Logic: If we have results, show them. 
-      // If we have ZERO results (common for full addresses), show the Manual Fallback.
+      // Logic: If Autocomplete finds predictions, show them.
+      // If Autocomplete returns ZERO results (e.g. user pasted a complex string), 
+      // we show a "Search By Name" option which triggers the powerful 'findPlaceFromQuery'
       if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
         setPredictions(results);
       } else {
         setPredictions([{
-            place_id: 'MANUAL_FALLBACK',
-            description: inputValue, // Show what user typed
+            place_id: 'MANUAL_SEARCH',
+            description: inputValue,
             isManual: true,
             structured_formatting: {
-                main_text: "Use exact address",
-                secondary_text: inputValue
+                main_text: `Search for "${inputValue}"`,
+                secondary_text: "Find this place by name"
             }
         }]);
       }
@@ -108,57 +114,64 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
       return;
     }
 
-    // Debounce to prevent rate limiting
+    // 300ms debounce
     debounceTimerRef.current = setTimeout(() => {
         executeSearch(inputValue);
     }, 300);
   };
 
   const handleSelectPlace = (placeId: string, description: string, isManual: boolean = false) => {
-    // 1. If it's the "Manual Fallback" option, go straight to Geocoding
-    if (isManual || placeId === 'MANUAL_FALLBACK') {
+    // A. Handle Manual "Find Place" Search (The fix for your issue)
+    if (isManual || placeId === 'MANUAL_SEARCH') {
         const inputValue = inputRef.current?.value || description;
-        handleGeocodingFallback(inputValue, `manual_${Date.now()}`);
+        handleFindPlaceFallback(inputValue);
         return;
     }
 
-    // 2. Otherwise, use Places Details API
+    // B. Handle Standard Autocomplete Selection
     const placesService = new window.google.maps.places.PlacesService(document.createElement("div"));
     placesService.getDetails({ 
       placeId,
       fields: ['geometry', 'name', 'types', 'formatted_address'],
       sessionToken: sessionTokenRef.current
     }, (place, status) => {
-      sessionTokenRef.current = new window.google.maps.places.AutocompleteSessionToken();
+      sessionTokenRef.current = new window.google.maps.places.AutocompleteSessionToken(); // Refresh token
 
-      if (status === window.google.maps.places.PlacesServiceStatus.OK && place && place.geometry) {
+      if (status === window.google.maps.places.PlacesServiceStatus.OK && place) {
         processSelectedPlace(place, placeId, description);
       } else {
-        // Fallback to geocoding if details fail
-        handleGeocodingFallback(description, placeId);
+        console.error("Details failed, trying fallback name search...");
+        handleFindPlaceFallback(description);
       }
     });
   };
 
-  const handleGeocodingFallback = (address: string, placeId: string) => {
-    const geocoder = new window.google.maps.Geocoder();
-    geocoder.geocode({ address: address }, (results, status) => {
-      if (status === 'OK' && results && results[0]) {
-        const place = {
-            name: address, // Geocoding doesn't give a "name", so use input
-            formatted_address: results[0].formatted_address,
-            geometry: results[0].geometry,
-            types: ['geocode']
-        };
-        processSelectedPlace(place, placeId, address);
+  // 4. The Powerful Fallback: Find Place From Query
+  // This ignores address formatting and searches for the "Entity" (Name)
+  const handleFindPlaceFallback = (query: string) => {
+    const placesService = new window.google.maps.places.PlacesService(document.createElement("div"));
+    
+    const request = {
+      query: query,
+      fields: ['name', 'geometry', 'formatted_address', 'place_id', 'types'], 
+    };
+
+    placesService.findPlaceFromQuery(request, (results, status) => {
+      if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results[0]) {
+        const place = results[0];
+        // We generate a unique ID because findPlaceFromQuery sometimes returns same IDs
+        processSelectedPlace(place, place.place_id || `manual_${Date.now()}`, place.formatted_address || query);
       } else {
-        console.error("Geocoding failed:", status);
+        // If even Name search fails, we show an alert or just nothing (rare)
+        console.error("Find Place failed:", status);
+        // Optional: Last resort geocode could go here, but usually FindPlace is better for what you want.
       }
     });
   };
 
   const processSelectedPlace = (place: any, placeId: string, originalDescription: string) => {
     const placeTypes = place.types || [];
+    // Find the most relevant icon
     const iconType = placeTypes.find((type: string) => placeTypeIcons[type]) || "establishment";
     const icon = placeTypeIcons[iconType] || defaultIcon;
 
@@ -167,7 +180,7 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
 
     const selectedPlace = {
       address: place.formatted_address || originalDescription,
-      name: place.name || originalDescription,
+      name: place.name || originalDescription, // This ensures we get "Disneyland Paris"
       lat: place.geometry.location.lat(),
       lng: place.geometry.location.lng(),
       place_id: placeId,
@@ -176,7 +189,7 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
     };
 
     onPlaceSelected(selectedPlace);
-    if (inputRef.current) inputRef.current.value = place.formatted_address || place.name;
+    if (inputRef.current) inputRef.current.value = place.name; // Update input to show the clean name
   };
 
   return (
@@ -190,12 +203,12 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
           ref={inputRef}
           type="text"
           className="flex h-9 w-full rounded-md border border-input bg-transparent pl-12 p-3 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-          placeholder={isGoogleLoaded ? "Search location..." : "Loading..."}
+          placeholder={isGoogleLoaded ? "Search by name or address..." : "Initializing..."}
           disabled={!isGoogleLoaded}
           onChange={handleInputChange}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && inputRef.current?.value) {
-               handleGeocodingFallback(inputRef.current.value, `enter_${Date.now()}`);
+               handleFindPlaceFallback(inputRef.current.value);
             }
           }}
         />
@@ -210,7 +223,7 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected }: AutocompleteInputProps) 
               onClick={() => handleSelectPlace(prediction.place_id, prediction.description, prediction.isManual)}
             >
               <span className="w-6 h-6 flex items-center justify-center flex-shrink-0">
-                 {prediction.isManual ? <Search className="w-5 h-5 text-gray-400"/> : defaultIcon}
+                 {prediction.isManual ? <Search className="w-5 h-5 text-blue-500"/> : defaultIcon}
               </span>
               <div className="flex flex-col">
                 <span className="text-sm font-medium">
