@@ -17,7 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { Plane, Hotel, TrainFront, Bus, UsersRound, MapPin, CalendarIcon, ClockIcon, ArrowUpDown, Landmark, Car } from "lucide-react";
@@ -66,6 +66,8 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected, value, onChange }: any) =>
   const [predictions, setPredictions] = useState<any[]>([]);
   const [selectedIcon, setSelectedIcon] = useState<JSX.Element | null>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const loadGoogleMapsScript = () => {
@@ -103,15 +105,25 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected, value, onChange }: any) =>
     }
   }, [apiKey]);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = event.target.value;
-    onChange(inputValue);
-    
-    if (!inputValue) {
+  // Debounced search function
+  const debouncedSearch = useCallback((inputValue: string) => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    debounceTimeoutRef.current = setTimeout(() => {
+      performSearch(inputValue);
+    }, 500); // 500ms delay
+  }, []);
+
+  const performSearch = (inputValue: string) => {
+    if (!inputValue || inputValue.length < 2) {
       setPredictions([]);
+      setIsSearching(false);
       return;
     }
 
+    setIsSearching(true);
     const service = new window.google.maps.places.AutocompleteService();
     
     // First try: Search with NO type restrictions to get all locations
@@ -138,11 +150,39 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected, value, onChange }: any) =>
             }
           );
         }
+        setIsSearching(false);
       }
     );
   };
 
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value;
+    onChange(inputValue);
+    
+    if (!inputValue) {
+      setPredictions([]);
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+      return;
+    }
+
+    // Only start searching if user has typed at least 2 characters
+    if (inputValue.length < 2) {
+      setPredictions([]);
+      return;
+    }
+
+    debouncedSearch(inputValue);
+  };
+
   const handleSelectPlace = (placeId: string, description: string) => {
+    // Clear any pending debounce timeout when user selects a place
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    setIsSearching(true);
     const placesService = new window.google.maps.places.PlacesService(
       document.createElement("div")
     );
@@ -179,8 +219,18 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected, value, onChange }: any) =>
         if (inputRef.current) inputRef.current.value = cleanName;
         onChange(cleanName);
       }
+      setIsSearching(false);
     });
   };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="relative w-full">
@@ -200,7 +250,21 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected, value, onChange }: any) =>
           onFocus={() => setIsFocused(true)}
           onBlur={() => setTimeout(() => setIsFocused(false), 200)}
         />
+        
+        {/* Loading indicator */}
+        {isSearching && (
+          <div className="absolute right-3">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+          </div>
+        )}
       </div>
+
+      {/* Search hint */}
+      {isFocused && !isSearching && predictions.length === 0 && value && value.length < 2 && (
+        <div className="absolute z-10 mt-1 w-full bg-yellow-50 border border-yellow-200 rounded-md p-2 text-xs text-yellow-800">
+          Type at least 2 characters to search...
+        </div>
+      )}
 
       {/* Improved Dropdown */}
       {predictions.length > 0 && isFocused && (
@@ -224,6 +288,16 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected, value, onChange }: any) =>
               </button>
             );
           })}
+        </div>
+      )}
+
+      {/* Loading state in dropdown */}
+      {isSearching && isFocused && (
+        <div className="absolute z-50 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg p-3">
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+            Searching...
+          </div>
         </div>
       )}
     </div>
