@@ -20,7 +20,7 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
-import { Plane, Hotel, TrainFront, Bus, UsersRound, MapPin, CalendarIcon, ClockIcon, ArrowUpDown } from "lucide-react";
+import { Plane, Hotel, TrainFront, Bus, UsersRound, MapPin, CalendarIcon, ClockIcon, ArrowUpDown, Landmark, Car } from "lucide-react";
 
 const placeTypeIcons: { [key: string]: JSX.Element } = {
   airport: <Plane className="w-4 h-4 text-blue-500" />,
@@ -28,6 +28,9 @@ const placeTypeIcons: { [key: string]: JSX.Element } = {
   establishment: <MapPin className="w-4 h-4 text-gray-500" />,
   train_station: <TrainFront className="w-4 h-4 text-green-500" />,
   bus_station: <Bus className="w-4 h-4 text-purple-500" />,
+  tourist_attraction: <Landmark className="w-4 h-4 text-red-500" />,
+  amusement_park: <Landmark className="w-4 h-4 text-pink-500" />,
+  point_of_interest: <MapPin className="w-4 h-4 text-orange-500" />,
 };
 
 const defaultIcon = <MapPin className="w-4 h-4 text-gray-500" />;
@@ -110,19 +113,31 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected, value, onChange }: any) =>
     }
 
     const service = new window.google.maps.places.AutocompleteService();
+    
+    // First try: Search with NO type restrictions to get all locations
     service.getPlacePredictions(
       {
         input: inputValue,
-        types: [
-          "airport",
-          "bus_station",
-          "transit_station",
-          "train_station",
-          "lodging",
-        ],
+        // REMOVED types restriction to show ALL locations
       },
-      (results) => {
-        setPredictions(results || []);
+      (results, status) => {
+        console.log("Autocomplete results:", results);
+        console.log("Autocomplete status:", status);
+        
+        if (status === 'OK' && results) {
+          setPredictions(results);
+        } else {
+          // If no results, try with establishment type as fallback
+          service.getPlacePredictions(
+            {
+              input: inputValue,
+              types: ["establishment"]
+            },
+            (fallbackResults) => {
+              setPredictions(fallbackResults || []);
+            }
+          );
+        }
       }
     );
   };
@@ -131,7 +146,13 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected, value, onChange }: any) =>
     const placesService = new window.google.maps.places.PlacesService(
       document.createElement("div")
     );
-    placesService.getDetails({ placeId }, (place) => {
+    placesService.getDetails({ 
+      placeId,
+      fields: ['name', 'formatted_address', 'types', 'geometry']
+    }, (place, status) => {
+      console.log("Place details status:", status);
+      console.log("Place details:", place);
+      
       if (place) {
         const cleanName = getCleanLocationName(place);
         onPlaceSelected(place, cleanName, placeId);
@@ -144,6 +165,15 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected, value, onChange }: any) =>
         );
 
         setSelectedIcon(icon);
+        setPredictions([]);
+        setIsFocused(false);
+        if (inputRef.current) inputRef.current.value = cleanName;
+        onChange(cleanName);
+      } else {
+        // Fallback: if we can't get place details, still use the prediction
+        const cleanName = getCleanLocationName({ description });
+        onPlaceSelected({ description }, cleanName, placeId);
+        setSelectedIcon(defaultIcon);
         setPredictions([]);
         setIsFocused(false);
         if (inputRef.current) inputRef.current.value = cleanName;
@@ -175,7 +205,7 @@ const AutocompleteInput = ({ apiKey, onPlaceSelected, value, onChange }: any) =>
       {/* Improved Dropdown */}
       {predictions.length > 0 && isFocused && (
         <div className="absolute z-50 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-y-auto">
-          {predictions.slice(0, 5).map((prediction) => {
+          {predictions.slice(0, 6).map((prediction) => {
             const type = prediction.types?.find((t: string) => placeTypeIcons[t]) || "establishment";
             return (
               <button
@@ -319,12 +349,14 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
     setFromPlaceId(placeId);
     console.log("Pickup place ID:", placeId);
     console.log("Pickup name:", cleanName);
+    console.log("Full pickup place:", place);
   };
 
   const handleSelectTo = (place: any, cleanName: string, placeId: string) => {
     setToPlaceId(placeId);
     console.log("Dropoff place ID:", placeId);
     console.log("Dropoff name:", cleanName);
+    console.log("Full dropoff place:", place);
   };
 
   const swapLocations = () => {
@@ -343,7 +375,7 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
   const onSubmit = (data: FormData) => {
     if (!fromPlaceId || !toPlaceId) {
       toast({
-        title: "Valid Location",
+        title: "Valid Location Required",
         description: "Please select valid locations for both Pickup and Dropoff.",
         variant: "destructive",
       });
@@ -378,6 +410,10 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
 
   const toggleReturnFields = () => {
     setShowReturnFields(!showReturnFields);
+    if (!showReturnFields) {
+      form.setValue("returnDate", "");
+      form.setValue("returnTime", "");
+    }
   };
 
   return (
