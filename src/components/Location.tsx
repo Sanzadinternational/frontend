@@ -402,7 +402,7 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
   const [fromPlaceId, setFromPlaceId] = useState<string | null>(null);
   const [toPlaceId, setToPlaceId] = useState<string | null>(null);
   const [showReturnFields, setShowReturnFields] = useState(false);
-  const googleMapsApiKey = "AIzaSyC9vmFHkCL1BZUjf1rTNytSfbKhmDG3OyE";
+  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const { toast } = useToast();
   const router = useRouter();
   
@@ -493,8 +493,10 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
   return (
     <div className="w-[70%]">
       <Card className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg">
+      
         <CardHeader>
           <CardTitle className="text-center text-2xl font-semibold text-gray-800 dark:text-white">
+          
             Book Your Ride
           </CardTitle>
         </CardHeader>
@@ -511,6 +513,7 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
                       <FormLabel className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                         Pickup Location
                       </FormLabel>
+                      
                       <FormControl>
                         <AutocompleteInput
                           apiKey={googleMapsApiKey}
@@ -525,15 +528,15 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
                 />
 
                 {/* Swap Button */}
-                <div className="flex justify-center py-2">
+                <div className="md:flex md:justify-center relative md:static">
                   <Button
                     type="button"
                     variant="outline"
                     size="icon"
-                    className="h-10 w-10 rounded-full border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                    className="h-10 w-10 rounded-full border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors absolute right-0 md:static"
                     onClick={swapLocations}
                   >
-                    <ArrowUpDown className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                    <ArrowUpDown className="h-4 w-4 text-gray-600 dark:text-gray-400 rotate-90" />
                   </Button>
                 </div>
 
@@ -546,6 +549,7 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
                       <FormLabel className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                         Dropoff Location
                       </FormLabel>
+                     
                       <FormControl>
                         <AutocompleteInput
                           apiKey={googleMapsApiKey}
@@ -569,12 +573,14 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
                       <FormLabel className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                         Passengers
                       </FormLabel>
+                  
                       <FormControl>
                         <div className="relative flex items-center">
                           <select
                             {...field}
                             value={field.value || "1"}
                             className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 pl-3 pr-10 appearance-none"
+            
                           >
                             {Array.from({ length: 50 }, (_, i) => i + 1).map((num) => (
                               <option key={num} value={num.toString()}>
@@ -687,7 +693,7 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
               </div>
               
               <Button
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 text-sm transition-colors"
+                className="w-full bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2.5 text-sm transition-colors"
                 type="submit"
               >
                 Search Transfers

@@ -14,7 +14,7 @@ const containerStyle = {
   borderRadius: "8px",
 };
 
-const googleMapsApiKey = "AIzaSyC9vmFHkCL1BZUjf1rTNytSfbKhmDG3OyE";
+const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 export default function LocationMap({ pickupLocation, dropoffLocation }) {
   // pickupLocation = placeId
