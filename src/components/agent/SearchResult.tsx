@@ -414,7 +414,9 @@ const SearchResult = ({
     <>
       {displayForm && (
         <div className="flex items-center justify-center w-full mb-4">
-          <Location onFormSubmit={() => setDisplayForm(false)} />
+          <Location onFormSubmit={() => setDisplayForm(false)}
+          initialData={formData} 
+          />
         </div>
       )}
       <div className="flex flex-col md:flex-row gap-5">

@@ -397,8 +397,27 @@ const formSchema = z.object({
 });
 
 type FormData = z.infer<typeof formSchema>;
+// edited at 22-12-25
+interface LocationProps {
+  onFormSubmit: () => void;
+  initialData?: {
+    pickup: string;
+    dropoff: string;
+    pax: string;
+    date: string;
+    time: string;
+    returnDate?: string;
+    returnTime?: string;
+    pickupLocation?: string;
+    dropoffLocation?: string;
+  };
+}
+// end
 
-export default function Location({ onFormSubmit }: { onFormSubmit: () => void }) {
+// export default function Location({ onFormSubmit }: { onFormSubmit: () => void }) {
+// edited at 22-12
+export default function Location({ onFormSubmit, initialData }: LocationProps) {
+  // end
   const [fromPlaceId, setFromPlaceId] = useState<string | null>(null);
   const [toPlaceId, setToPlaceId] = useState<string | null>(null);
   const [showReturnFields, setShowReturnFields] = useState(false);
@@ -408,16 +427,50 @@ export default function Location({ onFormSubmit }: { onFormSubmit: () => void })
   
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
+    // edited at 22-12
+    // defaultValues: {
+    //   pickup: "",
+    //   dropoff: "",
+    //   pax: "1",
+    //   date: "",
+    //   time: "",
+    //   returnDate: "",
+    //   returnTime: "",
+    // },
+    
     defaultValues: {
-      pickup: "",
-      dropoff: "",
-      pax: "1",
-      date: "",
-      time: "",
-      returnDate: "",
-      returnTime: "",
+      pickup: initialData?.pickup || "",
+      dropoff: initialData?.dropoff || "",
+      pax: initialData?.pax || "1",
+      date: initialData?.date || "",
+      time: initialData?.time || "",
+      returnDate: initialData?.returnDate || "",
+      returnTime: initialData?.returnTime || "",
     },
+    // end
   });
+
+// edited 22-12
+// Load initial data when component mounts
+  useEffect(() => {
+    if (initialData) {
+      console.log('Loading initial data:', initialData);
+      
+      if (initialData.pickupLocation) {
+        setFromPlaceId(initialData.pickupLocation);
+      }
+      if (initialData.dropoffLocation) {
+        setToPlaceId(initialData.dropoffLocation);
+      }
+      
+      // Show return fields if return data exists
+      if (initialData.returnDate || initialData.returnTime) {
+        setShowReturnFields(true);
+      }
+    }
+  }, [initialData]);
+// end
+
 
   const handleSelectFrom = (place: any, cleanName: string, placeId: string) => {
     setFromPlaceId(placeId);

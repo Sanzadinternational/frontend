@@ -58,7 +58,7 @@ const Footer = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 justify-items-center gap-3">
         <div className="flex w-full justify-center md:justify-normal">
-          <p>© 2025 Sanzad International</p>
+          <p>© 2026 Sanzad International</p>
         </div>
         <div className="flex items-center divide-x divide-white">
           <Link className="px-1 text-sm hover:text-blue-200" href="/privacy-policy">
